@@ -38,7 +38,7 @@ import { StatusBar, View } from "react-native";
 function App() {
   return (
     <View style={{ flex: 1 }}>
-      <StatusBar style="auto" barStyle="default" />
+      <StatusBar style="auto"  barStyle="dark-content" />
       <NavigationContainer>
         <Stack.Navigator>
       
