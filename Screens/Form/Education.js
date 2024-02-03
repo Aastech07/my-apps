@@ -1,16 +1,13 @@
 import React, { useState } from "react";
 import { ScrollView, View, Text, TextInput, StyleSheet,TouchableOpacity,Alert } from "react-native";
 import Animated, {
-  FadeInUp,
   FadeInLeft,
-  FadeInDown,
 } from "react-native-reanimated";
 import {
   responsiveHeight,
   responsiveWidth,responsiveFontSize
 } from "react-native-responsive-dimensions";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 
 

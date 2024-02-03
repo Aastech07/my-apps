@@ -10,7 +10,6 @@ import {
 import HomecSreen from "./HomeScreen";
 import {
   responsiveWidth,
-  responsiveHeight,
 } from "react-native-responsive-dimensions";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { useState } from "react";
@@ -63,7 +62,7 @@ const BottomNav = () => {
                 position: "absolute",
                 left: responsiveWidth(6),
                 top: 2,
-                opacity: 0.7,
+           
               }}
               entering={FadeInDown.duration(500).damping()}
             >
@@ -89,7 +88,7 @@ const BottomNav = () => {
               style={{
                 position: "absolute",
                 left: responsiveWidth(30),
-                opacity: 0.7,
+                
               }}
               entering={FadeInDown.duration(500).damping()}
             >
@@ -142,7 +141,7 @@ const BottomNav = () => {
               style={{
                 position: "absolute",
                 left: responsiveWidth(59),
-                opacity: 0.7,
+              
               }}
               entering={FadeInDown.duration(500).damping()}
             >
@@ -169,7 +168,7 @@ const BottomNav = () => {
                 position: "absolute",
                 left: responsiveWidth(83),
                 top: 2,
-                opacity: 0.7,
+              
               }}
               entering={FadeInDown.duration(500).damping()}
             >

@@ -7,30 +7,37 @@ import Nearby from "./Nearby";
 import Search from "./Search";
 import { responsiveHeight } from "react-native-responsive-dimensions";
 import RecentlyView from "./RecentlyView";
-import { Ionicons } from "@expo/vector-icons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const Tab = createMaterialTopTabNavigator();
+
 const Matrimony = () => {
   return (
     <View style={{ flex: 1, marginTop: responsiveHeight(4) }}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
+            let IconComponent;
             let iconName;
 
             if (route.name === "Search") {
-              iconName = focused ? "ios-search" : "ios-search-outline";
+              IconComponent = FontAwesome5;
+              iconName = focused ? "search" : "search";
             } else if (route.name === "MyMatc") {
-              iconName = focused ? "ios-heart" : "ios-heart-outline";
+              IconComponent = FontAwesome5;
+              iconName = focused ? "heart" : "heart";
             } else if (route.name === "New") {
-              iconName = focused ? "ios-add-circle" : "ios-add-circle-outline";
+              IconComponent = FontAwesome5;
+              iconName = focused ? "plus-circle" : "plus-circle";
             } else if (route.name === "Nearby") {
-              iconName = focused ? "ios-location" : "ios-location-outline";
+              IconComponent = FontAwesome5;
+              iconName = focused ? "map-marker-alt" : "map-marker-alt";
             } else if (route.name === "View") {
-              iconName = focused ? "ios-eye" : "ios-eye-outline";
+              IconComponent = FontAwesome5;
+              iconName = focused ? "eye" : "eye-slash";
             }
 
-            return <Ionicons name={iconName} size={20} color={color} />;
+            return <IconComponent name={iconName} size={18} color={color} />;
           },
         })}
       >
@@ -39,7 +46,7 @@ const Matrimony = () => {
           component={Search}
           options={{
             tabBarLabelStyle: {
-              fontSize: 10, // Adjust the font size here
+              fontSize: 10,
             },
           }}
         />
@@ -48,7 +55,7 @@ const Matrimony = () => {
           component={MyMatches}
           options={{
             tabBarLabelStyle: {
-              fontSize: 10, // Adjust the font size here
+              fontSize: 10,
             },
           }}
         />
@@ -57,7 +64,7 @@ const Matrimony = () => {
           component={New}
           options={{
             tabBarLabelStyle: {
-              fontSize: 10, // Adjust the font size here
+              fontSize: 10,
             },
           }}
         />
@@ -66,7 +73,7 @@ const Matrimony = () => {
           component={Nearby}
           options={{
             tabBarLabelStyle: {
-              fontSize: 10, // Adjust the font size here
+              fontSize: 10,
             },
           }}
         />
@@ -75,7 +82,7 @@ const Matrimony = () => {
           component={RecentlyView}
           options={{
             tabBarLabelStyle: {
-              fontSize: 10, 
+              fontSize: 10,
             },
           }}
         />

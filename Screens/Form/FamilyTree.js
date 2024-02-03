@@ -26,16 +26,21 @@ import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import Materials from "react-native-vector-icons/MaterialCommunityIcons";
 import { SelectList } from "react-native-dropdown-select-list";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Camera, CameraType } from "expo-camera";
+import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from "@react-navigation/native";
+
 const FamilyTree = () => {
-  const [firstName, FirstName] = useState("");
-  const [fullname, setFullName] = useState("");
+
+  
+ 
+  const imgs =
+  "https://static.vecteezy.com/system/resources/previews/002/275/847/non_2x/male-avatar-profile-icon-of-smiling-caucasian-man-vector.jpg";
+const [filteredData, setFilteredData] = useState([]);
+const [searchText, setSearchText] = useState("");
+  const [fullname, setFullName] = useState();
   const [relationship, setRelationship] = useState("");
-  const [dob, setDOB] = useState("");
   const [show, setShow] = useState(false);
-  const [marital, setMarital] = useState("");
   const [listData, setListData] = useState([]);
   const [cameraRef, setCameraRef] = useState(null);
   const [photo, setPhoto] = useState(null);
@@ -43,9 +48,22 @@ const FamilyTree = () => {
   const [hasPermission, setHasPermission] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
-
+  const [searchmember,setSearchMember] = useState(false)
+  const [data, setData] = useState([
+    { id: 1, name: "John" },
+    { id: 2, name: "Jane" },
+    { id: 3, name: "Alice" },
+    { id: 4, name: "Bob" },
+    { id: 5, name: "Charlie" },
+    { id: 6, name: "item" },
+    { id: 7, name: "item" },
+    { id: 8, name: "item" },
+    { id: 9, name: "item" },
+    { id: 10, name: "item" },
+    { id: 11, name: "item" },
+    { id: 12, name: "item" },
+  ]);
    const navigation = useNavigation();
-
 
   const showlist = () => {
     setShow(!show);
@@ -62,8 +80,18 @@ const FamilyTree = () => {
 
   useEffect(() => {
     loadListData();
+  
   }, []);
+  useEffect(() => {
+    const filterData = () => {
+      const filtered = data.filter((item) =>
+        item.name.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilteredData(filtered);
+    };
 
+    filterData();
+  }, [searchText, data]);
 
   const validate = () => {
     if (
@@ -124,7 +152,7 @@ const FamilyTree = () => {
     setListData(newListData);
     await saveListData(newListData);
   };
-
+  
   const img =
     "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.632798143.1705622400&semt=ais";
 
@@ -188,6 +216,33 @@ const FamilyTree = () => {
     );
   };
 
+  
+  const renderItem = ({ item }) => {
+    return (
+      <View style={{ flex: 1 }}>
+        <TouchableOpacity onPress={()=>setSearchMember(!searchmember)}>
+          <View style={{ padding: 10 }}>
+            <Text style={{ position: "absolute", left: 100, top: 30 }}>
+              {item.name}
+            </Text>
+            <Image
+              style={{
+                height: 50,
+                width: 50,
+                top: 8,
+                left: 20,
+                borderRadius: 50,
+              }}
+              source={{ uri: img }}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+
+
   return (
     <View style={{ flex: 1,backgroundColor:'#fff'}}>
  <ScrollView style={{flex:1}}  contentContainerStyle={{ paddingBottom: 300 }}>
@@ -211,7 +266,7 @@ const FamilyTree = () => {
 
         <View style={{ flexDirection: "row", bottom:responsiveHeight(-1), left:responsiveWidth(80),
         }}>
-             <TouchableOpacity onPress={()=>navigation.navigate('CreateProfile')}>
+             <TouchableOpacity onPress={()=>navigation.goBack()}>
              <FontAwesome5Icon name="arrow-left" size={18}  style={{  backgroundColor:'#fff',padding:5,paddingHorizontal:7,borderRadius:50,elevation:3,shadowColor:'#000',shadowOpacity:0.6,shadowRadius:10}}/>
              </TouchableOpacity>
           </View>
@@ -439,33 +494,58 @@ const FamilyTree = () => {
 
           {show ? (
             <View style={{ marginTop: responsiveHeight(5) }}>
-              <Text
-                style={{
-                  top: responsiveHeight(24),
-                  left: 23,
-                  fontSize: 15,
-                  fontWeight: "500",
-                  opacity: 0.6,
-                }}
-              >
-                Enter FullName
-              </Text>
+              
+              <View style={{ bottom: 10 }}>
+            <Text
+              style={{
+                top: responsiveHeight(24),
+                left: 23,
+                fontSize: 15,
+                fontWeight: "500",
+                opacity: 0.6,
+              }}
+            >
+              Add Member
+            </Text>
+            <View style={styles.inputView}>
+              <TextInput
+                style={styles.inputText}
+                placeholder="Add Member"
+                placeholderTextColor="black"
+                onChangeText={(txt) => setFullName(txt)}
+                value={fullname}
+              />
+              <FontAwesome5Icon
+                name="users"
+                size={16}
+                style={{ position: "absolute", left: 7, top: responsiveHeight(2.5), opacity: 0.6 }}
+                color={"#000"}
+              />
+            </View>
+          </View>
+
+
               <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="Enter FullName"
-                  placeholderTextColor="black"
-                  onChangeText={(txt) => setFullName(txt)}
-                  value={fullname}
-                />
+              <TouchableOpacity onPress={()=>setSearchMember(!searchmember)}>
+                { fullname? (
+
+             <Text style={{top:responsiveHeight(2),opacity:0.7,left:10}}>{Names}</Text>
+
+                ):(
+                  <Text style={{top:responsiveHeight(2),opacity:0.7,left:10}}>Search Member</Text>
+                )
+
+                }
+
                 <FontAwesome5Icon
-                  name="signature"
+                  name="search"
                   size={16}
-                  style={{ position: "absolute", left: 5, top: 18 }}
+                  style={{ position: "absolute",  top: 16,opacity:0.7,right:responsiveWidth(75) }}
                   color={"#000"}
                 />
+                 </TouchableOpacity>
               </View>
-
+             
               <View style={{ marginTop: 15 }}>
                 <View style={{ top: responsiveHeight(24.5) }}>
                   <Text
@@ -548,6 +628,109 @@ const FamilyTree = () => {
               </View>
             </View>
           </Modal>
+
+
+
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={searchmember}
+            onRequestClose={() => setSearchMember(!searchmember)}
+          >
+            <View style={{ flex: 1,backgroundColor:'#fff' }}>
+           
+
+             <View style={{ flex: 1, }}>
+      <View style={styles.inputView1}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Search..."
+          placeholderTextColor="black"
+          edile={true}
+          onChangeText={(txt) => setSearchText(txt)}
+          value={searchText}
+        />
+        <FontAwesome5Icon
+          name="search"
+          size={19}
+          style={{
+            position: "absolute",
+
+            opacity: 0.4,
+            right: responsiveWidth(80),
+          }}
+          color={"#000"}
+        />
+      </View>
+
+      <View style={{ top: 30, marginBottom: 120 }}>
+        {searchText.length > 0 ? (
+          <FlatList
+            data={filteredData}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id.toString()}
+          />
+        ) : null}
+      </View>
+    </View>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </View>
+
+
+          </Modal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         </View>
       </View>
 </ScrollView>
@@ -693,5 +876,30 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 16,
+  },
+  inputView1: {
+    width: "90%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    height: 50,
+    marginBottom: 20,
+    justifyContent: "center",
+    padding: 20,
+    top: responsiveHeight(2),
+    alignSelf: "center",
+    shadowColor: "#984065",
+    shadowOffset: {
+      width: 0,
+      height: 50,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 16.0,
+    elevation: 5,
+    paddingLeft: 50,
+  },
+
+  inputText: {
+    height: 50,
+    color: "black",
   },
 });

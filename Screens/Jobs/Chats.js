@@ -12,7 +12,7 @@ const Chats = () => {
     const email = await AsyncStorage.getItem('email')
     const id = await AsyncStorage.getItem('userId')
   
-  //  console.warn(id)
+  
     firebase.firestore().collection('users').where('email', '!=', email).get()
     .then((res) => {
       let tempData = [];

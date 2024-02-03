@@ -21,7 +21,7 @@ import {
 } from "react-native-dropdown-select-list";
 import axios from "axios";
 const SignUp = () => {
-  const [Membar, setMembar] = useState("");
+  const [Member, setMember] = useState("");
   const [number, setNumber] = useState("");
   const [relationship,setRelationship] = useState('')
   const navigation = useNavigation();
@@ -135,11 +135,11 @@ const SignUp = () => {
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}        //envelope
-          placeholder="Enter Membar ID"
+          placeholder="Enter Member ID"
           placeholderTextColor="black"
-          onChangeText={(txt) => setMembar(txt)}
+          onChangeText={(txt) => setMember(txt)}
           editable={true}
-          value={Membar}
+          value={Member}
         />
       </View>
       <View style={{top:responsiveHeight(20),right:responsiveWidth(-9.5)}}>

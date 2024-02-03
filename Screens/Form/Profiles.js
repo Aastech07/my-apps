@@ -21,7 +21,7 @@ import {
   MultipleSelectList,
   SelectList,
 } from "react-native-dropdown-select-list";
-import { Camera, CameraType } from "expo-camera";
+import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import Animated, {
   FadeInUp,
@@ -30,7 +30,6 @@ import Animated, {
 } from "react-native-reanimated";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import RadioGroup from "react-native-radio-buttons-group";
 import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
 import { api } from "../Api";
@@ -68,15 +67,8 @@ const Profiles = ({ id }) => {
   const [modalVisible1, setModalVisible1] = useState(false);
 
   const Api = api;
-  const Marital = [
-    { key: "1", value: "Doesn't Matter" },
-    { key: "2", value: "Never Married" },
-    { key: "3", value: "Divorced" },
-    { key: "4", value: "Widowed" },
-    { key: "5", value: "Awaiting Divorce" },
-    { key: "6", value: "Diary Products" },
-    { key: "7", value: "Annulled" },
-  ];
+
+  
 
   const Professions = [
     { key: "1", value: "Business" },
@@ -85,7 +77,7 @@ const Profiles = ({ id }) => {
   ];
 
   const MotherTongue = [
-    { key: "1", value: "Doesn't Matter" },
+ 
     { key: "2", value: "Assamese" },
     { key: "3", value: "Bengali" },
     { key: "4", value: "English" },
@@ -211,10 +203,9 @@ const Profiles = ({ id }) => {
           base64: true,
         });
         setPhoto(`data:image/jpg;base64,${photoData.base64}`);
-        //console.log(`data:image/jpg;base64,${photoData.base64}`);
         setModalVisible(!modalVisible);
       } catch (error) {
-        console.error("Error taking picture:", error);
+        console.log("Error taking picture:", error);
       }
     }
   };
@@ -235,7 +226,7 @@ const Profiles = ({ id }) => {
       quality: 1,
     });
 
-    console.log(result);
+  
 
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
@@ -279,7 +270,6 @@ const Profiles = ({ id }) => {
         maritalStatus: marital,
       });
 
-      console.log("Response:", data);
     } catch (error) {
       console.error("Error during login:", error.message);
     }
@@ -400,6 +390,8 @@ const Profiles = ({ id }) => {
             </Text>
           </View>
 
+     
+
           <View style={{ bottom: 5 }}>
             <View style={{}}>
               <Text
@@ -421,17 +413,7 @@ const Profiles = ({ id }) => {
                   onChangeText={(text) => setFirstName(text)}
                   value={firstName}
                 />
-                <FontAwesome5Icon
-                  name="signature"
-                  size={16}
-                  style={{
-                    position: "absolute",
-                    left: 5,
-                    top: 18,
-                    opacity: 0.6,
-                  }}
-                  color={"#000"}
-                />
+               
               </View>
             </View>
 
@@ -460,17 +442,7 @@ const Profiles = ({ id }) => {
                   onChangeText={(text) => setLastName(text)}
                   value={lastName}
                 />
-                <FontAwesome5Icon
-                  name="signature"
-                  size={16}
-                  style={{
-                    position: "absolute",
-                    left: 5,
-                    top: 18,
-                    opacity: 0.6,
-                  }}
-                  color={"#000"}
-                />
+              
               </View>
             </View>
 
@@ -504,7 +476,8 @@ const Profiles = ({ id }) => {
               </View>
             </View>
 
-            <View style={{ top: 15 }}>
+            <View style={{ top: 15 }} >
+            
               <Text
                 style={{
                   top: responsiveHeight(24),
@@ -516,30 +489,10 @@ const Profiles = ({ id }) => {
                 }}
               >
                 Date of Birth :<Text style={{ color: "tomato" }}> {age}</Text>
+                  <Text style={{ left:20}} onPress={()=>setModalVisible1(!modalVisible1)}>                 📆</Text>
               </Text>
 
-              <TouchableOpacity onPress={() => setModalVisible1(true)}>
-                <FontAwesome5Icon
-                  name="calendar"
-                  style={{
-                    position: "absolute",
-                    top: responsiveWidth(42),
-                    left: responsiveWidth(79),
-                    fontWeight: "400",
-                    borderRadius: 4,
-                    backgroundColor: "#fff",
-                    padding: 3,
-                    paddingHorizontal: 7,
-                    shadowColor: "#000",
-                    shadowOpacity: 0.5,
-                    shadowRadius: 10,
-                    elevation: 1,
-                    color: "tomato",
-                  }}
-                  size={16}
-                />
-              </TouchableOpacity>
-
+            
               <View style={{ top: responsiveHeight(25) }}>
                 <View style={styles.centeredView1}>
                   <Modal
@@ -591,17 +544,7 @@ const Profiles = ({ id }) => {
                   onChangeText={(txt) => setFatherName(txt)}
                   value={fatherName}
                 />
-                <FontAwesome5Icon
-                  name="signature"
-                  size={16}
-                  style={{
-                    position: "absolute",
-                    left: 5,
-                    top: 18,
-                    opacity: 0.6,
-                  }}
-                  color={"#000"}
-                />
+              
               </View>
             </View>
 
@@ -625,17 +568,7 @@ const Profiles = ({ id }) => {
                   onChangeText={(txt) => setMotherName(txt)}
                   value={motherName}
                 />
-                <FontAwesome5Icon
-                  name="signature"
-                  size={16}
-                  style={{
-                    position: "absolute",
-                    left: 5,
-                    top: 18,
-                    opacity: 0.6,
-                  }}
-                  color={"#000"}
-                />
+             
               </View>
             </View>
 
@@ -659,17 +592,7 @@ const Profiles = ({ id }) => {
                   onChangeText={(text) => setCountry(text)}
                   value={country}
                 />
-                <FontAwesome5Icon
-                  name="flag"
-                  size={16}
-                  style={{
-                    position: "absolute",
-                    left: 5,
-                    top: 18,
-                    opacity: 0.6,
-                  }}
-                  color={"#000"}
-                />
+              
               </View>
             </View>
 
@@ -693,17 +616,7 @@ const Profiles = ({ id }) => {
                   onChangeText={(txt) => setState(txt)}
                   value={state}
                 />
-                <FontAwesome5Icon
-                  name="chart-area"
-                  size={16}
-                  style={{
-                    position: "absolute",
-                    left: 5,
-                    top: 18,
-                    opacity: 0.6,
-                  }}
-                  color={"#000"}
-                />
+              
               </View>
             </View>
 
@@ -727,17 +640,7 @@ const Profiles = ({ id }) => {
                   onChangeText={(txt) => setCity(txt)}
                   value={city}
                 />
-                <FontAwesome5Icon
-                  name="city"
-                  size={16}
-                  style={{
-                    position: "absolute",
-                    left: 5,
-                    top: 18,
-                    opacity: 0.6,
-                  }}
-                  color={"#000"}
-                />
+              
               </View>
             </View>
 
@@ -761,17 +664,7 @@ const Profiles = ({ id }) => {
                   onChangeText={(txt) => setStreet(txt)}
                   value={street}
                 />
-                <FontAwesome5Icon
-                  name="map-pin"
-                  size={16}
-                  style={{
-                    position: "absolute",
-                    left: 10,
-                    top: 18,
-                    opacity: 0.6,
-                  }}
-                  color={"#000"}
-                />
+              
               </View>
             </View>
 
@@ -796,17 +689,7 @@ const Profiles = ({ id }) => {
                   value={postalcode}
                   keyboardType="numeric"
                 />
-                <FontAwesome5Icon
-                  name="sort-numeric-up-alt"
-                  size={16}
-                  style={{
-                    position: "absolute",
-                    left: 5,
-                    top: 18,
-                    opacity: 0.6,
-                  }}
-                  color={"#000"}
-                />
+          
               </View>
             </View>
 
@@ -991,7 +874,7 @@ const styles = StyleSheet.create({
     height: 50,
     top: responsiveHeight(25),
     opacity: 0.8,
-    paddingLeft: 30,
+    paddingLeft: 20,
     paddingRight: 20,
     left: 20,
     marginBottom: 15,

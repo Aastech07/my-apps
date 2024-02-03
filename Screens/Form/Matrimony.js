@@ -21,7 +21,7 @@ import {
 } from "react-native-responsive-dimensions";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import {
-  MultipleSelectList,
+
   SelectList,
 } from "react-native-dropdown-select-list";
 import RadioGroup from "react-native-radio-buttons-group";

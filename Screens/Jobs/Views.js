@@ -33,7 +33,7 @@ const Views = () => {
       try {
         const { data } = await axios.get(`${Api}/jobs`);
         setApiData(data);
-        console.log(apidata);
+   
       } catch (error) {
         console.log(error);
       }

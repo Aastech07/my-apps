@@ -8,7 +8,7 @@ import {
   FlatList,
   DrawerLayoutAndroid,
   TouchableWithoutFeedback,
-  TouchableOpacity,
+  TouchableOpacity,ScrollView
 } from "react-native";
 import {
   responsiveWidth,
@@ -16,7 +16,7 @@ import {
 } from "react-native-responsive-dimensions";
 import FontAwesome5 from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
-import { ScrollView } from "react-native-virtualized-view";
+
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "./Api";
@@ -157,7 +157,7 @@ const HomeScreen = () => {
 
   const Image1 =
     "https://communityappintegrate.s3.ap-south-1.amazonaws.com/Event/pexels-matheus-bertelli-2608515.jpg";
-  const SaveIcon = "https://cdn-icons-png.flaticon.com/128/5667/5667029.png";
+ 
   const MusicIcon = "https://cdn-icons-png.flaticon.com/128/7566/7566380.png";
   const [apidata, setApiData] = useState("");
 
@@ -194,7 +194,7 @@ const HomeScreen = () => {
       try {
         const { data } = await axios.get(`${Api}/matrimonial/profiles`);
         setMatrimonial(data);
-        console.log(matrimonial);
+      
       } catch (error) {
         console.log(error);
       }

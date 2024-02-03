@@ -28,7 +28,7 @@ const OtpScreen = () => {
 
   
 const loginUser = async () => {
-  console.warn(nums)
+ 
   try {
     const { data } = await axios.post("http://15.206.74.132:3000/api/verify-login", {
       phone: phone,
@@ -37,12 +37,12 @@ const loginUser = async () => {
 
     if (data.message == "Login successful") {
       navigation.navigate("CreateProfile",{Datas:data});
-     //console.log(data)
     } else {
       Alert.alert("Login failed:");
     }
   } catch (error) {
     console.log("Error during login:", error.message);
+   
   }
 };
 
@@ -137,6 +137,8 @@ const loginUser = async () => {
         >
           {`${minutes}:${seconds < 10 ? "0" : ""}${seconds}`}
         </Text>
+        <Text style={{position:"absolute",top:responsiveHeight(5)}}>OTP: {nums}</Text>
+      
       </View>
     </View>
   );

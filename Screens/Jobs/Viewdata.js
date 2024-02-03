@@ -3,7 +3,7 @@ import { ScrollView, View, TouchableOpacity, Text, Image } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import {
-  responsiveHeight,
+
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 

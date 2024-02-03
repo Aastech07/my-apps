@@ -33,43 +33,56 @@ import JobsScreens from "./Screens/Form/JobsScreens";
 import Matrimonys from "./Screens/Form/Matrimony";
 import Profiles from "./Screens/Form/Profiles";
 import Directroydata from "./Screens/Directroydata";
+import SearchMember from "./Screens/Form/SearchMember";
 const Stack = createNativeStackNavigator();
 import { StatusBar, View } from "react-native";
 function App() {
   return (
     <View style={{ flex: 1 }}>
-      <StatusBar style="auto"  barStyle="dark-content" />
+      <StatusBar style="auto" barStyle="dark-content" />
       <NavigationContainer>
         <Stack.Navigator>
-      
-    
-    
-        <Stack.Screen
+
+     
+
+          <Stack.Screen
             name="SplashScreen"
             options={{ headerShown: false }}
             component={SplashScreen}
           />
 
-        <Stack.Screen
+          <Stack.Screen
             name="SignUp"
             options={{ headerShown: false }}
             component={SignUp}
           />
-       
-    
-       <Stack.Screen
+
+          <Stack.Screen name="search" component={SearchMember} />
+
+          <Stack.Screen
             name="BottomNav"
             options={{ headerShown: false }}
             component={BottomNav}
           />
 
-         <Stack.Screen
+          <Stack.Screen
+            name="Profiles"
+            options={{ headerShown: false }}
+            component={Profiles}
+          />
+
+          <Stack.Screen
             name="CreateProfile"
             options={{ headerShown: false }}
             component={CreateProfile}
           />
 
-       
+<Stack.Screen
+            name="FamilyTree"
+            options={{ headerShown: false }}
+            component={FamilyTree}
+          />
+
 
           <Stack.Screen
             name="Signin"
@@ -173,50 +186,35 @@ function App() {
             options={{ headerShown: false }}
             component={Messages}
           />
-             
+
           <Stack.Screen
             name="Education"
             options={{ headerShown: false }}
             component={Education}
           />
-            <Stack.Screen
-            name="FamilyTree"
-            options={{ headerShown: false }}
-            component={FamilyTree}
-          />
-     
-        <Stack.Screen
+
+          <Stack.Screen
             name="Matrimonys"
             options={{ headerShown: false }}
             component={Matrimonys}
           />
 
-         <Stack.Screen
-            name="Profiles"
-            options={{ headerShown: false }}
-            component={Profiles}
-          />
-
-        <Stack.Screen
+          <Stack.Screen
             name="JobsScreens"
             options={{ headerShown: false }}
             component={JobsScreens}
           />
 
-         <Stack.Screen
+          <Stack.Screen
             name="Directorys"
             options={{ headerShown: false }}
             component={Directorys}
           />
-          
+
+          <Stack.Screen name="directroy" component={Directroydata} />
+
         
 
-          <Stack.Screen
-            name="directroy"
-         
-            component={Directroydata}
-          />
-        
           <Stack.Screen name="Verification" component={OtpScreen} />
         </Stack.Navigator>
       </NavigationContainer>

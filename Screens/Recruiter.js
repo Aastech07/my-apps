@@ -17,8 +17,6 @@ import { useState } from "react";
 import Postjobs from "./Jobs/Postjobs";
 import ManagePost from "./Jobs/ManagePost";
 import Animated, {
-  FadeInUp,
-  FadeInLeft,
   FadeInDown,
 } from "react-native-reanimated";
 import Views from "./Jobs/Views";
@@ -60,7 +58,7 @@ const BottomNav = () => {
                 position: "absolute",
                 left: responsiveWidth(6),
                 top: 2,
-                opacity: 0.7,
+               
               }}
               entering={FadeInDown.duration(500).damping()}
             >
@@ -86,7 +84,7 @@ const BottomNav = () => {
               style={{
                 position: "absolute",
                 left: responsiveWidth(40),
-                opacity: 0.7,
+             
                 top: 3,
               }}
               entering={FadeInDown.duration(500).damping()}
@@ -114,7 +112,7 @@ const BottomNav = () => {
               style={{
                 position: "absolute",
                 left: responsiveWidth(80),
-                opacity: 0.7,
+              
                 top: 5,
               }}
               entering={FadeInDown.duration(500).damping()}
