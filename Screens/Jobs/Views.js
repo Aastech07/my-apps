@@ -45,11 +45,11 @@ const Views = () => {
   return (
     <ScrollView
       style={{ flex: 1 }}
-      contentContainerStyle={{ paddingBottom: 230 }}
+      contentContainerStyle={{ paddingBottom: 230, }}
     >
       <View style={{ flex: 1 }}>
         <FlatList
-          style={{ top: 50 }}
+          style={{  }}
           data={apidata}
           renderItem={({ item }) => (
             <>

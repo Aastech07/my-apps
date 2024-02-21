@@ -8,19 +8,16 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
-  Modal,Alert
+  Modal,
+  Alert,
 } from "react-native";
 import Animated, {
-  FadeInUp,
-  FadeInLeft,
-  FadeInDown,
-  FadeInRight,
+  FadeInLeft
 } from "react-native-reanimated";
 import {
   responsiveHeight,
   responsiveWidth,
-  responsiveFontSize
-
+  responsiveFontSize,
 } from "react-native-responsive-dimensions";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import Materials from "react-native-vector-icons/MaterialCommunityIcons";
@@ -28,17 +25,19 @@ import { SelectList } from "react-native-dropdown-select-list";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
-import { useNavigation } from "@react-navigation/native";
-
+import { useNavigation,useRoute } from "@react-navigation/native";
+import axios from "axios";
+import { api } from "../Api";
 const FamilyTree = () => {
-
+  const Api = api;
+  const datas = useRoute();
+  const ids = datas.params.data;
+  console.warn(ids)
   
- 
-  const imgs =
-  "https://static.vecteezy.com/system/resources/previews/002/275/847/non_2x/male-avatar-profile-icon-of-smiling-caucasian-man-vector.jpg";
-const [filteredData, setFilteredData] = useState([]);
-const [searchText, setSearchText] = useState("");
-  const [fullname, setFullName] = useState();
+  
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [fullname, setFullName] = useState("");
   const [relationship, setRelationship] = useState("");
   const [show, setShow] = useState(false);
   const [listData, setListData] = useState([]);
@@ -48,22 +47,10 @@ const [searchText, setSearchText] = useState("");
   const [hasPermission, setHasPermission] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
-  const [searchmember,setSearchMember] = useState(false)
-  const [data, setData] = useState([
-    { id: 1, name: "John" },
-    { id: 2, name: "Jane" },
-    { id: 3, name: "Alice" },
-    { id: 4, name: "Bob" },
-    { id: 5, name: "Charlie" },
-    { id: 6, name: "item" },
-    { id: 7, name: "item" },
-    { id: 8, name: "item" },
-    { id: 9, name: "item" },
-    { id: 10, name: "item" },
-    { id: 11, name: "item" },
-    { id: 12, name: "item" },
-  ]);
-   const navigation = useNavigation();
+  const [searchmember, setSearchMember] = useState(false);
+  const [id, setID] = useState("");
+  const [data, setData] = useState([]);
+  const navigation = useNavigation();
 
   const showlist = () => {
     setShow(!show);
@@ -72,20 +59,61 @@ const [searchText, setSearchText] = useState("");
   const Relationship = [
     { key: "1", value: "Father" },
     { key: "2", value: "Mother" },
-    { key: "3", value: "Sister" },
-    { key: "4", value: "Brother" },
+    { key: "3", value: "Son" },
+    { key: "4", value: "Daughter" },
     { key: "5", value: "Grandfather" },
-    { key: "6", value: "uncle" },
+    { key: "7", value: "Grandmother" },
+    { key: "8", value: "Uncle" },
+    { key: "9", value: "Aunt" },
+    { key: "10", value: "Brother" },
+    { key: "11", value: "Cousin" },
+    { key: "12", value: "Nephew" },
+    { key: "13", value: "Niece" },
+    { key: "14", value: "Husband" },
+    { key: "15", value: "Wife" },
+    { key: "16", value: "Partner" },
+    { key: "17", value: "Fiance" },
+    { key: "18", value: "Fiancee" },
+    { key: "19", value: "Ex-Spouse" },
+    { key: "20", value: "In-law" },
+    { key: "21", value: "Guardian" },
+    { key: "22", value: "Godfather" },
+    { key: "23", value: "Godmother" },
   ];
 
   useEffect(() => {
     loadListData();
-  
+    FetchUser();
   }, []);
+
+  const FetchUser = async () => {
+    try {
+      const { data } = await axios.get(`${Api}/profiles`, {});
+      setData(data);
+    } catch (error) {
+      console.error("Error during login:", error.message);
+    }
+  };
+
+  const MemberPost = async () => {
+  
+    try {
+      const { data } = await axios.post(`${Api}/members`, {
+        profileId: id,
+        userId:ids,
+        fullname: fullname,
+        Relationship: relationship,
+      });
+      console.warn(data);
+    } catch (error) {
+      console.log("Error during login:", error.message);
+    }
+  };
+
   useEffect(() => {
     const filterData = () => {
       const filtered = data.filter((item) =>
-        item.name.toLowerCase().includes(searchText.toLowerCase())
+        item.firstName.toLowerCase().includes(searchText.toLowerCase())
       );
       setFilteredData(filtered);
     };
@@ -94,23 +122,17 @@ const [searchText, setSearchText] = useState("");
   }, [searchText, data]);
 
   const validate = () => {
-    if (
-      !fullname ||
-      !relationship
-    ) {
-      Alert.alert("Incomplete Information", "Please fill in all the required fields before proceeding.",);
+    if (!fullname || !relationship) {
+      Alert.alert(
+        "Incomplete Information",
+        "Please fill in all the required fields before proceeding."
+      );
     } else {
-     
+      
     }
   };
 
-
-
-
-
-
-
-
+  useEffect(() => {}, [fullname]);
 
   const loadListData = async () => {
     try {
@@ -133,7 +155,7 @@ const [searchText, setSearchText] = useState("");
 
   const addItemToList = async () => {
     if (fullname.trim() === "") {
-      return; // Ignore empty items
+      return; 
     }
 
     const newFamilyMember = { fullname, relationship };
@@ -152,9 +174,8 @@ const [searchText, setSearchText] = useState("");
     setListData(newListData);
     await saveListData(newListData);
   };
-  
-  const img =
-    "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.632798143.1705622400&semt=ais";
+
+  const img ="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.632798143.1705622400&semt=ais";
 
   useEffect(() => {
     (async () => {
@@ -171,7 +192,6 @@ const [searchText, setSearchText] = useState("");
           base64: true,
         });
         setPhoto(`data:image/jpg;base64,${photoData.base64}`);
-        //console.log(`data:image/jpg;base64,${photoData.base64}`);
         setModalVisible(!modalVisible);
       } catch (error) {
         console.error("Error taking picture:", error);
@@ -188,15 +208,13 @@ const [searchText, setSearchText] = useState("");
   }
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
+  
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
 
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
@@ -216,14 +234,23 @@ const [searchText, setSearchText] = useState("");
     );
   };
 
-  
+  const handeldata = (name, id) => {
+    setFullName(name);
+    setID(id);
+  };
+
   const renderItem = ({ item }) => {
     return (
       <View style={{ flex: 1 }}>
-        <TouchableOpacity onPress={()=>setSearchMember(!searchmember)}>
+        <TouchableOpacity
+          onPress={() =>
+            setSearchMember(!searchmember) +
+            handeldata(item.firstName, item._id)
+          }
+        >
           <View style={{ padding: 10 }}>
             <Text style={{ position: "absolute", left: 100, top: 30 }}>
-              {item.name}
+              {item.firstName}
             </Text>
             <Image
               style={{
@@ -233,7 +260,7 @@ const [searchText, setSearchText] = useState("");
                 left: 20,
                 borderRadius: 50,
               }}
-              source={{ uri: img }}
+              source={{ uri: item.url }}
             />
           </View>
         </TouchableOpacity>
@@ -241,103 +268,126 @@ const [searchText, setSearchText] = useState("");
     );
   };
 
-
-
   return (
-    <View style={{ flex: 1,backgroundColor:'#fff'}}>
- <ScrollView style={{flex:1}}  contentContainerStyle={{ paddingBottom: 300 }}>
-
-      <View
-        style={{
-          width: responsiveWidth(100),
-          height: 90,
-          backgroundColor: "#3468C0",
-          position: "absolute",
-          bottom: 0,
-          top: -1,
-          elevation: 3,
-         borderBottomLeftRadius:20,
-         borderBottomRightRadius:20
-        }}
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 300 }}
       >
-        <View style={{ flexDirection: "row", marginTop: 10 }}>   
-        <Text style={{left:responsiveWidth(10),top:responsiveHeight(4),fontSize:responsiveFontSize(3),color:'red',fontWeight:'300'}}>Comm <Text style={{fontWeight:'300',color:'#fff'}}>unity</Text></Text>
-        </View>
-
-        <View style={{ flexDirection: "row", bottom:responsiveHeight(-1), left:responsiveWidth(80),
-        }}>
-             <TouchableOpacity onPress={()=>navigation.goBack()}>
-             <FontAwesome5Icon name="arrow-left" size={18}  style={{  backgroundColor:'#fff',padding:5,paddingHorizontal:7,borderRadius:50,elevation:3,shadowColor:'#000',shadowOpacity:0.6,shadowRadius:10}}/>
-             </TouchableOpacity>
+        <View
+          style={{
+            width: responsiveWidth(100),
+            height: 90,
+            backgroundColor: "#3468C0",
+            position: "absolute",
+            bottom: 0,
+            top: -1,
+            elevation: 3,
+            borderBottomLeftRadius: 20,
+            borderBottomRightRadius: 20,
+          }}
+        >
+          <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <Text
+              style={{
+                left: responsiveWidth(10),
+                top: responsiveHeight(4),
+                fontSize: responsiveFontSize(3),
+                color: "red",
+                fontWeight: "300",
+              }}
+            >
+              Comm{" "}
+              <Text style={{ fontWeight: "300", color: "#fff" }}>unity</Text>
+            </Text>
           </View>
 
-
-
-
-
-      </View>
-
-
-      <Animated.View
-        style={{ flex: 1, top: 110 }}
-        entering={FadeInLeft.duration(500).damping()}
-      >
-        <Text style={{ left: 20, fontSize: 25, fontWeight: "300" }}>
-          Create{" "}
-          <Text style={{ color: "tomato", fontWeight: "500" }}>
-            FamilyTree...
-          </Text>
-        </Text>
-
-        <TouchableOpacity onPress={() => showlist()}>
-          <Materials
-            name="plus"
-            size={25}
+          <View
             style={{
-              position: "absolute",
-              left: 300,
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 50,
-              },
-              shadowOpacity: 0.8,
-              shadowRadius: 16.0,
-              elevation: 3,
-              backgroundColor: "#f2f2f2",
-              padding: 4,
-              borderRadius: 50,
-              bottom: -4,
+              flexDirection: "row",
+              bottom: responsiveHeight(-1),
+              left: responsiveWidth(80),
             }}
-            color={"tomato"}
-          />
-        </TouchableOpacity>
-      </Animated.View>
+          >
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <FontAwesome5Icon
+                name="arrow-left"
+                size={18}
+                style={{
+                  backgroundColor: "#fff",
+                  padding: 5,
+                  paddingHorizontal: 7,
+                  borderRadius: 50,
+                  elevation: 3,
+                  shadowColor: "#000",
+                  shadowOpacity: 0.6,
+                  shadowRadius: 10,
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
 
-      <View
-        style={{
-          top: 150,
-          alignSelf: "center",
-          backgroundColor: "#fff",
-          paddingHorizontal: 5,
-          paddingVertical: 5,
-          borderRadius: 50,
-          shadowColor: "#000",
-          shadowOffset: 20.0,
-          shadowOpacity: 0.6,
-          shadowRadius: 10,
-          elevation: 3,
-        }}
-      >
-        <Image
-          source={{
-            uri: (photo && photo) || (selectedImage && selectedImage) || img,
+        <Animated.View
+          style={{ flex: 1, top: 110 }}
+          entering={FadeInLeft.duration(500).damping()}
+        >
+          <Text style={{ left: 20, fontSize: 25, fontWeight: "300" }}>
+            Create{" "}
+            <Text style={{ color: "tomato", fontWeight: "500" }}>
+              FamilyTree...
+            </Text>
+          </Text>
+
+          <TouchableOpacity onPress={() => showlist()}>
+            <Materials
+              name="plus"
+              size={25}
+              style={{
+                position: "absolute",
+                left: 300,
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 50,
+                },
+                shadowOpacity: 0.8,
+                shadowRadius: 16.0,
+                elevation: 3,
+                backgroundColor: "#f2f2f2",
+                padding: 4,
+                borderRadius: 50,
+                bottom: -4,
+              }}
+              color={"tomato"}
+            />
+          </TouchableOpacity>
+        </Animated.View>
+
+        <View
+          style={{
+            top: 150,
+            alignSelf: "center",
+            backgroundColor: "#fff",
+            paddingHorizontal: 5,
+            paddingVertical: 5,
+            borderRadius: 50,
+            shadowColor: "#000",
+            shadowOffset: 20.0,
+            shadowOpacity: 0.6,
+            shadowRadius: 10,
+            elevation: 3,
           }}
-          style={{ height: 80, width: 80, borderRadius: 50 }}
-        />
-      </View>
+        >
+          <Image
+            source={{
+              uri: (photo && photo) || (selectedImage && selectedImage) || img,
+            }}
+            style={{ height: 80, width: 80, borderRadius: 50 }}
+          />
+        </View>
 
-      <View
+        <View
           style={{
             top: 125,
             alignSelf: "center",
@@ -391,362 +441,317 @@ const [searchText, setSearchText] = useState("");
           </TouchableOpacity>
         </View>
 
-
-
         <View style={{ top: 120, alignSelf: "center" }}>
           <Text onPress={() => removeimage()} style={{ fontWeight: "300" }}>
             Remove <Text style={{ color: "tomato" }}>Image..</Text>
           </Text>
         </View>
 
-
-      <View style={{ bottom: 30 }}>
-        <View style={{}}>
-          <Text
-            style={{
-              top: responsiveHeight(25),
-              left: 20,
-              fontSize: 15,
-              fontWeight: "500",
-              opacity: 0.6,
-            }}
-            entering={FadeInLeft.duration(500).damping()}
-          >
-            Add FamilyTree
-          </Text>
-          <View
-            style={{
-              top: responsiveHeight(26),
-              backgroundColor: "#fff",
-              borderWidth: 1,
-              padding: 20,
-              marginHorizontal: 15,
-              borderRadius: 5,
-            }}
-          >
-            <FlatList
-              data={listData}
-              scrollEnabled={false}
-              
-              renderItem={({ item, index }) => (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginVertical: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      marginHorizontal: 80,
-                      backgroundColor: "#f2f2f2",
-                      flex: 1,
-                      borderRadius: 5,
-                      paddingLeft: 20,
-                      fontSize: 15,
-                      right: 60,
-                      shadowColor: "#000",
-                      shadowOpacity: 0.6,
-                      shadowRadius: 20,
-                      elevation: 3,
-                    }}
-                  >
-                    {item.fullname}
-                  </Text>
-
-                  <Text
-                    style={{
-                      backgroundColor: "#f2f2f2",
-
-                      flex: 1,
-                      borderRadius: 5,
-                      right: 90,
-                      marginHorizontal: -10,
-                      paddingLeft: 10,
-                      fontSize: 16,
-                      fontWeight: "300",
-                      shadowColor: "#000",
-
-                      shadowOpacity: 0.6,
-                      shadowRadius: 20,
-                      elevation: 3,
-                    }}
-                  >
-                    {item.relationship}
-                  </Text>
-
-                  <FontAwesome5Icon
-                    name="times"
-                    size={16}
-                    color="red"
-                    style={{
-                      marginLeft: responsiveWidth(73),
-                      position: "absolute",
-                    }}
-                    onPress={() => removeItemFromList(index)}
-                  />
-                </View>
-              )}
-              keyExtractor={(item, index) => index.toString()}
-              style={{ marginTop: 5 }}
-            />
-          </View>
-
-          {show ? (
-            <View style={{ marginTop: responsiveHeight(5) }}>
-              
-              <View style={{ bottom: 10 }}>
+        <View style={{ bottom: 30 }}>
+          <View style={{}}>
             <Text
               style={{
-                top: responsiveHeight(24),
-                left: 23,
+                top: responsiveHeight(25),
+                left: 20,
                 fontSize: 15,
                 fontWeight: "500",
                 opacity: 0.6,
               }}
+              entering={FadeInLeft.duration(500).damping()}
             >
-              Add Member
+              Add FamilyTree
             </Text>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                placeholder="Add Member"
-                placeholderTextColor="black"
-                onChangeText={(txt) => setFullName(txt)}
-                value={fullname}
-              />
-              <FontAwesome5Icon
-                name="users"
-                size={16}
-                style={{ position: "absolute", left: 7, top: responsiveHeight(2.5), opacity: 0.6 }}
-                color={"#000"}
+            <View
+              style={{
+                top: responsiveHeight(26),
+                backgroundColor: "#fff",
+                borderWidth: 1,
+                padding: 20,
+                marginHorizontal: 15,
+                borderRadius: 5,
+              }}
+            >
+              <FlatList
+                data={listData}
+                scrollEnabled={false}
+                renderItem={({ item, index }) => (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginVertical: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        marginHorizontal: 80,
+                        backgroundColor: "#f2f2f2",
+                        flex: 1,
+                        borderRadius: 5,
+                        paddingLeft: 20,
+                        fontSize: 15,
+                        right: 60,
+                        shadowColor: "#000",
+                        shadowOpacity: 0.6,
+                        shadowRadius: 20,
+                        elevation: 3,
+                      }}
+                    >
+                      {item.fullname}
+                    </Text>
+
+                    <Text
+                      style={{
+                        backgroundColor: "#f2f2f2",
+
+                        flex: 1,
+                        borderRadius: 5,
+                        right: 90,
+                        marginHorizontal: -10,
+                        paddingLeft: 10,
+                        fontSize: 16,
+                        fontWeight: "300",
+                        shadowColor: "#000",
+
+                        shadowOpacity: 0.6,
+                        shadowRadius: 20,
+                        elevation: 3,
+                      }}
+                    >
+                      {item.relationship}
+                    </Text>
+
+                    <FontAwesome5Icon
+                      name="times"
+                      size={16}
+                      color="red"
+                      style={{
+                        marginLeft: responsiveWidth(73),
+                        position: "absolute",
+                      }}
+                      onPress={() => removeItemFromList(index)}
+                    />
+                  </View>
+                )}
+                keyExtractor={(item, index) => index.toString()}
+                style={{ marginTop: 5 }}
               />
             </View>
-          </View>
 
-
-              <View style={styles.inputView}>
-              <TouchableOpacity onPress={()=>setSearchMember(!searchmember)}>
-                { fullname? (
-
-             <Text style={{top:responsiveHeight(2),opacity:0.7,left:10}}>{Names}</Text>
-
-                ):(
-                  <Text style={{top:responsiveHeight(2),opacity:0.7,left:10}}>Search Member</Text>
-                )
-
-                }
-
-                <FontAwesome5Icon
-                  name="search"
-                  size={16}
-                  style={{ position: "absolute",  top: 16,opacity:0.7,right:responsiveWidth(75) }}
-                  color={"#000"}
-                />
-                 </TouchableOpacity>
-              </View>
-             
-              <View style={{ marginTop: 15 }}>
-                <View style={{ top: responsiveHeight(24.5) }}>
+            {show ? (
+              <View style={{ marginTop: responsiveHeight(5) }}>
+                <View style={{ bottom: 10 }}>
                   <Text
                     style={{
-                      top: responsiveHeight(-1),
+                      top: responsiveHeight(24),
                       left: 23,
                       fontSize: 15,
                       fontWeight: "500",
                       opacity: 0.6,
                     }}
                   >
-                    Select Relationship
+                    Add Member
                   </Text>
+                  <View style={styles.inputView}>
+                    <TextInput
+                      style={styles.inputText}
+                      placeholder="Add Member"
+                      placeholderTextColor="black"
+                      onChangeText={(txt) => setFullName(txt)}
+                      value={fullname}
+                    />
+                    <FontAwesome5Icon
+                      name="users"
+                      size={16}
+                      style={{
+                        position: "absolute",
+                        left: 7,
+                        top: responsiveHeight(2.5),
+                        opacity: 0.6,
+                      }}
+                      color={"#000"}
+                    />
+                  </View>
+                </View>
 
-                  <SelectList
-                    setSelected={(val) => setRelationship(val)}
-                    data={Relationship}
-                    save="value"
-                    boxStyles={{
-                      marginLeft: responsiveWidth(5),
-                      marginRight: responsiveWidth(5),
-                    }}
-                    dropdownStyles={{
-                      marginLeft: responsiveWidth(5),
-                      marginRight: responsiveWidth(5),
-                    }}
+                <View style={styles.inputView}>
+                  <TouchableOpacity
+                    onPress={() => setSearchMember(!searchmember)}
+                  >
+                    {fullname ? (
+                      <Text
+                        style={{
+                          top: responsiveHeight(2),
+                          opacity: 0.7,
+                          left: 10,
+                        }}
+                      >
+                        {fullname}
+                      </Text>
+                    ) : (
+                      <Text
+                        style={{
+                          top: responsiveHeight(2),
+                          opacity: 0.7,
+                          left: 10,
+                        }}
+                      >
+                        Search Member
+                      </Text>
+                    )}
+
+                    <FontAwesome5Icon
+                      name="search"
+                      size={16}
+                      style={{
+                        position: "absolute",
+                        top: 16,
+                        opacity: 0.7,
+                        right: responsiveWidth(76),
+                      }}
+                      color={"#000"}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={{ marginTop: 15 }}>
+                  <View style={{ top: responsiveHeight(24.5) }}>
+                    <Text
+                      style={{
+                        top: responsiveHeight(-1),
+                        left: 23,
+                        fontSize: 15,
+                        fontWeight: "500",
+                        opacity: 0.6,
+                      }}
+                    >
+                      Select Relationship
+                    </Text>
+
+                    <SelectList
+                      setSelected={(val) => setRelationship(val)}
+                      data={Relationship}
+                      save="value"
+                      boxStyles={{
+                        marginLeft: responsiveWidth(5),
+                        marginRight: responsiveWidth(5),
+                      }}
+                      dropdownStyles={{
+                        marginLeft: responsiveWidth(5),
+                        marginRight: responsiveWidth(5),
+                      }}
+                    />
+                  </View>
+                </View>
+              </View>
+            ) : null}
+
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => setModalVisible(!modalVisible)}
+            >
+              <View style={{ flex: 1 }}>
+                <View style={styles.container}>
+                  <Camera
+                    ref={(ref) => setCameraRef(ref)}
+                    style={styles.camera}
+                    type={cameraType}
                   />
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={() => takePicture()}
+                    >
+                      <FontAwesome5Icon
+                        name="camera"
+                        size={20}
+                        color={"tomato"}
+                      />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: "#fff",
+                        padding: 10,
+                        borderRadius: 50,
+                        borderWidth: 0.5,
+                        borderColor: "tomato",
+                        position: "absolute",
+                        left: 130,
+                        top: 10,
+                      }}
+                      onPress={() => toggleCameraType()}
+                    >
+                      <FontAwesome5Icon
+                        name="redo-alt"
+                        size={20}
+                        color={"tomato"}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </View>
-          ) : null}
+            </Modal>
 
-        
-
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(!modalVisible)}
-          >
-            <View style={{ flex: 1 }}>
-              <View style={styles.container}>
-                <Camera
-                  ref={(ref) => setCameraRef(ref)}
-                  style={styles.camera}
-                  type={cameraType}
-                />
-                <View style={styles.buttonContainer}>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => takePicture()}
-                  >
-                    <FontAwesome5Icon
-                      name="camera"
-                      size={20}
-                      color={"tomato"}
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={searchmember}
+              onRequestClose={() => setSearchMember(!searchmember)}
+            >
+              <View style={{ flex: 1, backgroundColor: "#fff" }}>
+                <View style={{ flex: 1 }}>
+                  <View style={styles.inputView1}>
+                    <TextInput
+                      style={styles.inputText}
+                      placeholder="Search..."
+                      placeholderTextColor="black"
+                      edile={true}
+                      onChangeText={(txt) => setSearchText(txt)}
+                      value={searchText}
                     />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={{
-                      backgroundColor: "#fff",
-                      padding: 10,
-                      borderRadius: 50,
-                      borderWidth: 0.5,
-                      borderColor: "tomato",
-                      position: "absolute",
-                      left: 130,
-                      top: 10,
-                    }}
-                    onPress={() => toggleCameraType()}
-                  >
                     <FontAwesome5Icon
-                      name="redo-alt"
-                      size={20}
-                      color={"tomato"}
+                      name="search"
+                      size={19}
+                      style={{
+                        position: "absolute",
+
+                        opacity: 0.4,
+                        right: responsiveWidth(80),
+                      }}
+                      color={"#000"}
                     />
-                  </TouchableOpacity>
+                  </View>
+
+                  <View style={{ top: 30, marginBottom: 120 }}>
+                    {searchText.length > 0 ? (
+                      <FlatList data={filteredData} renderItem={renderItem} />
+                    ) : null}
+                  </View>
                 </View>
               </View>
-            </View>
-          </Modal>
-
-
-
-
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={searchmember}
-            onRequestClose={() => setSearchMember(!searchmember)}
-          >
-            <View style={{ flex: 1,backgroundColor:'#fff' }}>
-           
-
-             <View style={{ flex: 1, }}>
-      <View style={styles.inputView1}>
-        <TextInput
-          style={styles.inputText}
-          placeholder="Search..."
-          placeholderTextColor="black"
-          edile={true}
-          onChangeText={(txt) => setSearchText(txt)}
-          value={searchText}
-        />
-        <FontAwesome5Icon
-          name="search"
-          size={19}
-          style={{
-            position: "absolute",
-
-            opacity: 0.4,
-            right: responsiveWidth(80),
-          }}
-          color={"#000"}
-        />
-      </View>
-
-      <View style={{ top: 30, marginBottom: 120 }}>
-        {searchText.length > 0 ? (
-          <FlatList
-            data={filteredData}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()}
-          />
-        ) : null}
-      </View>
-    </View>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </View>
-
-
-          </Modal>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            </Modal>
+          </View>
         </View>
-      </View>
-</ScrollView>
-<View style={{ bottom: 50, left: responsiveWidth(21) }}>
-        <TouchableOpacity style={{
-          width: "50%",
-          backgroundColor: "#3D50DF",
-          borderRadius: 5,
-          height: 50,
-          alignItems: "center",
-          justifyContent: "center",
-          top: responsiveHeight(10),
-          elevation: 3,
-          alignSelf: "center",
-          borderColor: "blue",
-        }}   onPress={()=>navigation.navigate("Education")}>
+      </ScrollView>
+      <View style={{ bottom: 50, left: responsiveWidth(21) }}>
+        <TouchableOpacity
+          style={{
+            width: "50%",
+            backgroundColor: "#3D50DF",
+            borderRadius: 5,
+            height: 50,
+            alignItems: "center",
+            justifyContent: "center",
+            top: responsiveHeight(10),
+            elevation: 3,
+            alignSelf: "center",
+            borderColor: "blue",
+          }}
+          onPress={() => navigation.navigate("Education",{data:ids})} >
+
           <Text style={{ color: "white", fontSize: 16, fontWeight: "500" }}>
             Next
           </Text>
@@ -764,30 +769,27 @@ const [searchText, setSearchText] = useState("");
         </TouchableOpacity>
       </View>
 
-
       <View style={{ bottom: 100, right: responsiveWidth(26) }}>
-        <TouchableOpacity style={{
-          width: "40%",
-          borderWidth: 1,
-          borderRadius: 5,
-          height: 50,
-          alignItems: "center",
-          justifyContent: "center",
-          top: responsiveHeight(10),
+        <TouchableOpacity
+          style={{
+            width: "40%",
+            borderWidth: 1,
+            borderRadius: 5,
+            height: 50,
+            alignItems: "center",
+            justifyContent: "center",
+            top: responsiveHeight(10),
 
-          alignSelf: "center",
-          borderColor: "tomato",
-        }} onPress={()=>addItemToList()}>
+            alignSelf: "center",
+            borderColor: "tomato",
+          }}
+          onPress={() => addItemToList() + MemberPost()}
+        >
           <Text style={{ color: "tomato", fontSize: 16, fontWeight: "500" }}>
             Save
           </Text>
-
         </TouchableOpacity>
       </View>
-
-
-
-
     </View>
   );
 };
@@ -806,7 +808,7 @@ const styles = StyleSheet.create({
     left: 20,
     marginBottom: 15,
     opacity: 0.7,
-    borderWidth:1
+    borderWidth: 1,
   },
   inputView1: {
     width: "90%",
@@ -902,4 +904,5 @@ const styles = StyleSheet.create({
     height: 50,
     color: "black",
   },
+  
 });

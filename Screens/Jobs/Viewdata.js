@@ -2,10 +2,7 @@ import React from "react";
 import { ScrollView, View, TouchableOpacity, Text, Image } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
-import {
-
-  responsiveWidth,
-} from "react-native-responsive-dimensions";
+import { responsiveWidth } from "react-native-responsive-dimensions";
 
 const Viewdata = () => {
   const navigation = useNavigation();
@@ -187,33 +184,101 @@ const Viewdata = () => {
           </Text>
         </View>
 
-           <View style={{borderWidth:0.5,paddingHorizontal:170,top:250,opacity:0.4}}></View>
-          <View style={{top:260,right:100}}>
-            <Text style={{fontSize:17}}>Job Preference</Text>
-                 <Text style={{left:4,fontWeight:'500',top:10}}>Photography</Text>
-                 <Text style={{left:200,fontWeight:'500',top:35,position:'absolute',}}>Rs 3 - 4 LPA</Text>
-                <Text style={{top:10,left:5,fontWeight:'300'}}>any industry</Text>
-                <Text style={{top:10,left:5,fontWeight:'300'}}>Mumbai, MH</Text>
-          </View>
-          <View style={{borderWidth:0.5,paddingHorizontal:170,top:280,opacity:0.4}}></View>
+        <View
+          style={{
+            borderWidth: 0.5,
+            paddingHorizontal: 170,
+            top: 250,
+            opacity: 0.4,
+          }}
+        ></View>
+        <View style={{ top: 260, right: 100 }}>
+          <Text style={{ fontSize: 17 }}>Job Preference</Text>
+          <Text style={{ left: 4, fontWeight: "500", top: 10 }}>
+            Photography
+          </Text>
+          <Text
+            style={{
+              left: 200,
+              fontWeight: "500",
+              top: 35,
+              position: "absolute",
+            }}
+          >
+            Rs 3 - 4 LPA
+          </Text>
+          <Text style={{ top: 10, left: 5, fontWeight: "300" }}>
+            any industry
+          </Text>
+          <Text style={{ top: 10, left: 5, fontWeight: "300" }}>
+            Mumbai, MH
+          </Text>
+        </View>
+        <View
+          style={{
+            borderWidth: 0.5,
+            paddingHorizontal: 170,
+            top: 280,
+            opacity: 0.4,
+          }}
+        ></View>
 
-          <View style={{top:300,right:100}}>
-            <Text style={{fontSize:17,right:10}}>Experience</Text>
-                 <Text style={{fontWeight:'500',top:10,right:10}}>Angel Finance</Text>
-                 <Text style={{left:160,fontWeight:'300',top:35,position:'absolute',}}>Dec 2020 - Present</Text>
-                <Text style={{top:20,fontWeight:'300',right:10}}>Video editor</Text>
-             
-          </View>
+        <View style={{ top: 300, right: 100 }}>
+          <Text style={{ fontSize: 17, right: 10 }}>Experience</Text>
+          <Text style={{ fontWeight: "500", top: 10, right: 10 }}>
+            Angel Finance
+          </Text>
+          <Text
+            style={{
+              left: 160,
+              fontWeight: "300",
+              top: 35,
+              position: "absolute",
+            }}
+          >
+            Dec 2020 - Present
+          </Text>
+          <Text style={{ top: 20, fontWeight: "300", right: 10 }}>
+            Video editor
+          </Text>
+        </View>
 
-          <View style={{borderWidth:0.5,paddingHorizontal:170,top:330,opacity:0.4}}></View>
+        <View
+          style={{
+            borderWidth: 0.5,
+            paddingHorizontal: 170,
+            top: 330,
+            opacity: 0.4,
+          }}
+        ></View>
 
-          <View style={{top:350,right:50}}>
-            <Text style={{fontSize:17,right:10}}>Education</Text>
-                 <Text style={{fontWeight:'500',top:10,right:10}}>KK Parekh Commerce College</Text>
-                 <Text style={{left:190,fontWeight:'300',top:35,position:'absolute',}}>Dec 2020 - Present</Text>
-                <Text style={{top:60,fontWeight:'500',position:'absolute',left:-10,opacity:0.4}}>Graducation/Diploma - B.B.A/B.M.S - Management</Text>
-             
-          </View>
+        <View style={{ top: 350, right: 50 }}>
+          <Text style={{ fontSize: 17, right: 10 }}>Education</Text>
+          <Text style={{ fontWeight: "500", top: 10, right: 10 }}>
+            KK Parekh Commerce College
+          </Text>
+          <Text
+            style={{
+              left: 190,
+              fontWeight: "300",
+              top: 35,
+              position: "absolute",
+            }}
+          >
+            Dec 2020 - Present
+          </Text>
+          <Text
+            style={{
+              top: 60,
+              fontWeight: "500",
+              position: "absolute",
+              left: -10,
+              opacity: 0.4,
+            }}
+          >
+            Graducation/Diploma - B.B.A/B.M.S - Management
+          </Text>
+        </View>
       </View>
     </ScrollView>
   );

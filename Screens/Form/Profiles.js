@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ScrollView,
   Text,
@@ -14,7 +14,6 @@ import {
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import {
   responsiveHeight,
-  responsiveFontSize,
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import {
@@ -23,17 +22,14 @@ import {
 } from "react-native-dropdown-select-list";
 import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
-import Animated, {
-  FadeInUp,
-  FadeInLeft,
-  FadeInDown,
-} from "react-native-reanimated";
+import Animated, { FadeInLeft } from "react-native-reanimated";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
 import { api } from "../Api";
 import { useNavigation } from "@react-navigation/native";
+import { MotherTongue } from "../By&Sell/SellDetails/Api";
 
 const Profiles = ({ id }) => {
   const navigation = useNavigation();
@@ -60,91 +56,17 @@ const Profiles = ({ id }) => {
   const [street, setStreet] = useState("");
   const [profession, setProfession] = useState("");
   const [languages, setLanguages] = useState("");
-  const [profileid, setProfileID] = useState("");
-
+  const [profileid, setProfileID] = useState([]);
   const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
   const [genders, setGender] = useState();
   const [modalVisible1, setModalVisible1] = useState(false);
 
   const Api = api;
 
-  
-
   const Professions = [
     { key: "1", value: "Business" },
     { key: "2", value: "Employee" },
     { key: "3", value: "Self Employee" },
-  ];
-
-  const MotherTongue = [
- 
-    { key: "2", value: "Assamese" },
-    { key: "3", value: "Bengali" },
-    { key: "4", value: "English" },
-    { key: "5", value: "Gujarati" },
-    { key: "6", value: "Hindi" },
-    { key: "7", value: "Kannada" },
-    { key: "8", value: "Konkani" },
-    { key: "9", value: "Malayalam" },
-    { key: "10", value: "Marathi" },
-    { key: "11", value: "Marwari" },
-    { key: "11", value: "Odia" },
-    { key: "12", value: "Punjabi" },
-    { key: "13", value: "Sindhi" },
-    { key: "14", value: "Tamil" },
-    { key: "15", value: "Telugu" },
-    { key: "16", value: "Urdu" },
-    { key: "17", value: "Aka" },
-    { key: "18", value: "Arabic" },
-    { key: "19", value: "Arunachali" },
-    { key: "20", value: "Awadhi" },
-    { key: "21", value: "Baluchi" },
-    { key: "22", value: "Bhojpuri" },
-    { key: "23", value: "Bhutia" },
-    { key: "24", value: "Brahui" },
-    { key: "25", value: "Brij" },
-    { key: "26", value: "Burmese" },
-    { key: "27", value: "Chattisgarhi" },
-    { key: "28", value: "Chinese" },
-    { key: "29", value: "Coorgi" },
-    { key: "30", value: "Dogi" },
-    { key: "31", value: "French" },
-    { key: "32", value: "Garhwali" },
-    { key: "33", value: "Garo" },
-    { key: "34", value: "Haryanavi" },
-    { key: "35", value: "Himachali/Pahari" },
-    { key: "36", value: "Hindko" },
-    { key: "37", value: "Kakbarak" },
-    { key: "38", value: "Kanauji" },
-    { key: "39", value: "Kashmiri" },
-    { key: "40", value: "Khandesi" },
-    { key: "41", value: "Khasi" },
-    { key: "42", value: "Koshali" },
-    { key: "43", value: "Kumaoni" },
-    { key: "44", value: "Kutchi" },
-    { key: "45", value: "Ladakhi" },
-    { key: "46", value: "Lepcha" },
-    { key: "47", value: "Magahi" },
-    { key: "48", value: "Maithili" },
-    { key: "49", value: "Malay" },
-    { key: "50", value: "Manipuri" },
-    { key: "51", value: "Miji" },
-    { key: "52", value: "Mizo" },
-    { key: "53", value: "Monpa" },
-    { key: "54", value: "Nepali" },
-    { key: "55", value: "Pashto" },
-    { key: "56", value: "Persian" },
-    { key: "57", value: "Rajasthani" },
-    { key: "58", value: "Russian" },
-    { key: "59", value: "Santhali" },
-    { key: "60", value: "Seraiki" },
-    { key: "61", value: "Sinhala" },
-    { key: "62", value: "Sourashtra" },
-    { key: "63", value: "Spanish" },
-    { key: "64", value: "Swedish" },
-    { key: "65", value: "Tagalog" },
-    { key: "66", value: "Tulu" },
-    { key: "67", value: "Other" },
   ];
 
   const MaritalStatus = [
@@ -153,15 +75,6 @@ const Profiles = ({ id }) => {
     { key: "3", value: "Divorced" },
     { key: "4", value: "Widowed" },
   ];
-
-  const storeData = async () => {
-    try {
-      const jsonValue = JSON.stringify(marital);
-      await AsyncStorage.setItem("my-key", jsonValue);
-    } catch (e) {
-      console.log(e);
-    }
-  };
 
   const Genders = [
     { key: "1", value: "male" },
@@ -181,10 +94,14 @@ const Profiles = ({ id }) => {
       !postalcode ||
       !profession
     ) {
-      Alert.alert("Incomplete Information", "Please fill in all the required fields before proceeding.",);
+      Alert.alert(
+        "Incomplete Information",
+        "Please fill in all the required fields before proceeding."
+      );
     } else {
       loginUser();
-      navigation.navigate("FamilyTree");
+      ImageUpload();
+      navigation.navigate("FamilyTree", { data: ids, profileid: profileid });
     }
   };
 
@@ -193,6 +110,7 @@ const Profiles = ({ id }) => {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
       setHasPermission(cameraStatus.status === "granted");
     })();
+    setProfileID("");
   }, []);
 
   const takePicture = async () => {
@@ -225,8 +143,6 @@ const Profiles = ({ id }) => {
       aspect: [4, 3],
       quality: 1,
     });
-
-  
 
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
@@ -269,7 +185,7 @@ const Profiles = ({ id }) => {
         languages: languages,
         maritalStatus: marital,
       });
-
+      await AsyncStorage.setItem("profileid", data._id);
     } catch (error) {
       console.error("Error during login:", error.message);
     }
@@ -390,8 +306,6 @@ const Profiles = ({ id }) => {
             </Text>
           </View>
 
-     
-
           <View style={{ bottom: 5 }}>
             <View style={{}}>
               <Text
@@ -413,7 +327,6 @@ const Profiles = ({ id }) => {
                   onChangeText={(text) => setFirstName(text)}
                   value={firstName}
                 />
-               
               </View>
             </View>
 
@@ -442,7 +355,6 @@ const Profiles = ({ id }) => {
                   onChangeText={(text) => setLastName(text)}
                   value={lastName}
                 />
-              
               </View>
             </View>
 
@@ -476,8 +388,7 @@ const Profiles = ({ id }) => {
               </View>
             </View>
 
-            <View style={{ top: 15 }} >
-            
+            <View style={{ top: 15 }}>
               <Text
                 style={{
                   top: responsiveHeight(24),
@@ -488,11 +399,16 @@ const Profiles = ({ id }) => {
                   opacity: 0.6,
                 }}
               >
-                Date of Birth :<Text style={{ color: "tomato" }}> {age}</Text>
-                  <Text style={{ left:20}} onPress={()=>setModalVisible1(!modalVisible1)}>                 📆</Text>
+                Date of Birth
               </Text>
+              <View style={styles.inputView}>
+                <TouchableOpacity
+                  onPress={() => setModalVisible1(!modalVisible1)}
+                >
+                  <Text style={{ top: 15, opacity: 0.7 }}>{age}</Text>
+                </TouchableOpacity>
+              </View>
 
-            
               <View style={{ top: responsiveHeight(25) }}>
                 <View style={styles.centeredView1}>
                   <Modal
@@ -544,7 +460,6 @@ const Profiles = ({ id }) => {
                   onChangeText={(txt) => setFatherName(txt)}
                   value={fatherName}
                 />
-              
               </View>
             </View>
 
@@ -568,7 +483,6 @@ const Profiles = ({ id }) => {
                   onChangeText={(txt) => setMotherName(txt)}
                   value={motherName}
                 />
-             
               </View>
             </View>
 
@@ -592,7 +506,6 @@ const Profiles = ({ id }) => {
                   onChangeText={(text) => setCountry(text)}
                   value={country}
                 />
-              
               </View>
             </View>
 
@@ -616,7 +529,6 @@ const Profiles = ({ id }) => {
                   onChangeText={(txt) => setState(txt)}
                   value={state}
                 />
-              
               </View>
             </View>
 
@@ -640,7 +552,6 @@ const Profiles = ({ id }) => {
                   onChangeText={(txt) => setCity(txt)}
                   value={city}
                 />
-              
               </View>
             </View>
 
@@ -664,7 +575,6 @@ const Profiles = ({ id }) => {
                   onChangeText={(txt) => setStreet(txt)}
                   value={street}
                 />
-              
               </View>
             </View>
 
@@ -689,7 +599,6 @@ const Profiles = ({ id }) => {
                   value={postalcode}
                   keyboardType="numeric"
                 />
-          
               </View>
             </View>
 
@@ -740,7 +649,6 @@ const Profiles = ({ id }) => {
                   setSelected={(text) => setLanguages(text)}
                   data={MotherTongue}
                   save="value"
-                  
                   boxStyles={{
                     marginLeft: responsiveWidth(5),
                     marginRight: responsiveWidth(5),
@@ -749,7 +657,7 @@ const Profiles = ({ id }) => {
                     marginLeft: responsiveWidth(5),
                     marginRight: responsiveWidth(5),
                   }}
-                  search={false}
+                  maxHeight={200}
                 />
               </View>
             </View>
@@ -921,6 +829,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
   },
+
   centeredView1: {
     flex: 1,
     justifyContent: "center",

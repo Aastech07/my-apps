@@ -1,16 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   ScrollView,
   View,
   Text,
   StyleSheet,
   TextInput,
-  TouchableOpacity,Alert
+  TouchableOpacity,Alert,Modal,Pressable
 } from "react-native";
 import Animated, {
-  FadeInUp,
-  FadeInLeft,
-  FadeInDown,
+    FadeInLeft,
 } from "react-native-reanimated";
 import {
   responsiveHeight,
@@ -18,7 +16,16 @@ import {
 } from "react-native-responsive-dimensions";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
+import { MyContext } from "../../App";
+import axios from "axios";
+import DateTimePicker from "react-native-ui-datepicker";
+import dayjs from "dayjs";
+import { api } from "../Api";
+import { useRoute } from "@react-navigation/native";
 const Directorys = () => {
+  const Value = useRoute();
+  const ids = Value.params.data
+  console.warn(ids)
   const [companyname, setCompanyName] = useState("");
   const [established, setEstablished] = useState("");
   const [description, setDescription] = useState("");
@@ -26,13 +33,52 @@ const Directorys = () => {
   const [twitter, setTwitter] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [instagram, setInstagram] = useState("");
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [companyEmail,setCompanyEmail] = useState("");
+  const [gstNumber,setGstNumber] = useState("");
   const [tags, setTags] = useState("");
-   const navigation = useNavigation()
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const [contactNumber,setContactNumber] = useState("");
+  const [businessArea,setBusinessArea] = useState("");
+  const [locality,setLocality] = useState("");
+  const [website,setWebsite] = useState("");
+  const [address,setAddress] = useState("");
+  const [completionYear, setCompletionYear] = useState(dayjs().format("YYYY-MM-DD"));
+  const navigation = useNavigation()
+  const [modalVisible1, setModalVisible1] = useState("");
+  const id = useContext(MyContext)
+ 
+  const img = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyrHPk8PA3LcbnSqnikNs8A2AKJvvWIHgr9w&s"
 
+  const PostDirectory = async () => {
+    try {
+      const { data } = await axios.post(`${api}/directories`, {
+        profileId:id,
+        companyLogo: img,
+        companyEmail:companyEmail,
+        gstNumber:gstNumber,
+        contactNumber: contactNumber,
+        businessArea: businessArea,
+        locality: locality,
+        companyName: companyname,
+        website:website,
+        address: address,
+        description: description,
+        establishedDate: completionYear,
+        socialMediaLinks: {
+          facebook: facebook,
+          twitter: twitter,
+          linkedin: linkedin,
+        },
+        tags: [
+          tags
+        ]
+      });
 
-
+    } catch (error) {
+      console.log("Error during login:", error.message);
+    }
+  };
+  
+ 
   const validate = () => {
     let isValid = true
     if (companyname == '') {
@@ -64,19 +110,13 @@ const Directorys = () => {
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  const handleDateChange = (event, selectedDate) => {
+    if (selectedDate !== undefined) {
+      const year = selectedDate.getFullYear();
+      setCompletionYear(year);
+    }
+  };
+  
 
 
 
@@ -107,7 +147,7 @@ const Directorys = () => {
 
         <View style={{ flexDirection: "row", bottom:responsiveHeight(-1), left:responsiveWidth(80),
         }}>
-             <TouchableOpacity onPress={()=>navigation.navigate('Education')}>
+             <TouchableOpacity onPress={()=>navigation.goBack()}>
              <FontAwesome5Icon name="arrow-left" size={18}  style={{  backgroundColor:'#fff',padding:5,paddingHorizontal:7,borderRadius:50,elevation:3,shadowColor:'#000',shadowOpacity:0.6,shadowRadius:10}}/>
              </TouchableOpacity>
           </View>
@@ -143,16 +183,112 @@ const Directorys = () => {
           <View style={styles.inputView}>
             <TextInput
               style={styles.inputText}
-              placeholder="Enter CompanyName"
+              placeholder="Enter Company Name"
               placeholderTextColor="black"
               onChangeText={(txt) => setCompanyName(txt)}
               value={companyname}
             />
-            <FontAwesome5Icon
-              name="building"
-              size={16}
-              style={{ position: "absolute", left: 10, top: 18, opacity: 0.6 }}
-              color={"#000"}
+         
+          </View>
+        </View>
+
+     
+
+        
+        <View style={{ bottom: 30 }}>
+          <Text
+            style={{
+              top: responsiveHeight(24),
+              left: 23,
+              fontSize: 15,
+              fontWeight: "500",
+              opacity: 0.6,
+            }}
+          >
+            Enter Company Email
+          </Text>
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.inputText}
+              placeholder="xyz@gmail.com"
+              placeholderTextColor="black"
+              onChangeText={(txt) => setCompanyEmail(txt)}
+              value={companyEmail}
+            />
+          
+          </View>
+        </View>
+
+
+        <View style={{ bottom: 30 }}>
+          <Text
+            style={{
+              top: responsiveHeight(24),
+              left: 23,
+              fontSize: 15,
+              fontWeight: "500",
+              opacity: 0.6,
+            }}
+          >
+            Add Gst Number
+          </Text>
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.inputText}
+              placeholder="Add Gst Number"
+              placeholderTextColor="black"
+              onChangeText={(txt) => setGstNumber(txt)}
+              value={gstNumber}
+              //keyboardType="numeric"
+            />
+           
+          </View>
+        </View>
+
+        <View style={{ bottom: 30 }}>
+          <Text
+            style={{
+              top: responsiveHeight(24),
+              left: 23,
+              fontSize: 15,
+              fontWeight: "500",
+              opacity: 0.6,
+            }}
+          >
+            Add Contact Number
+          </Text>
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.inputText}
+              placeholder="1234567890"
+              placeholderTextColor="black"
+              onChangeText={(txt) => setContactNumber(txt)}
+              value={contactNumber}
+              keyboardType="numeric"
+            />
+           
+          </View>
+        </View>
+
+        <View style={{ bottom: 30 }}>
+          <Text
+            style={{
+              top: responsiveHeight(24),
+              left: 23,
+              fontSize: 15,
+              fontWeight: "500",
+              opacity: 0.6,
+            }}
+          >
+            Enter business Area
+          </Text>
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.inputText}
+              placeholder="Enter business Area"
+              placeholderTextColor="black"
+              onChangeText={(txt) => setBusinessArea(txt)}
+              value={businessArea}
             />
           </View>
         </View>
@@ -167,24 +303,67 @@ const Directorys = () => {
               opacity: 0.6,
             }}
           >
-            Enter Established Date
+            Enter locality
           </Text>
           <View style={styles.inputView}>
             <TextInput
               style={styles.inputText}
-              placeholder="dd/mm/yyyy"
+              placeholder="Enter locality"
               placeholderTextColor="black"
-              onChangeText={(txt) => setEstablished(txt)}
-              value={established}
-            />
-            <FontAwesome5Icon
-              name="table"
-              size={16}
-              style={{ position: "absolute", left: 8, top: 18, opacity: 0.6 }}
-              color={"#000"}
+              onChangeText={(txt) => setLocality(txt)}
+              value={locality}
             />
           </View>
         </View>
+
+
+        <View style={{ bottom: 30 }}>
+          <Text
+            style={{
+              top: responsiveHeight(24),
+              left: 23,
+              fontSize: 15,
+              fontWeight: "500",
+              opacity: 0.6,
+            }}
+          >
+            Enter Address
+          </Text>
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.inputText}
+              placeholder="Enter Address"
+              placeholderTextColor="black"
+              onChangeText={(txt) => setAddress(txt)}
+              value={address}
+            />
+          </View>
+        </View>
+
+
+        <View style={{ bottom: 23 }}>
+            <Text
+              style={{
+                top: responsiveHeight(24),
+
+                left: 23,
+                fontSize: 15,
+                fontWeight: "500",
+                opacity: 0.6,
+              }}
+            >
+              Established Date
+            </Text>
+            <View style={styles.inputView}>
+              <TouchableOpacity
+                onPress={() => setModalVisible1(!modalVisible1)}
+              >
+                <Text style={{ top: 15, opacity: 0.7 }}>{completionYear}</Text>
+              </TouchableOpacity>
+            </View>
+            </View>
+
+
 
         <View style={{ bottom: 20 }}>
           <Text
@@ -338,6 +517,40 @@ const Directorys = () => {
           </View>
         </View>
 
+
+
+        <View style={{ bottom: 10 }}>
+          <Text
+            style={{
+              top: responsiveHeight(25),
+              left: 23,
+              fontSize: 15,
+              fontWeight: "500",
+              opacity: 0.6,
+            }}
+          >
+            Add Website link
+          </Text>
+          <View style={styles.inputView1}>
+            <TextInput
+              style={styles.inputText}
+              placeholder="Add Website link"
+              placeholderTextColor="black"
+              onChangeText={(txt) => setWebsite(txt)}
+              value={website}
+            />
+            <FontAwesome5Icon
+              name="wordpress"
+              size={18}
+              style={{ position: "absolute", left: 7, top: 15, opacity: 0.6 }}
+              color={"#000"}
+            />
+          </View>
+        </View>
+
+
+
+
         <View style={{ bottom: 5 }}>
           <Text
             style={{
@@ -358,14 +571,53 @@ const Directorys = () => {
               onChangeText={(txt) => setTags(txt)}
               value={tags}
             />
-            <FontAwesome5Icon
-              name="tag"
-              size={16}
-              style={{ position: "absolute", left: 8, top: 18, opacity: 0.6 }}
-              color={"#000"}
-            />
+          
           </View>
         </View>
+
+        <View style={styles.centeredView1}>
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={modalVisible1}
+                  onRequestClose={() => {
+                    Alert.alert("Modal has been closed.");
+                    setModalVisible1(!modalVisible1);
+                  }}
+                >
+                  <View style={styles.centeredView1}>
+                    <View style={styles.modalView1}>
+                      <DateTimePicker
+                        value={completionYear}
+                        mode="date"
+                        display="default" // You can also use "spinner" or "calendar"
+                        onChange={handleDateChange}
+                      />
+
+                      <Pressable
+                        style={[styles.button1, styles.buttonClose1]}
+                        onPress={() => setModalVisible1(!modalVisible1)}
+                      >
+                        <Text style={styles.textStyle1}>Close</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                </Modal>
+              </View>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
       
@@ -386,7 +638,7 @@ const Directorys = () => {
           elevation: 3,
           alignSelf: "center",
           borderColor: "blue",
-        }} onPress={()=>validate()}>
+        }} onPress={()=> navigation.navigate('JobsScreens',{data:ids})}>
           <Text style={{ color: "white", fontSize: 16, fontWeight: "500" }}>
             Next
           </Text>
@@ -447,12 +699,12 @@ const styles = StyleSheet.create({
 
     top: responsiveHeight(25),
     opacity: 0.8,
-    paddingLeft: 30,
+    paddingLeft: 15,
     paddingRight: 20,
 
     left: 20,
     marginBottom: 15,
-    opacity: 0.7,
+    opacity: 0.6,
 
     borderWidth: 1,
   },
@@ -516,5 +768,46 @@ const styles = StyleSheet.create({
     shadowRadius: 16.0,
     elevation: 10,
     alignSelf: "center",
+  },
+  centeredView1: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView1: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button1: {
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen1: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose1: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle1: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText1: {
+    marginBottom: 15,
+    textAlign: "center",
   },
 });

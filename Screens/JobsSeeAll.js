@@ -261,7 +261,7 @@ const JobsSeeAll = () => {
               position: "absolute",
               color: "black",
               fontWeight: "700",
-              left: 30,
+              left: 10,
               top: 15,
             }}
           >
@@ -269,13 +269,14 @@ const JobsSeeAll = () => {
           </Text>
 
           <FlatList
-            style={{ top: 70 }}
+            style={{ top: 55 }}
             data={details}
             showsHorizontalScrollIndicator={false}
             numColumns={2}
-            keyExtractor={(item) => item.id}
+           
             renderItem={({ item }) => (
               <>
+      <TouchableWithoutFeedback onPress={()=>navigation.navigate('JobsDetails',{data:item})} >
                 <View
                   style={{
                     backgroundColor: "#0F2167",
@@ -393,6 +394,7 @@ const JobsSeeAll = () => {
                     <Text>Hybrid</Text>
                   </View>
                 </View>
+                </TouchableWithoutFeedback>
               </>
             )}
           />

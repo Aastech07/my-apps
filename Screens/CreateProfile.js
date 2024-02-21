@@ -62,7 +62,7 @@ useEffect(()=>{
       ) : selected == 5 ? (
         <JobsScreens />
       ) :selected == 6 ?(
-      <Matrimonys/>
+      <Matrimonys id={ids} />
       ):  null}
 
       <View

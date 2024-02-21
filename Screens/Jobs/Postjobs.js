@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ScrollView,
   Text,
@@ -11,7 +11,9 @@ import { responsiveWidth } from "react-native-responsive-dimensions";
 import { SelectList } from "react-native-dropdown-select-list";
 import { responsiveHeight } from "react-native-responsive-dimensions";
 import FontAwsome5 from "react-native-vector-icons/FontAwesome5";
-
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { api } from "../Api";
 const Postjobs = () => {
   const data = [
     { key: "1", value: "Any Experience" },
@@ -67,15 +69,71 @@ const Postjobs = () => {
     { key: "2", value: "Internship" },
     { key: "3", value: "Contract" },
   ];
+
+  const data4 = [
+    { key: "1", value: "Doctorate" },
+    { key: "2", value: "Post-Graducation" },
+    { key: "3", value: "Graducation/Diploma" },
+    { key: "4", value: "Higher Secondary" },
+    { key: "5", value: "School" },
+  ];
+
   const [experience, setExperience] = useState("");
   const [education, setEducation] = useState("");
   const [salary, setSalary] = useState("");
   const [type, setType] = useState("");
+  const [title, setJobTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [skill, setSkills] = useState("");
+  const [addressLine1, setAddressLine1] = useState("");
+  const [userid, setUserID] = useState("");
+  const [company, setCompany] = useState("");
+  const [email, setEmail] = useState("");
+  const [responsibilities, setResponsibilities] = useState("");
+  const [qualifications, setQualifications] = useState("");
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const value = await AsyncStorage.getItem("UserID");
+        if (value !== null) {
+          setUserID(value);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getData();
+  }, []);
+
+  const POSTPRO = async () => {
+    try {
+      const { data } = await axios.post(`${api}/jobs`, {
+        userId: userid,
+        salary: salary,
+        title: title,
+        contactEmail: email,
+        company: company,
+        location: addressLine1,
+        description: description,
+        employmentType: type,
+        experienceLevel: experience,
+        educationLevel: education,
+        skills: skill,
+        applicationDeadline: 20 - 20 - 2024,
+        responsibilities: responsibilities,
+        qualifications: qualifications,
+      });
+      console.warn(data);
+    } catch (error) {
+      console.log("Error during login:", error.message);
+    }
+  };
 
   return (
     <ScrollView
-      style={{ flex: 1 }}
-      contentContainerStyle={{ paddingBottom: 470 }}
+      style={{ flex: 1, backgroundColor: "#fff" }}
+      contentContainerStyle={{ paddingBottom: 440, bottom: 60 }}
       keyboardShouldPersistTaps="handled"
     >
       <View style={{ flex: 1 }}>
@@ -128,6 +186,23 @@ const Postjobs = () => {
               marginLeft: responsiveWidth(5),
               marginRight: responsiveWidth(5),
             }}
+            search={false}
+          />
+        </View>
+
+        <View style={{ top: 100, left: 30, marginBottom: 40 }}>
+          <Text style={{ fontSize: 16, opacity: 0.8 }}>Company</Text>
+          <TextInput
+            style={{
+              ///qualifications
+              borderBottomWidth: 1,
+              top: 10,
+              marginRight: 60,
+              opacity: 0.6,
+            }}
+            placeholder="Please fill in Company"
+            onChangeText={(text) => setCompany(text)}
+            value={company}
           />
         </View>
 
@@ -141,6 +216,8 @@ const Postjobs = () => {
               opacity: 0.6,
             }}
             placeholder="Please fill in Job Title"
+            onChangeText={(text) => setJobTitle(text)}
+            value={title}
           />
         </View>
 
@@ -154,6 +231,8 @@ const Postjobs = () => {
               opacity: 0.6,
             }}
             placeholder="Describe Key responsibilities, skills..."
+            onChangeText={(text) => setDescription(text)}
+            value={description}
           />
         </View>
 
@@ -167,7 +246,47 @@ const Postjobs = () => {
               opacity: 0.6,
             }}
             placeholder="Describe skills..."
+            onChangeText={(text) => setSkills(text)}
+            value={skill}
           />
+        </View>
+
+        <View style={{ top: 200, left: 30, marginBottom: 35 }}>
+          <Text style={{ fontSize: 16, opacity: 0.8 }}>Responsibilities</Text>
+          <TextInput
+            style={{
+              borderBottomWidth: 1,
+              top: 10,
+              marginRight: 60,
+              opacity: 0.6,
+            }}
+            placeholder="Responsibilities..."
+            onChangeText={(text) => setResponsibilities(text)}
+            value={responsibilities}
+          />
+        </View>
+
+        <View style={{ top: 180, marginBottom: 20 }}>
+          <Text style={{ fontSize: 16, opacity: 0.8, left: 30, top: 15 }}>
+            Qualifications
+          </Text>
+
+          <View style={{ top: 20 }}>
+            <SelectList
+              setSelected={(val) => setQualifications(val)}
+              data={data4}
+              save="value"
+              boxStyles={{
+                marginLeft: responsiveWidth(5),
+                marginRight: responsiveWidth(5),
+              }}
+              dropdownStyles={{
+                marginLeft: responsiveWidth(5),
+                marginRight: responsiveWidth(5),
+              }}
+              search={false}
+            />
+          </View>
         </View>
 
         <View style={{ top: 200, left: 30 }}>
@@ -179,7 +298,7 @@ const Postjobs = () => {
             <SelectList
               setSelected={(val) => setExperience(val)}
               data={data}
-              save="key"
+              save="value"
               boxStyles={{
                 marginLeft: responsiveWidth(5),
                 marginRight: responsiveWidth(5),
@@ -188,6 +307,7 @@ const Postjobs = () => {
                 marginLeft: responsiveWidth(5),
                 marginRight: responsiveWidth(5),
               }}
+              search={false}
             />
           </View>
 
@@ -200,7 +320,7 @@ const Postjobs = () => {
               <SelectList
                 setSelected={(val) => setEducation(val)}
                 data={data1}
-                save="key"
+                save="value"
                 boxStyles={{
                   marginLeft: responsiveWidth(5),
                   marginRight: responsiveWidth(5),
@@ -209,6 +329,7 @@ const Postjobs = () => {
                   marginLeft: responsiveWidth(5),
                   marginRight: responsiveWidth(5),
                 }}
+                search={false}
               />
             </View>
           </View>
@@ -245,13 +366,13 @@ const Postjobs = () => {
                 opacity: 0.6,
               }}
               placeholder="Enter Postcode, street or addresss"
+              onChangeText={(text) => setAddressLine1(text)}
+              value={addressLine1}
             />
           </View>
 
           <View style={{ top: 90 }}>
-            <Text style={{ fontSize: 12, opacity: 0.6, top: 10 }}>
-              Address Line 2 (Optional).
-            </Text>
+            <Text style={{ fontSize: 12, opacity: 0.6, top: 10 }}>Email</Text>
             <TextInput
               style={{
                 borderBottomWidth: 1,
@@ -259,29 +380,16 @@ const Postjobs = () => {
                 marginRight: 60,
                 opacity: 0.6,
               }}
-              placeholder="e.g. Floor number"
+              placeholder="e.g. xyz@gmail.com"
+              onChangeText={(text) => setEmail(text)}
+              value={email}
             />
           </View>
 
-          <View style={{ top: 120 }}>
-            <Text style={{ fontSize: 12, opacity: 0.6, top: 10 }}>
-              State & City.
-            </Text>
-            <TextInput
-              style={{
-                borderBottomWidth: 1,
-                top: 10,
-                marginRight: 60,
-                opacity: 0.6,
-              }}
-              placeholder="e.g. MH & Mumbai"
-            />
-          </View>
-
-          <View style={{ top: 50 }}>
-            <TouchableOpacity style={styles.loginBtn}>
+          <View style={{ top: 60 }}>
+            <TouchableOpacity style={styles.loginBtn} onPress={() => POSTPRO()}>
               <Text style={{ color: "white", fontSize: 18, fontWeight: "500" }}>
-                SAVE
+                Post
               </Text>
               <FontAwsome5
                 name="arrow-right"
