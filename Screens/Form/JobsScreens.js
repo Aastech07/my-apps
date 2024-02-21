@@ -27,9 +27,11 @@ import {
 } from "react-native-dropdown-select-list";
 import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
+import { api } from "../Api";
 import { useNavigation } from "@react-navigation/native";
+
 const JobsScreens = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const [currentCompany, setCurrentCompany] = useState("");
   const [experience, setExperience] = useState("");
   const [yearsOfExperienced, setYearsOfExperienced] = useState("");
@@ -43,7 +45,6 @@ const JobsScreens = () => {
   const [workModes, setWorkMode] = useState("");
   const [references, setReferences] = useState("");
   const [position, setPosition] = useState("");
-
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
   const [modalVisible, setModalVisible] = useState(false);
@@ -52,6 +53,7 @@ const JobsScreens = () => {
   const [value1, setValue1] = useState(dayjs().format("YYYY-MM-DD"));
   const [modalVisible2, setModalVisible2] = useState(false);
   const [value2, setValue2] = useState(dayjs().format("YYYY-MM-DD"));
+  
   const EmploymentType = [
     { key: "1", value: "Experienced" },
     { key: "2", value: "Fresher" },
@@ -101,8 +103,7 @@ const JobsScreens = () => {
   const [isEnabled1, setIsEnabled1] = useState(false);
   const toggleSwitchs = () => setIsEnabled1((previousState) => !previousState);
 
-
-         
+    
 
 const validate = () => {
     let isValid = true
@@ -151,12 +152,36 @@ const validate = () => {
 
 
 
-
-
-
-
-
-
+  const PostJob = async () => {
+   
+    try {
+      const { data } = await axios.post(`${api}/profiles`, {
+        userId: ids,
+        firstName: firstName,
+        lastName: lastName,
+        family: {
+          fatherName: fatherName,
+          motherName: motherName,
+        },
+        profession: profession,
+        dateOfBirth: age,
+        gender: genders,
+        address: {
+          street: street,
+          city: city,
+          state: state,
+          country: country,
+          postalCode: postalcode,
+        },
+        languages: languages,
+        maritalStatus: marital,
+        
+      })
+      await AsyncStorage.setItem('profileid', data._id);
+    } catch (error) {
+      console.error("Error during login:", error.message);
+    }
+  };
 
 
 
@@ -166,7 +191,6 @@ const validate = () => {
     >
 
       <ScrollView style={{ flex:1 }} contentContainerStyle={{ paddingBottom: 200 }}>
-
       <View
         style={{
           width: responsiveWidth(100),
@@ -815,7 +839,7 @@ const validate = () => {
           elevation: 3,
           alignSelf: "center",
           borderColor: "blue",
-        }} onPress={()=>validate()}>
+        }} onPress={()=> navigation.navigate('Matrimonys',{data:Datasapi})}>
           <Text style={{ color: "white", fontSize: 16, fontWeight: "500" }}>
             Next
           </Text>

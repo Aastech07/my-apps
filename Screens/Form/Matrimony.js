@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   ScrollView,
   View,
@@ -20,17 +20,40 @@ import {
   responsiveFontSize,
 } from "react-native-responsive-dimensions";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
-import {
-
-  SelectList,
-} from "react-native-dropdown-select-list";
-import RadioGroup from "react-native-radio-buttons-group";
+import { SelectList } from "react-native-dropdown-select-list";
 import DateTimePicker from "react-native-ui-datepicker";
 import Slider from "@react-native-community/slider";
 import dayjs from "dayjs";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { api } from "../Api";
 const Matrimonys = () => {
-  const navigation = useNavigation()
+
+  const [userid, setUserID] = useState();
+  const [profileid, setProfileid] = useState();
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const value = await AsyncStorage.getItem('UserID');
+        const value1 = await AsyncStorage.getItem('profileid');
+        if (value !== null) {
+          setUserID(value)
+          setProfileid(value1)
+          console.warn(value)
+        }
+      } catch (e) {
+        console.log(e)
+
+      }
+    };
+    getData()
+  }, [])
+
+
+  const navigation = useNavigation();
+
   const ProfileCreatedBy = [
     { key: "1", value: "Self" },
     { key: "2", value: "Parent/Guardian" },
@@ -38,6 +61,16 @@ const Matrimonys = () => {
     { key: "4", value: "Friend" },
     { key: "5", value: "Other" },
   ];
+
+  const WorkingWithOptions = [
+    { key: "1", value: "Private Company" },
+    { key: "2", value: "Government/Public Sector" },
+    { key: "3", value: "Self-Employed" },
+    { key: "4", value: "Business/Entrepreneur" },
+    { key: "5", value: "Not Working" },
+    { key: "6", value: "Other" },
+  ];
+
 
   const HealthInformation = [
     { key: "1", value: "No Health Problems" },
@@ -70,7 +103,7 @@ const Matrimonys = () => {
   ];
 
   const MaritalStatus = [
-    { key: "1", value: "Not Married" },
+    { key: "1", value: "Not married" },
     { key: "2", value: "Married" },
   ];
 
@@ -183,6 +216,15 @@ const Matrimonys = () => {
     { key: "5", value: "Passed Away" },
   ];
 
+  const Education = [
+    { key: "1", value: "High School Graduate" },
+    { key: "2", value: "Associate's Degree" },
+    { key: "3", value: "Bachelor's Degree" },
+    { key: "4", value: "Master's Degree" },
+    { key: "5", value: "Doctorate or Professional Degree" },
+  ];
+
+
   const Affluence = [
     { key: "1", value: "Affluent" },
     { key: "2", value: "Upper Middle Class" },
@@ -190,19 +232,12 @@ const Matrimonys = () => {
     { key: "4", value: "Lower Middle Class" },
   ];
 
-  const WorkingWith = [
-    { key: "1", value: "Private Company" },
-    { key: "2", value: "Government/Public Sector" },
-    { key: "3", value: "Defense/Civil Services" },
-    { key: "4", value: "Business/Self Employed" },
-    { key: "5", value: "Not Working" },
-  ];
+
 
   const Countrys = [
-    { key: "1", value: "Doesn't Matter" },
     { key: "2", value: "India" },
     { key: "3", value: "USA" },
-    { key: "4", value: "Uk" },
+    { key: "4", value: "UK" },
     { key: "5", value: "UAE" },
     { key: "6", value: "Canada" },
     { key: "7", value: "Australia" },
@@ -210,260 +245,365 @@ const Matrimonys = () => {
     { key: "9", value: "Pakistan" },
     { key: "10", value: "Saudi Arabia" },
     { key: "11", value: "Kuwait" },
-    { key: "11", value: "South Africa" },
+    { key: "12", value: "South Africa" },
+    { key: "13", value: "Germany" },
+    { key: "14", value: "France" },
+    { key: "15", value: "Brazil" },
+    { key: "16", value: "China" },
+    { key: "17", value: "Japan" },
+    { key: "18", value: "Singapore" },
+    { key: "19", value: "Malaysia" },
+    { key: "20", value: "Thailand" },
+    { key: "21", value: "Netherlands" },
+    { key: "22", value: "Sweden" },
+    { key: "23", value: "Norway" },
+    { key: "24", value: "Denmark" },
+    { key: "25", value: "Switzerland" },
+    { key: "26", value: "Spain" },
+    { key: "27", value: "Italy" },
+    { key: "28", value: "Portugal" },
+    { key: "29", value: "Russia" },
+    { key: "30", value: "South Korea" },
+    { key: "31", value: "Other" },
+    // Add more countries as needed
   ];
 
-  const Stateliving = [
-    { key: "1", value: "Doesn't Matter" },
-    { key: "2", value: "Andaman & Nicobar" },
-    { key: "3", value: "Andhra Pradesh" },
-    { key: "4", value: "Arunachal Pradesh" },
-    { key: "5", value: "Assam" },
-    { key: "6", value: "Bihar" },
-    { key: "7", value: "Chandigarh" },
-    { key: "8", value: "Chhattisgarh" },
-    { key: "9", value: "Dadra & Nagar Haveli" },
-    { key: "10", value: "Daman & Diu" },
-    { key: "11", value: "Delhi-NCR" },
-    { key: "12", value: "Goa" },
-    { key: "13", value: "Gujarati" },
-    { key: "14", value: "Haryana" },
-    { key: "15", value: "Himachal Pradesh" },
-    { key: "16", value: "Jammu & Kashmir" },
-    { key: "17", value: "JharKhand" },
-    { key: "18", value: "Karnataka" },
-    { key: "19", value: "Kerala" },
-    { key: "20", value: "Lakshadweep" },
-    { key: "21", value: "Madhya Pradesh" },
-    { key: "22", value: "Maharashtra" },
-    { key: "23", value: "Manipur" },
-    { key: "24", value: "Meghalaya" },
-    { key: "25", value: "Mizoram" },
-    { key: "26", value: "Nagaland" },
-    { key: "27", value: "Orissa" },
-    { key: "28", value: "Pondicherry" },
-    { key: "29", value: "Punjab" },
-    { key: "30", value: "Rajashan" },
-    { key: "31", value: "Sikkim" },
-    { key: "32", value: "Tamil Nadu" },
-    { key: "33", value: "Telangana" },
-    { key: "34", value: "Tripura" },
-    { key: "35", value: "Uttar Pradesh" },
-    { key: "36", value: "Uttaranchal" },
-    { key: "37", value: "West Bengal" },
+
+
+
+  const Genders = [
+    { key: "1", value: "Male" },
+    { key: "2", value: "Female" },
   ];
 
-  const radioButtons = useMemo(
-    () => [
-      {
-        id: "1", // acts as primary key, should be unique and non-empty string
-        label: "Male",
-        value: "option1",
-      },
-      {
-        id: "2",
-        label: "Female",
-        value: "option2",
-      },
-    ],
-    []
-  );
+  const Disability = [
+    { key: "1", value: "None" },
+    { key: "2", value: "Physical Disability" },
+  ];
 
-  const radioButtons1 = useMemo(
-    () => [
-      {
-        id: "1",
-        label: "None",
-        value: "None",
-      },
-      {
-        id: "2",
-        label: "Physical Disability",
-        value: "Physical Disability",
-      },
-    ],
-    []
-  );
+  const Family = [
+    { key: "1", value: "Joint" },
+    { key: "2", value: "Nuclear" },
+  ];
 
-  const radioButtons2 = useMemo(
-    () => [
-      {
-        id: "1",
-        label: "Joint",
-        value: "Joint",
-      },
-      {
-        id: "2",
-        label: "Nuclear",
-        value: "Nuclear",
-      },
-    ],
-    []
-  );
+  const FamilyValue = [
+    { key: "1", value: "Traditional" },
+    { key: "2", value: "Moderate" },
+    { key: "3", value: "Liberal" },
+  ];
 
-  const radioButtons3 = useMemo(
-    () => [
-      {
-        id: "1",
-        label: "Traditional",
-        value: "Traditional",
-      },
-      {
-        id: "2",
-        label: "Moderate",
-        value: "Moderate",
-      },
-      {
-        id: "3",
-        label: "Liberal",
-        value: "Liberal",
-      },
-    ],
-    []
-  );
+  const AstroDetails = [
+    { key: "1", value: "yes" },
+    { key: "2", value: "No" },
+    { key: "3", value: "NotSure" },
+  ];
 
-  const radioButtons4 = useMemo(
-    () => [
-      {
-        id: "1",
-        label: "Veg",
-        value: "Veg",
-      },
-      {
-        id: "2",
-        label: "Non-Veg",
-        value: "Non-Veg",
-      },
-      {
-        id: "3",
-        label: "Occasionally Non-Veg",
-        value: "Occasionally Non-Veg",
-      },
-      {
-        id: "4",
-        label: "Eggetarian",
-        value: "Eggetarian",
-      },
-      {
-        id: "5",
-        label: "Jain",
-        value: "Jain",
-      },
-      {
-        id: "6",
-        label: "Vegan",
-        value: "Vegan",
-      },
-    ],
-    []
-  );
+  const Lifestyle = [
+    { key: "1", value: "Veg" },
+    { key: "2", value: "Non-Veg" },
+    { key: "3", value: "Occasionally Non-Veg" },
+    { key: "4", value: "Eggetarian" },
+    { key: "5", value: "Jain" },
+    { key: "5", value: "Vegan" },
+  ];
 
-  const radioButtons5 = useMemo(
-    () => [
-      {
-        id: "1",
-        label: "yes",
-        value: "yes",
-      },
-      {
-        id: "2",
-        label: "No",
-        value: "No",
-      },
-      {
-        id: "3",
-        label: "Don't Know",
-        value: "Don't Know",
-      },
-    ],
-    []
-  );
+  const Profession = [
+    { key: "1", value: "Software Engineer" },
+    { key: "2", value: "Teacher" },
+    { key: "3", value: "Doctor" },
+    { key: "4", value: "Accountant" },
+    { key: "5", value: "Marketing Manager" },
+    { key: "6", value: "Graphic Designer" },
+    { key: "7", value: "Nurse" },
+    { key: "8", value: "Engineer" },
+    { key: "9", value: "Architect" },
+    { key: "10", value: "Lawyer" },
+    { key: "11", value: "Chef" },
+    { key: "12", value: "Financial Analyst" },
+    { key: "13", value: "Pharmacist" },
+    { key: "14", value: "Police Officer" },
+    { key: "15", value: "Artist" },
+    // Add more professions as needed
+  ];
+
+  const Nakshatra = [
+    { key: "1", value: "Ashwini" },
+    { key: "2", value: "Bharani" },
+    { key: "3", value: "Krittika" },
+    { key: "4", value: "Rohini" },
+    { key: "5", value: "Mrigashira" },
+    { key: "6", value: "Ardra" },
+    { key: "7", value: "Punarvasu" },
+    { key: "8", value: "Pushya" },
+    { key: "9", value: "Ashlesha" },
+    { key: "10", value: "Magha" },
+    { key: "11", value: "Purva Phalguni" },
+    { key: "12", value: "Uttara Phalguni" },
+    { key: "13", value: "Hasta" },
+    { key: "14", value: "Chitra" },
+    { key: "15", value: "Swati" },
+    { key: "16", value: "Vishakha" },
+    { key: "17", value: "Anuradha" },
+    { key: "18", value: "Jyeshtha" },
+    { key: "19", value: "Mula" },
+    { key: "20", value: "Purva Ashadha" },
+    { key: "21", value: "Uttara Ashadha" },
+    { key: "22", value: "Shravana" },
+    { key: "23", value: "Dhanishta" },
+    { key: "24", value: "Shatabhisha" },
+    { key: "25", value: "Purva Bhadrapada" },
+    { key: "26", value: "Uttara Bhadrapada" },
+    { key: "27", value: "Revati" },
+    { key: "28", value: "Ashwini" },
+    { key: "29", value: "Bharani" },
+    { key: "30", value: "Krittika" },
+    // Add more Nakshatras as needed
+  ];
+
+  const HighestQualification = [
+    { key: "1", value: "High School Diploma" },
+    { key: "2", value: "Associate's Degree" },
+    { key: "3", value: "Bachelor's Degree" },
+    { key: "4", value: "Master's Degree" },
+    { key: "5", value: "Doctorate or Professional Degree" },
+    { key: "6", value: "Other" },
+  ];
+
+  const WorkingAsOptions = [
+    { key: "1", value: "Software Engineer" },
+    { key: "2", value: "Teacher" },
+    { key: "3", value: "Doctor" },
+    { key: "4", value: "Accountant" },
+    { key: "5", value: "Marketing Manager" },
+    { key: "6", value: "Business Analyst" },
+    { key: "7", value: "Artist" },
+    { key: "8", value: "Engineer" },
+    { key: "9", value: "Entrepreneur" },
+    { key: "10", value: "Not Applicable" },
+    { key: "11", value: "Other" },
+  ];
+
+  const StateLivingInIndiaOptions = [
+    { key: "1", value: "Andhra Pradesh" },
+    { key: "2", value: "Arunachal Pradesh" },
+    { key: "3", value: "Assam" },
+    { key: "4", value: "Bihar" },
+    { key: "5", value: "Chhattisgarh" },
+    { key: "6", value: "Goa" },
+    { key: "7", value: "Gujarat" },
+    { key: "8", value: "Haryana" },
+    { key: "9", value: "Himachal Pradesh" },
+    { key: "10", value: "Jharkhand" },
+    { key: "11", value: "Karnataka" },
+    { key: "12", value: "Kerala" },
+    { key: "13", value: "Madhya Pradesh" },
+    { key: "14", value: "Maharashtra" },
+    { key: "15", value: "Manipur" },
+    { key: "16", value: "Meghalaya" },
+    { key: "17", value: "Mizoram" },
+    { key: "18", value: "Nagaland" },
+    { key: "19", value: "Odisha" },
+    { key: "20", value: "Punjab" },
+    { key: "21", value: "Rajasthan" },
+    { key: "22", value: "Sikkim" },
+    { key: "23", value: "Tamil Nadu" },
+    { key: "24", value: "Telangana" },
+    { key: "25", value: "Tripura" },
+    { key: "26", value: "Uttar Pradesh" },
+    { key: "27", value: "Uttarakhand" },
+    { key: "28", value: "West Bengal" },
+    { key: "29", value: "Andaman and Nicobar Islands" },
+    { key: "30", value: "Chandigarh" },
+    { key: "31", value: "Dadra and Nagar Haveli and Daman and Diu" },
+    { key: "32", value: "Delhi" },
+    { key: "33", value: "Lakshadweep" },
+    { key: "34", value: "Puducherry" },
+    // Add more states or union territories as needed
+  ];
+
+  const CityLivingInIndiaOptions = [
+    { key: "1", value: "Mumbai" },
+    { key: "2", value: "Delhi" },
+    { key: "3", value: "Bangalore" },
+    { key: "4", value: "Hyderabad" },
+    { key: "5", value: "Chennai" },
+    { key: "6", value: "Kolkata" },
+    { key: "7", value: "Pune" },
+    { key: "8", value: "Ahmedabad" },
+    { key: "9", value: "Jaipur" },
+    { key: "10", value: "Lucknow" },
+    { key: "11", value: "Chandigarh" },
+    { key: "12", value: "Surat" },
+    { key: "13", value: "Bhopal" },
+    { key: "14", value: "Indore" },
+    { key: "15", value: "Vadodara" },
+    { key: "16", value: "Kochi" },
+    { key: "17", value: "Coimbatore" },
+    { key: "18", value: "Nagpur" },
+    { key: "19", value: "Ludhiana" },
+    { key: "20", value: "Amritsar" },
+    { key: "21", value: "Visakhapatnam" },
+    { key: "22", value: "Thane" },
+    { key: "23", value: "Bhubaneswar" },
+    { key: "24", value: "Agra" },
+    { key: "25", value: "Patna" },
+    { key: "26", value: "Ranchi" },
+    { key: "27", value: "Varanasi" },
+    { key: "28", value: "Nashik" },
+    { key: "29", value: "Faridabad" },
+    { key: "30", value: "Meerut" },
+    { key: "31", value: "Srinagar" },
+    { key: "32", value: "Jodhpur" },
+    { key: "33", value: "Raipur" },
+    { key: "34", value: "Kanpur" },
+    { key: "35", value: "Kozhikode" },
+    // Add more cities as needed
+  ];
+
+  const GrewUpInOptions = [
+    { key: "1", value: "India" },
+    { key: "2", value: "United States" },
+    { key: "3", value: "Canada" },
+    { key: "4", value: "United Kingdom" },
+    { key: "5", value: "Australia" },
+    { key: "6", value: "New Zealand" },
+    { key: "7", value: "South Africa" },
+    { key: "8", value: "Other" },
+  ];
+
+  const EthnicOriginOptions = [
+    { key: "1", value: "Caucasian" },
+    { key: "2", value: "African American" },
+    { key: "3", value: "Asian" },
+    { key: "4", value: "Hispanic/Latino" },
+    { key: "5", value: "Native American" },
+    { key: "6", value: "Middle Eastern" },
+    { key: "7", value: "Indian" },
+    { key: "8", value: "Pacific Islander" },
+    { key: "9", value: "Other" },
+  ];
+
+
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedId, setSelectedId] = useState();
-  const [disability, setDisability] = useState();
-  const [disability1, setDisability1] = useState();
-  const [disability2, setDisability2] = useState();
-  const [disability3, setDisability3] = useState();
-  const [disability4, setDisability4] = useState();
   const [values, setValues] = useState(dayjs().format("YYYY-MM-DD"));
-  const [profileData, setProfileData] = useState({
-    Profilecreatedby: "",
-    maritalStatus: {
-      Not_married: "",
-      Married: "",
-    },
-    nativePlace: "",
-    healthInformation: "",
-    anyDisabiliy: "",
-    bloodGroup: "",
-    religiousBackground: {
-      religion: "",
-      motherTongue: "",
-      community: "",
-      subCommunity: "",
-      gothraGothram: "",
-    },
-    family: {
-      fatherStatus: "",
-      with: "",
-      as: "",
-      natureOfBusiness: "",
-      motherStatus: "",
-      familyLocation: "",
-      numberOfSiblings: {},
-      familyType: "",
-      familyValue: "",
-      familyAffluence: "",
-    },
-    astroDetails: {
-      manglikChevvaidosham: {
-        Yes: "",
-        No: "",
-        NotSure: "",
-      },
-      nakshatra: "",
-    },
-    hobbies: "",
 
-    partnerPreferences: {
-      ageRange: {
-        min: "",
-        max: "",
-      },
 
-      gender: {
-        Male: "",
-        Female: "",
-      },
-      education: "",
-      profession: "",
-      minHeight: "",
-      maxIncome: "",
-    },
-    educationAndCareer: {
-      highestQualification: "",
-      collegeAttended: "",
-      workingWith: "",
-      WorkingAs: "",
-    },
-    lifestyle: "",
-    locationOfGroom: {
-      countryLivingIn: "",
-      stateLivingIn: "",
-      cityLivingIn: "",
-      grewUpIn: "",
-      ethnicOrigin: "",
-      zipPinCode: "",
-    },
-    moreAboutYourselfPartnerAndFamily: "",
-    height: "",
-    aboutMe: "",
-  });
+  const [profilecreatedby, setProfileCreatedBy] = useState("");
+  const [nativePlace, setNativePlace] = useState("");
+  const [healthInformation, setHealthInformation] = useState("");
+  const [anyDisability, setAnyDisability] = useState("");
+  const [bloodgroup, setBloodGroup] = useState("");
+  const [hobbies, setHobbies] = useState("");
+  const [lifestyle, setLifestyle] = useState("");
+  const [moreAboutYourselfPartnerAndFamily, setMoreAboutYourselfPartnerAndFamily] = useState("");
+  const [height, setHeight] = useState("");
+  const [aboutMe, setAboutMe] = useState("");
+  const [maritalstatus, setMaritalStatus] = useState("");
+  const [religion, setReligion] = useState("");
+  const [motherTongue, setMotherTongue] = useState("");
+  const [community, setCommunity] = useState("");
+  const [subCommunity, setSubCommunity] = useState("");
+  const [gothraGothram, setGothraGothram] = useState("");
+  const [fatherS, setFatherStatus] = useState("");
+  const [withWhom, setWithWhom] = useState("");
+  const [asWhat, setAsWhat] = useState("");
+  const [natureOfBusiness, setNatureOfBusiness] = useState("");
+  const [motherStatus, setMotherStatus] = useState("");
+  const [familyLocation, setFamilyLocation] = useState("");
+  const [numberOfSiblings, setNumberOfSiblings] = useState({});
+  const [familyType, setFamilyType] = useState("");
+  const [familyValue, setFamilyValue] = useState("");
+  const [familyAffluence, setFamilyAffluence] = useState("");
+  const [manglikChevvaidosham, setManglikChevvaidosham] = useState("");
+  const [nakshatra, setNakshatra] = useState("");
+  const [ageRange, setAgeRange] = useState("");
+  const [gender, setGender] = useState("");
+  const [education, setEducation] = useState("");
+  const [profession, setProfession] = useState("");
+  const [minHeight, setMinHeight] = useState("");
+  const [maxIncome, setMaxIncome] = useState("");
+  const [highestQualification, setHighestQualification] = useState("");
+  const [collegeAttended, setCollegeAttended] = useState("");
+  const [workingWith, setWorkingWith] = useState("");
+  const [workingAs, setWorkingAs] = useState("");
+  const [countryLivingIn, setCountryLivingIn] = useState("");
+  const [stateLivingIn, setStateLivingIn] = useState("");
+  const [cityLivingIn, setCityLivingIn] = useState("");
+  const [grewUpIn, setGrewUpIn] = useState("");
+  const [ethnicOrigin, setEthnicOrigin] = useState("");
+  const [zipPinCode, setZipPinCode] = useState("");
 
-  const handleInputChange = (field, Values) => {
-    setProfileData({ ...profileData, [field]: Values });
+
+  const PostMatri = async () => {
+   console.warn(profileid)
+   console.warn(profilecreatedby)
+    try {
+      const { data } = await axios.post(`${api}/matrimonial/profiles`, {
+        userId:userid,
+        profileId:profileid,
+        Profilecreatedby: profilecreatedby,
+        maritalStatus: maritalstatus,
+        nativePlace: nativePlace,
+        healthInformation: healthInformation,
+        anyDisabiliy: anyDisability,
+        bloodGroup: bloodgroup,
+        religiousBackground: {
+          religion: religion,
+          motherTongue: motherTongue,
+          community: community,
+          subCommunity: subCommunity,
+          gothraGothram: gothraGothram
+        },
+        family: {
+          fatherStatus: fatherS,
+          motherStatus: motherStatus,
+          familyLocation: familyLocation,
+          numberOfSiblings: numberOfSiblings,
+          familyType: familyType,
+          familyValue: familyValue,
+          familyAffluence: familyAffluence
+        },
+        astroDetails: {
+          manglikChevvaidosham: manglikChevvaidosham,
+          nakshatra: nakshatra
+        },
+        partnerPreferences: {
+         
+          gender: gender,
+          education: education,
+          profession: profession,
+          
+        },
+        educationAndCareer: {
+          highestQualification: highestQualification,
+          collegeAttended: collegeAttended,
+          workingWith: workingWith,
+          WorkingAs: workingAs,
+        },
+        lifestyle: lifestyle,
+        locationOfGroom: {
+          countryLivingIn: countryLivingIn,
+          stateLivingIn: stateLivingIn,
+          cityLivingIn: cityLivingIn,
+          grewUpIn: grewUpIn,
+          ethnicOrigin: ethnicOrigin,
+          zipPinCode: zipPinCode
+        },
+        moreAboutYourselfPartnerAndFamily: moreAboutYourselfPartnerAndFamily,
+        height: height,
+      
+
+
+      })
+      console.warn(data)
+    } catch (error) {
+      console.error("Error during login:", error.message);
+    }
   };
 
+
+
+ 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <ScrollView
@@ -498,11 +638,31 @@ const Matrimonys = () => {
             </Text>
           </View>
 
-          <View style={{ flexDirection: "row", bottom:responsiveHeight(-1), left:responsiveWidth(80),
-        }}>
-             <TouchableOpacity onPress={()=>navigation.navigate('JobsScreens')}>
-             <FontAwesome5Icon name="arrow-left" size={18}  style={{  backgroundColor:'#fff',padding:5,paddingHorizontal:7,borderRadius:50,elevation:3,shadowColor:'#000',shadowOpacity:0.6,shadowRadius:10}}/>
-             </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: "row",
+              bottom: responsiveHeight(-1),
+              left: responsiveWidth(80),
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => navigation.navigate("JobsScreens")}
+            >
+              <FontAwesome5Icon
+                name="arrow-left"
+                size={18}
+                style={{
+                  backgroundColor: "#fff",
+                  padding: 5,
+                  paddingHorizontal: 7,
+                  borderRadius: 50,
+                  elevation: 3,
+                  shadowColor: "#000",
+                  shadowOpacity: 0.6,
+                  shadowRadius: 10,
+                }}
+              />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -542,9 +702,7 @@ const Matrimonys = () => {
               </Text>
               <View style={{ top: responsiveHeight(25) }}>
                 <SelectList
-                  setSelected={(text) =>
-                    handleInputChange("Profilecreatedby", text)
-                  }
+                  setSelected={(val) => setProfileCreatedBy(val)}
                   data={ProfileCreatedBy}
                   save="value"
                   boxStyles={{
@@ -560,7 +718,7 @@ const Matrimonys = () => {
               </View>
             </View>
 
-            <View style={{ bottom: responsiveHeight(17) }}>
+            <View style={{ bottom: 120 }}>
               <Text
                 style={{
                   top: responsiveHeight(24),
@@ -572,13 +730,20 @@ const Matrimonys = () => {
               >
                 Select Gender
               </Text>
-              <View style={{ top: responsiveHeight(24), left: 15 }}>
-                <RadioGroup
-                  radioButtons={radioButtons}
-                  onPress={setSelectedId}
-                  selectedId={selectedId}
-                  layout="row"
-                  containerStyle={{ opacity: 0.6 }}
+              <View style={{ top: responsiveHeight(25), marginBottom: 13 }}>
+                <SelectList
+                  setSelected={(val) => setGender(val)}
+                  data={Genders}
+                  save="value"
+                  boxStyles={{
+                    marginLeft: responsiveWidth(5),
+                    marginRight: responsiveWidth(5),
+                  }}
+                  dropdownStyles={{
+                    marginLeft: responsiveWidth(5),
+                    marginRight: responsiveWidth(5),
+                  }}
+                  search={false}
                 />
               </View>
             </View>
@@ -601,7 +766,7 @@ const Matrimonys = () => {
                 <Text
                   style={{
                     position: "absolute",
-                    top:responsiveHeight(21),
+                    top: responsiveHeight(21),
                     left: responsiveWidth(79),
                     fontWeight: "400",
                     borderRadius: 4,
@@ -663,8 +828,7 @@ const Matrimonys = () => {
                 </Text>
                 <View style={{ top: responsiveHeight(25) }}>
                   <SelectList
-                    setSelected={(text) =>
-                      handleInputChange("maritalStatus", text)
+                    setSelected={(val) => setMaritalStatus(val)
                     }
                     data={MaritalStatus}
                     save="value"
@@ -695,7 +859,7 @@ const Matrimonys = () => {
                 </Text>
                 <View style={{ top: responsiveHeight(25) }}>
                   <SelectList
-                    setSelected={(text) => handleInputChange("height", text)}
+                    setSelected={(val) => setHeight(val)}
                     data={Height}
                     save="value"
                     boxStyles={{
@@ -725,9 +889,7 @@ const Matrimonys = () => {
                 </Text>
                 <View style={{ top: responsiveHeight(25) }}>
                   <SelectList
-                    setSelected={(text) =>
-                      handleInputChange("healthInformation", text)
-                    }
+                    setSelected={(val) => setHealthInformation(val)}
                     data={HealthInformation}
                     save="value"
                     boxStyles={{
@@ -755,13 +917,22 @@ const Matrimonys = () => {
                 >
                   Any Disability
                 </Text>
-                <View style={{ top: responsiveHeight(24), left: 15 }}>
-                  <RadioGroup
-                    radioButtons={radioButtons1}
-                    onPress={setDisability}
-                    selectedId={disability}
-                    layout="row"
-                    containerStyle={{ opacity: 0.6 }}
+                <View style={{ top: responsiveHeight(25), marginBottom: 13 }}>
+                  <SelectList
+                    setSelected={(val) =>
+                      setAnyDisability(val)
+                    }
+                    data={Disability}
+                    save="value"
+                    boxStyles={{
+                      marginLeft: responsiveWidth(5),
+                      marginRight: responsiveWidth(5),
+                    }}
+                    dropdownStyles={{
+                      marginLeft: responsiveWidth(5),
+                      marginRight: responsiveWidth(5),
+                    }}
+                    search={false}
                   />
                 </View>
               </View>
@@ -780,8 +951,8 @@ const Matrimonys = () => {
                 </Text>
                 <View style={{ top: responsiveHeight(25) }}>
                   <SelectList
-                    setSelected={(text) =>
-                      handleInputChange("bloodGroup", text)
+                    setSelected={(val) =>
+                      setBloodGroup(val)
                     }
                     data={bloodGroup}
                     save="value"
@@ -799,7 +970,7 @@ const Matrimonys = () => {
               </View>
 
               <View style={{ bottom: responsiveHeight(-10) }}>
-              <Text
+                <Text
                   style={{
                     top: responsiveHeight(24),
                     left: 23,
@@ -811,7 +982,6 @@ const Matrimonys = () => {
                   Set Age Range
                 </Text>
 
-
                 <Text
                   style={{
                     top: responsiveHeight(26),
@@ -821,7 +991,7 @@ const Matrimonys = () => {
                     opacity: 0.6,
                   }}
                 >
-                min Age 18
+                  min Age 18
                 </Text>
 
                 <Text
@@ -830,13 +1000,14 @@ const Matrimonys = () => {
                     left: responsiveWidth(72),
                     fontSize: 13,
                     fontWeight: "500",
-                    opacity: 0.6,position:'absolute'
+                    opacity: 0.6,
+                    position: "absolute",
                   }}
                 >
-                max Age 38
+                  max Age 38
                 </Text>
 
-                <View style={{ top: responsiveHeight(26),left:15 }}>
+                <View style={{ top: responsiveHeight(26), left: 15 }}>
                   <Slider
                     style={{ width: responsiveWidth(95), height: 40 }}
                     minimumValue={0}
@@ -848,10 +1019,8 @@ const Matrimonys = () => {
                 </View>
               </View>
 
-
-
               <View style={{ bottom: responsiveHeight(-10) }}>
-              <Text
+                <Text
                   style={{
                     top: responsiveHeight(25.5),
                     left: 23,
@@ -863,8 +1032,6 @@ const Matrimonys = () => {
                   Set Height
                 </Text>
 
-
-
                 <Text
                   style={{
                     top: responsiveHeight(26),
@@ -874,7 +1041,7 @@ const Matrimonys = () => {
                     opacity: 0.6,
                   }}
                 >
-                min Height 5.5
+                  min Height 5.5
                 </Text>
 
                 <Text
@@ -883,13 +1050,14 @@ const Matrimonys = () => {
                     left: responsiveWidth(72),
                     fontSize: 13,
                     fontWeight: "500",
-                    opacity: 0.6,position:'absolute'
+                    opacity: 0.6,
+                    position: "absolute",
                   }}
                 >
-                max Height 6.2
+                  max Height 6.2
                 </Text>
 
-                <View style={{ top: responsiveHeight(26),left:15 }}>
+                <View style={{ top: responsiveHeight(26), left: 15 }}>
                   <Slider
                     style={{ width: responsiveWidth(95), height: 40 }}
                     minimumValue={0}
@@ -901,9 +1069,8 @@ const Matrimonys = () => {
                 </View>
               </View>
 
-
               <View style={{ bottom: responsiveHeight(-10) }}>
-              <Text
+                <Text
                   style={{
                     top: responsiveHeight(25.5),
                     left: 23,
@@ -912,10 +1079,8 @@ const Matrimonys = () => {
                     opacity: 0.6,
                   }}
                 >
-                  Set Max Income 
+                  Set Max Income
                 </Text>
-
-
 
                 <Text
                   style={{
@@ -926,7 +1091,7 @@ const Matrimonys = () => {
                     opacity: 0.6,
                   }}
                 >
-                min Income 5lpa
+                  min Income 5lpa
                 </Text>
 
                 <Text
@@ -935,13 +1100,14 @@ const Matrimonys = () => {
                     left: responsiveWidth(68),
                     fontSize: 13,
                     fontWeight: "500",
-                    opacity: 0.6,position:'absolute'
+                    opacity: 0.6,
+                    position: "absolute",
                   }}
                 >
-                max Income 20lpa
+                  max Income 20lpa
                 </Text>
 
-                <View style={{ top: responsiveHeight(26),left:15 }}>
+                <View style={{ top: responsiveHeight(26), left: 15 }}>
                   <Slider
                     style={{ width: responsiveWidth(95), height: 40 }}
                     minimumValue={0}
@@ -953,24 +1119,7 @@ const Matrimonys = () => {
                 </View>
               </View>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <View style={{ bottom: responsiveHeight(-11),marginBottom:10 }}>
+              <View style={{ bottom: responsiveHeight(-11), marginBottom: 10 }}>
                 <Text
                   style={{
                     top: responsiveHeight(24),
@@ -984,10 +1133,10 @@ const Matrimonys = () => {
                 </Text>
                 <View style={{ top: responsiveHeight(25) }}>
                   <SelectList
-                    setSelected={(text) =>
-                      handleInputChange("partnerPreferences.education", text)
+                    setSelected={(val) =>
+                      setEducation(val)
                     }
-                    data={bloodGroup}
+                    data={Education}
                     save="value"
                     boxStyles={{
                       marginLeft: responsiveWidth(5),
@@ -1002,7 +1151,7 @@ const Matrimonys = () => {
                 </View>
               </View>
 
-              <View style={{ bottom: responsiveHeight(-12),marginBottom:13 }}>
+              <View style={{ bottom: responsiveHeight(-12), marginBottom: 13 }}>
                 <Text
                   style={{
                     top: responsiveHeight(24),
@@ -1016,10 +1165,10 @@ const Matrimonys = () => {
                 </Text>
                 <View style={{ top: responsiveHeight(25) }}>
                   <SelectList
-                    setSelected={(text) =>
-                      handleInputChange("partnerPreferences.profession", text)
+                    setSelected={(val) =>
+                      setProfession(val)
                     }
-                    data={fatherStatus}
+                    data={Profession}
                     save="value"
                     boxStyles={{
                       marginLeft: responsiveWidth(5),
@@ -1034,25 +1183,7 @@ const Matrimonys = () => {
                 </View>
               </View>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
               <View style={{}}>
-
                 <View style={{ left: 22, top: responsiveHeight(36.6) }}>
                   <Text
                     style={{ fontSize: 17, color: "tomato", fontWeight: "300" }}
@@ -1079,11 +1210,8 @@ const Matrimonys = () => {
                     </Text>
                     <View style={{ top: responsiveHeight(25) }}>
                       <SelectList
-                        setSelected={(text) =>
-                          handleInputChange(
-                            "religiousBackground.religion",
-                            text
-                          )
+                        setSelected={(val) =>
+                          setReligion(val)
                         }
                         data={Religion}
                         save="value"
@@ -1114,11 +1242,8 @@ const Matrimonys = () => {
                     </Text>
                     <View style={{ top: responsiveHeight(25) }}>
                       <SelectList
-                        setSelected={(text) =>
-                          handleInputChange(
-                            "religiousBackground.motherTongue",
-                            text
-                          )
+                        setSelected={(val) =>
+                          setMotherTongue(val)
                         }
                         data={MotherTongue}
                         save="value"
@@ -1149,11 +1274,8 @@ const Matrimonys = () => {
                     </Text>
                     <View style={{ top: responsiveHeight(25) }}>
                       <SelectList
-                        setSelected={(text) =>
-                          handleInputChange(
-                            "religiousBackground.community",
-                            text
-                          )
+                        setSelected={(val) =>
+                          setCommunity(val)
                         }
                         data={Community}
                         save="value"
@@ -1184,11 +1306,8 @@ const Matrimonys = () => {
                     </Text>
                     <View style={{ top: responsiveHeight(25) }}>
                       <SelectList
-                        setSelected={(text) =>
-                          handleInputChange(
-                            "religiousBackground.subCommunity",
-                            text
-                          )
+                        setSelected={(val) =>
+                          setSubCommunity(val)
                         }
                         data={Community}
                         save="value"
@@ -1219,11 +1338,8 @@ const Matrimonys = () => {
                     </Text>
                     <View style={{ top: responsiveHeight(25) }}>
                       <SelectList
-                        setSelected={(text) =>
-                          handleInputChange(
-                            "religiousBackground.subCommunity",
-                            text
-                          )
+                        setSelected={(val) =>
+                          setGothraGothram(val)
                         }
                         data={Community}
                         save="value"
@@ -1272,8 +1388,8 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(text) =>
-                            handleInputChange("family.fatherStatus", text)
+                          setSelected={(val) =>
+                            setFatherStatus(val)
                           }
                           data={fatherStatus}
                           save="value"
@@ -1305,7 +1421,7 @@ const Matrimonys = () => {
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
                           setSelected={(text) =>
-                            handleInputChange("family.motherStatus", text)
+                            setMotherStatus(text)
                           }
                           data={MotherStatus}
                           save="value"
@@ -1339,10 +1455,10 @@ const Matrimonys = () => {
                           style={styles.inputText}
                           placeholder="Example: Mumbai, India"
                           placeholderTextColor="black"
-                          onChangeText={(text) =>
-                            handleInputChange("family.familyLocation", text)
+                          onChangeText={(val) =>
+                            setFamilyLocation(val)
                           }
-                          value={profileData.family.familyLocation}
+                          value={familyLocation}
                         />
                         <FontAwesome5Icon
                           name="map-pin"
@@ -1375,10 +1491,10 @@ const Matrimonys = () => {
                           style={styles.inputText}
                           placeholder="Enter native place"
                           placeholderTextColor="black"
-                          onChangeText={(text) =>
-                            handleInputChange("family.familyLocation", text)
+                          onChangeText={(val) =>
+                            setNativePlace(val)
                           }
-                          value={profileData.family.familyLocation}
+                          value={nativePlace}
                         />
                         <FontAwesome5Icon
                           name="map-pin"
@@ -1411,13 +1527,10 @@ const Matrimonys = () => {
                           style={styles.inputText}
                           placeholder="Enter No.of Siblings"
                           placeholderTextColor="black"
-                          onChangeText={(text) =>
-                            handleInputChange(
-                              "family.numberOfSiblings",
-                              text.toString()
-                            )
+                          onChangeText={(val) =>
+                            setNumberOfSiblings(val)
                           }
-                          value={profileData.family.numberOfSiblings.toString()}
+                          value={numberOfSiblings}
                         />
                         <FontAwesome5Icon
                           name="user-friends"
@@ -1445,13 +1558,24 @@ const Matrimonys = () => {
                       >
                         Family Type
                       </Text>
-                      <View style={{ top: responsiveHeight(24), left: 15 }}>
-                        <RadioGroup
-                          radioButtons={radioButtons2}
-                          onPress={setDisability1}
-                          selectedId={disability1}
-                          layout="row"
-                          containerStyle={{ opacity: 0.6 }}
+                      <View
+                        style={{ top: responsiveHeight(25), marginBottom: 13 }}
+                      >
+                        <SelectList
+                          setSelected={(val) =>
+                            setFamilyType(val)
+                          }
+                          data={Family}
+                          save="value"
+                          boxStyles={{
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                          }}
+                          dropdownStyles={{
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                          }}
+                          search={false}
                         />
                       </View>
                     </View>
@@ -1468,13 +1592,24 @@ const Matrimonys = () => {
                       >
                         Family Value
                       </Text>
-                      <View style={{ top: responsiveHeight(24), left: 15 }}>
-                        <RadioGroup
-                          radioButtons={radioButtons3}
-                          onPress={setDisability2}
-                          selectedId={disability2}
-                          layout="row"
-                          containerStyle={{ opacity: 0.6 }}
+                      <View
+                        style={{ top: responsiveHeight(25), marginBottom: 13 }}
+                      >
+                        <SelectList
+                          setSelected={(val) =>
+                            setFamilyValue(val)
+                          }
+                          data={FamilyValue}
+                          save="value"
+                          boxStyles={{
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                          }}
+                          dropdownStyles={{
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                          }}
+                          search={false}
                         />
                       </View>
                     </View>
@@ -1493,8 +1628,8 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(text) =>
-                            handleInputChange("family.familyAffluence", text)
+                          setSelected={(val) =>
+                            setFamilyAffluence(val)
                           }
                           data={Affluence}
                           save="value"
@@ -1544,10 +1679,10 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(text) =>
-                            handleInputChange("astroDetalis.nakshatra", text)
+                          setSelected={(val) =>
+                            setNakshatra(val)
                           }
-                          data={MotherStatus}
+                          data={Nakshatra}
                           save="value"
                           boxStyles={{
                             marginLeft: responsiveWidth(5),
@@ -1574,13 +1709,22 @@ const Matrimonys = () => {
                       >
                         Manglik/Chevvai dosham
                       </Text>
-                      <View style={{ top: responsiveHeight(24), left: 15 }}>
-                        <RadioGroup
-                          radioButtons={radioButtons5}
-                          onPress={setDisability3}
-                          selectedId={disability3}
-                          layout="row"
-                          containerStyle={{ opacity: 0.6 }}
+                      <View style={{ top: responsiveHeight(25) }}>
+                        <SelectList
+                          setSelected={(val) =>
+                            setManglikChevvaidosham(val)
+                          }
+                          data={AstroDetails}
+                          save="value"
+                          boxStyles={{
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                          }}
+                          dropdownStyles={{
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                          }}
+                          search={false}
                         />
                       </View>
                     </View>
@@ -1618,13 +1762,10 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(text) =>
-                            handleInputChange(
-                              "educationAndCareer.highestQualification",
-                              text
-                            )
+                          setSelected={(val) =>
+                            setHighestQualification(val)
                           }
-                          data={fatherStatus}
+                          data={HighestQualification}
                           save="value"
                           boxStyles={{
                             marginLeft: responsiveWidth(5),
@@ -1657,12 +1798,9 @@ const Matrimonys = () => {
                           placeholder="Specify highest degree college"
                           placeholderTextColor="black"
                           onChangeText={(text) =>
-                            handleInputChange(
-                              "educationAndCareer.collegeAttended",
-                              text
-                            )
+                            setCollegeAttended(text)
                           }
-                          value={profileData.educationAndCareer.collegeAttended}
+                          value={collegeAttended}
                         />
                         <FontAwesome5Icon
                           name="university"
@@ -1692,13 +1830,10 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(text) =>
-                            handleInputChange(
-                              "educationAndCareer.workingWith",
-                              text
-                            )
+                          setSelected={(val) =>
+                            setWorkingWith(val)
                           }
-                          data={WorkingWith}
+                          data={WorkingWithOptions}
                           save="value"
                           boxStyles={{
                             marginLeft: responsiveWidth(5),
@@ -1727,13 +1862,10 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(text) =>
-                            handleInputChange(
-                              "educationAndCareer.WorkingAs",
-                              text
-                            )
+                          setSelected={(val) =>
+                            setWorkingAs(val)
                           }
-                          data={WorkingWith}
+                          data={WorkingAsOptions}
                           save="value"
                           boxStyles={{
                             marginLeft: responsiveWidth(5),
@@ -1776,22 +1908,24 @@ const Matrimonys = () => {
                       >
                         Diet
                       </Text>
-                      <ScrollView
-                        horizontal
-                        style={{
-                          top: responsiveHeight(24),
-                          left: 15,
-                          marginRight: 10,
-                        }}
-                      >
-                        <RadioGroup
-                          radioButtons={radioButtons4}
-                          onPress={setDisability4}
-                          selectedId={disability4}
-                          layout="row"
-                          containerStyle={{ opacity: 0.6 }}
+                      <View style={{ top: responsiveHeight(25) }}>
+                        <SelectList
+                          setSelected={(val) =>
+                            setLifestyle(val)
+                          }
+                          data={Lifestyle}
+                          save="value"
+                          boxStyles={{
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                          }}
+                          dropdownStyles={{
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                          }}
+                          search={false}
                         />
-                      </ScrollView>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -1827,11 +1961,8 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(text) =>
-                            handleInputChange(
-                              "locationOfGroom.countryLivingIn",
-                              text
-                            )
+                          setSelected={(val) =>
+                            setCountryLivingIn(val)
                           }
                           data={Countrys}
                           save="value"
@@ -1864,13 +1995,10 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(text) =>
-                            handleInputChange(
-                              "locationOfGroom.stateLivingIn",
-                              text
-                            )
+                          setSelected={(val) =>
+                            setStateLivingIn(val)
                           }
-                          data={Stateliving}
+                          data={StateLivingInIndiaOptions}
                           save="value"
                           boxStyles={{
                             marginLeft: responsiveWidth(5),
@@ -1901,13 +2029,10 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(text) =>
-                            handleInputChange(
-                              "locationOfGroom.cityLivingIn",
-                              text
-                            )
+                          setSelected={(val) =>
+                            setCityLivingIn(val)
                           }
-                          data={Stateliving}
+                          data={CityLivingInIndiaOptions}
                           save="value"
                           boxStyles={{
                             marginLeft: responsiveWidth(5),
@@ -1938,10 +2063,10 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(text) =>
-                            handleInputChange("locationOfGroom.grewUpIn", text)
+                          setSelected={(val) =>
+                            setGrewUpIn(val)
                           }
-                          data={Stateliving}
+                          data={GrewUpInOptions}
                           save="value"
                           boxStyles={{
                             marginLeft: responsiveWidth(5),
@@ -1972,13 +2097,10 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(text) =>
-                            handleInputChange(
-                              "locationOfGroom.ethnicOrigin",
-                              text
-                            )
+                          setSelected={(val) =>
+                            setEthnicOrigin(val)
                           }
-                          data={Stateliving}
+                          data={EthnicOriginOptions}
                           save="value"
                           boxStyles={{
                             marginLeft: responsiveWidth(5),
@@ -2012,13 +2134,10 @@ const Matrimonys = () => {
                           style={styles.inputText}
                           placeholder="Example: 400072"
                           placeholderTextColor="black"
-                          onChangeText={(text) =>
-                            handleInputChange(
-                              "locationOfGroom.zipPinCode",
-                              text
-                            )
+                          onChangeText={(val) =>
+                            setZipPinCode(val)
                           }
-                          value={profileData.locationOfGroom.zipPinCode}
+                          value={zipPinCode}
                         />
                         <FontAwesome5Icon
                           name="sort-numeric-up-alt"
@@ -2080,12 +2199,9 @@ const Matrimonys = () => {
                           maxLength={40}
                           placeholder="Personality, Family Details, Career, Partner Expectations etc."
                           onChangeText={(text) =>
-                            handleInputChange(
-                              "moreAboutYourselfPartnerAndFamily",
-                              text
-                            )
+                            setMoreAboutYourselfPartnerAndFamily(text)
                           }
-                          value={profileData.moreAboutYourselfPartnerAndFamily}
+                          value={moreAboutYourselfPartnerAndFamily}
                           style={{ padding: 10 }}
                         />
                       </View>
@@ -2112,6 +2228,7 @@ const Matrimonys = () => {
             alignSelf: "center",
             borderColor: "blue",
           }}
+          onPress={() => PostMatri()}
         >
           <Text style={{ color: "white", fontSize: 16, fontWeight: "500" }}>
             Next
@@ -2143,7 +2260,8 @@ const Matrimonys = () => {
 
             alignSelf: "center",
             borderColor: "tomato",
-          }} onPress={()=>navigation.navigate('BottomNav')}
+          }}
+          onPress={() => navigation.navigate("BottomNav")}
         >
           <Text style={{ color: "tomato", fontSize: 16, fontWeight: "500" }}>
             Skip

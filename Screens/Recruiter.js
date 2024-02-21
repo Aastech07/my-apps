@@ -1,148 +1,75 @@
-import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-  Pressable,
-} from "react-native";
-
-import {
-  responsiveWidth,
-  responsiveHeight,
-} from "react-native-responsive-dimensions";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { useState } from "react";
+import React from "react";
+import { View } from "react-native";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Postjobs from "./Jobs/Postjobs";
 import ManagePost from "./Jobs/ManagePost";
-import Animated, {
-  FadeInDown,
-} from "react-native-reanimated";
 import Views from "./Jobs/Views";
-const BottomNav = () => {
-  const [selected, setSelected] = useState(1);
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+const Tab = createMaterialTopTabNavigator();
+
+const ByAndSellNav = () => {
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      {selected == 1 ? (
-        <Postjobs />
-      ) : selected == 2 ? (
-        <ManagePost />
-      ) : selected == 3 ? (
-        <Views />
-      ) : null}
-
-      <View
-        style={{
-          width: responsiveWidth(100),
-          height: 60,
-          backgroundColor: "#fff",
-          position: "absolute",
-          bottom: 0,
-          top: 1,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 100,
-            height: 100,
+    <View style={{ flex: 1 }}>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarLabelStyle: { fontSize: 16 },
+          tabBarStyle: { height: 55 },
+          swipeEnabled: false,
+          tabBarIcon: ({ focused, color }) => {
+            let IconComponent;
+            let iconName;
+            if (route.name === "Post job") {
+              IconComponent = FontAwesome5;
+              iconName = focused ? "briefcase" : "briefcase";
+            } else if (route.name === "Manage Post") {
+              IconComponent = FontAwesome5;
+              iconName = focused ? "list" : "list";
+            } else if (route.name === "View") {
+              IconComponent = FontAwesome5;
+              iconName = focused ? "eye" : "eye-slash";
+            }
+            return <IconComponent name={iconName} size={17} color={color} />;
           },
-          shadowOpacity: 0.6,
-          shadowRadius: 50.0,
-          elevation: 2,
-        }}
+        })}
       >
-        <View style={{ flexDirection: "row", marginTop: 10 }}>
-          <TouchableOpacity onPress={() => setSelected(1)}>
-            <Animated.View
-              style={{
-                position: "absolute",
-                left: responsiveWidth(6),
-                top: 2,
-               
-              }}
-              entering={FadeInDown.duration(500).damping()}
-            >
-              <FontAwesome5
-                name="briefcase"
-                size={20}
-                style={{ alignSelf: "center" }}
-                color={selected == 1 ? "#000" : "gray"}
-              />
-              <Text
-                style={{
-                  alignSelf: "center",
-                  fontSize: 12,
-                  color: selected == 1 ? "#000" : "gray",
-                }}
-              >
-                Post Jobs
-              </Text>
-            </Animated.View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSelected(2)} style={{}}>
-            <Animated.View
-              style={{
-                position: "absolute",
-                left: responsiveWidth(40),
-             
-                top: 3,
-              }}
-              entering={FadeInDown.duration(500).damping()}
-            >
-              <FontAwesome5
-                name="list"
-                size={18}
-                style={{ textAlign: "center" }}
-                color={selected == 2 ? "#000" : "gray"}
-              />
-              <Text
-                style={{
-                  alignSelf: "center",
-                  fontSize: 12,
-                  color: selected == 2 ? "#000" : "gray",
-                }}
-              >
-                Manage Post
-              </Text>
-            </Animated.View>
-          </TouchableOpacity>
+        <Tab.Screen
+          name="Post job"
+          component={Postjobs}
+          options={{
+            tabBarLabelStyle: {
+              fontSize: 10,
+              right: 2,
+              bottom: 5,
+            },
+          }}
+        />
 
-          <TouchableOpacity onPress={() => setSelected(3)}>
-            <Animated.View
-              style={{
-                position: "absolute",
-                left: responsiveWidth(80),
-              
-                top: 5,
-              }}
-              entering={FadeInDown.duration(500).damping()}
-            >
-              <FontAwesome5
-                name="eye"
-                size={18}
-                style={{ alignSelf: "center" }}
-                color={selected == 3 ? "#000" : "gray"}
-              />
-              <Text
-                style={{
-                  alignSelf: "center",
-                  fontSize: 12,
-                  color: selected == 3 ? "#000" : "gray",
-                }}
-              >
-                View
-              </Text>
-            </Animated.View>
-          </TouchableOpacity>
-        </View>
-      </View>
+        <Tab.Screen
+          name="Manage Post"
+          component={ManagePost}
+          options={{
+            tabBarLabelStyle: {
+              fontSize: 10,
+              right: 2.5,
+              bottom: 5,
+            },
+          }}
+        />
+
+        <Tab.Screen
+          name="View"
+          component={Views}
+          options={{
+            tabBarLabelStyle: {
+              fontSize: 10,
+              right: 2.5,
+              bottom: 5,
+            },
+          }}
+        />
+      </Tab.Navigator>
     </View>
   );
 };
-export default BottomNav;
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-});
+
+export default ByAndSellNav;
