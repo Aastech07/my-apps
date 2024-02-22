@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState,  useEffect, useRef } from "react";
 import {
   ImageBackground,
   Text,
   View,
   TouchableOpacity,
-  ScrollView,
 } from "react-native";
 import TinderCard from "react-tinder-card";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -71,44 +70,24 @@ const styles = {
   },
 };
 
-const db = [
-  {
-    name: "Richard Hendricks",
-    img: "https://assets.cntraveller.in/photos/60ba26c0bfe773a828a47146/4:3/w_1440,h_1080,c_limit/Burgers-Mumbai-Delivery.jpg  ",
-  },
-  {
-    name: "Erlich Bachman",
-    img: "https://assets.cntraveller.in/photos/60ba26c0bfe773a828a47146/4:3/w_1440,h_1080,c_limit/Burgers-Mumbai-Delivery.jpg  ",
-  },
-  {
-    name: "Monica Hall",
-    img: "https://assets.cntraveller.in/photos/60ba26c0bfe773a828a47146/4:3/w_1440,h_1080,c_limit/Burgers-Mumbai-Delivery.jpg  ",
-  },
-  {
-    name: "Jared Dunn",
-    img: "https://assets.cntraveller.in/photos/60ba26c0bfe773a828a47146/4:3/w_1440,h_1080,c_limit/Burgers-Mumbai-Delivery.jpg  ",
-  },
-  {
-    name: "Dinesh Chugtai",
-    img: "https://assets.cntraveller.in/photos/60ba26c0bfe773a828a47146/4:3/w_1440,h_1080,c_limit/Burgers-Mumbai-Delivery.jpg  ",
-  },
-];
-
 const alreadyRemoved = [];
-let charactersState = db; // This fixes issues with updating characters state forcing it to use the current state and not the state that was active when the card was created.
 
 const MyMatches = () => {
   const [characters, setCharacters] = useState([]);
   const [lastDirection, setLastDirection] = useState();
   const navigation = useNavigation();
-  const childRefs = useMemo(() => characters.map(() => React.createRef()), []);
+  const childRefs = useRef([]);
+
   const Api = api;
+
   useEffect(() => {
     (async () => {
       try {
         const { data } = await axios.get(`${Api}/matrimonial/profiles`);
         setCharacters(data);
-       
+        childRefs.current = Array(data.length)
+          .fill()
+          .map((_, i) => childRefs.current[i] || React.createRef());
       } catch (error) {
         console.log(error);
       }
@@ -117,6 +96,7 @@ const MyMatches = () => {
 
   const [showLikeIndicator, setShowLikeIndicator] = useState(false);
   const [showNoMatchIndicator, setShowNoMatchIndicator] = useState(false);
+
   const swiped = (direction, nameToDelete) => {
     if (direction === "left") {
       setShowNoMatchIndicator(true);
@@ -129,12 +109,14 @@ const MyMatches = () => {
 
     setLastDirection(direction);
   };
+
   const outOfFrame = (name) => {
     console.log(name + " left the screen!");
     setCharacters((prevCharacters) =>
       prevCharacters.filter((character) => character.name !== name)
     );
   };
+
   const swipe = (dir) => {
     const cardsLeft = characters.filter(
       (person) => !alreadyRemoved.includes(person.name)
@@ -146,9 +128,9 @@ const MyMatches = () => {
         .map((person) => person.name)
         .indexOf(toBeRemoved);
 
-      if (index > -1 && childRefs[index].current) {
+      if (index > -1 && childRefs.current[index].current) {
         alreadyRemoved.push(toBeRemoved);
-        childRefs[index].current.swipe(dir);
+        childRefs.current[index].current.swipe(dir);
       }
     }
   };
@@ -196,23 +178,21 @@ const MyMatches = () => {
 
       <View style={styles.cardContainer}>
         {characters.map((character, index) => (
-          
           <TinderCard
-            ref={childRefs[index]}
+            ref={childRefs.current[index]}
             key={character._id}
             onSwipe={(dir) => swiped(dir, character.profileId.firstName)}
             onCardLeftScreen={() => outOfFrame(character.profileId.firstName)}
           >
-           
             <View style={styles.card}>
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate("Mymatchdata", { data: character })
+                  navigation.navigate("MatrimonyData", { data: character })
                 }
               >
                 <ImageBackground
                   style={styles.cardImage}
-                  source={{ uri: character.images[0]}}
+                  source={{ uri: character.images[0] }}
                 >
                   {showNoMatchIndicator && (
                     <Text

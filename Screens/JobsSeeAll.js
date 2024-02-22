@@ -26,108 +26,6 @@ const JobsSeeAll = () => {
   const navigation = useNavigation();
   const drawer = useRef(null);
 
-  const navigationView = () => (
-    <View style={{ backgroundColor: "#fff" }}>
-      <StatusBar
-        translucent
-        backgroundColor="#4383f2"
-        barStyle="dark-content"
-      />
-      <View style={{ left: 20, top: 100, opacity: 0.6 }}>
-        <FontAwesome name="user" size={22} />
-        <Text
-          style={{
-            position: "absolute",
-            left: 30,
-            fontSize: 18,
-            fontWeight: "500",
-          }}
-        >
-          My Profile
-        </Text>
-      </View>
-      <View style={{ left: 20, top: 125, opacity: 0.6 }}>
-        <FontAwesome name="comment" size={22} />
-        <Text
-          style={{
-            position: "absolute",
-            left: 30,
-            fontSize: 18,
-            fontWeight: "500",
-          }}
-          onPress={() => navigation.navigate("Blog")}
-        >
-          Blog
-        </Text>
-      </View>
-      <View style={{ left: 20, top: 150, opacity: 0.6 }}>
-        <FontAwesome name="money-check-alt" size={22} />
-        <Text
-          style={{
-            position: "absolute",
-            left: 33,
-            fontSize: 18,
-            fontWeight: "500",
-          }}
-        >
-          Trade
-        </Text>
-      </View>
-      <View style={{ left: 20, top: 175, opacity: 0.6 }}>
-        <FontAwesome name="envelope" size={22} />
-        <Text
-          style={{
-            position: "absolute",
-            left: 33,
-            fontSize: 18,
-            fontWeight: "500",
-          }}
-        >
-          Contact Us
-        </Text>
-      </View>
-      <View style={{ left: 20, top: 200, opacity: 0.6 }}>
-        <FontAwesome name="cog" size={22} />
-        <Text
-          style={{
-            position: "absolute",
-            left: 33,
-            fontSize: 18,
-            fontWeight: "500",
-          }}
-        >
-          Setting
-        </Text>
-      </View>
-      <View style={{ left: 20, top: 220, opacity: 0.6 }}>
-        <FontAwesome name="question-circle" size={22} />
-        <Text
-          style={{
-            position: "absolute",
-            left: 33,
-            fontSize: 18,
-            fontWeight: "500",
-          }}
-        >
-          Helps & FAQs
-        </Text>
-      </View>
-      <View style={{ left: 20, top: 238, opacity: 0.6 }}>
-        <FontAwesome name="sign-in-alt" size={22} />
-        <Text
-          style={{
-            position: "absolute",
-            left: 33,
-            fontSize: 18,
-            fontWeight: "500",
-          }}
-        >
-          Sign Out
-        </Text>
-      </View>
-    </View>
-  );
-
   const Image1 =
     "https://communityappintegrate.s3.ap-south-1.amazonaws.com/Event/pexels-matheus-bertelli-2608515.jpg";
   const SaveIcon = "https://cdn-icons-png.flaticon.com/128/5667/5667029.png";
@@ -139,7 +37,6 @@ const JobsSeeAll = () => {
       try {
         const { data } = await axios.get(`${Api}/events`);
         setApiData(data);
-        console.log(data);
       } catch (error) {
         console.log(error);
       }
@@ -162,121 +59,25 @@ const JobsSeeAll = () => {
   }, []);
 
   return (
-    <DrawerLayoutAndroid
-      ref={drawer}
-      drawerWidth={200}
-      drawerPosition={"left"}
-      renderNavigationView={navigationView}
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{ paddingBottom: 130 }}
     >
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 130 }}
-      >
-        <View
-          style={{
-            backgroundColor: "#4383f2",
-            borderBottomStartRadius: 30,
-            borderBottomEndRadius: 30,
-            paddingTop: 100,
-          }}
-        >
-          <FontAwesome
-            name="bell"
-            size={20}
-            color={"#fff"}
-            style={{
-              position: "absolute",
-              left: responsiveWidth(87),
-              top: 50,
-              borderRadius: 50,
-              backgroundColor: "#4383f2",
-              paddingHorizontal: 7,
-              paddingVertical: 5,
-            }}
-          />
-          <FontAwesome5
-            name="message"
-            size={20}
-            color={"#fff"}
-            style={{
-              position: "absolute",
-              left: responsiveWidth(75),
-              top: 50,
-              borderRadius: 50,
-              backgroundColor: "#4383f2",
-              paddingHorizontal: 6,
-              paddingVertical: 5,
-            }}
-          />
+      <View style={{bottom:30}}>
+      
 
-          <Text
-            style={{
-              fontSize: 18,
-              position: "absolute",
-              marginTop: 54,
-              color: "white",
-              fontWeight: "bold",
-              left: 70,
-            }}
-          >
-            Hi, Viraj
-          </Text>
-          <Text
-            onPress={() => drawer.current.openDrawer()}
-            style={{
-              position: "absolute",
-              top: 40,
-              left: 28,
-              fontSize: 30,
-              color: "#fff",
-            }}
-          >
-            ☰
-          </Text>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              bottom: 6,
-            }}
-          >
-            <Text
-              style={{
-                color: "#fff",
-                fontSize: 25,
-                fontWeight: "bold",
-                position: "absolute",
-                top: 135,
-              }}
-            >
-              {" "}
-              ...{" "}
-            </Text>
-          </View>
-        </View>
-        <View>
-          <Text
-            style={{
-              fontSize: 20,
-              position: "absolute",
-              color: "black",
-              fontWeight: "700",
-              left: 10,
-              top: 15,
-            }}
-          >
-            Jobs Nearby You
-          </Text>
-
-          <FlatList
-            style={{ top: 55 }}
-            data={details}
-            showsHorizontalScrollIndicator={false}
-            numColumns={2}
-           
-            renderItem={({ item }) => (
-              <>
-      <TouchableWithoutFeedback onPress={()=>navigation.navigate('JobsDetails',{data:item})} >
+        <FlatList
+          style={{ top: 55 }}
+          data={details}
+          showsHorizontalScrollIndicator={false}
+          numColumns={2}
+          renderItem={({ item }) => (
+            <>
+              <TouchableWithoutFeedback
+                onPress={() =>
+                  navigation.navigate("JobsDetails", { data: item })
+                }
+              >
                 <View
                   style={{
                     backgroundColor: "#0F2167",
@@ -291,7 +92,7 @@ const JobsSeeAll = () => {
                     shadowOpacity: 0.8,
                     shadowRadius: 16.0,
                     elevation: 8,
-                    marginBottom: 100,
+                    marginBottom: 20,
                     marginLeft: 5,
                   }}
                 >
@@ -394,13 +195,12 @@ const JobsSeeAll = () => {
                     <Text>Hybrid</Text>
                   </View>
                 </View>
-                </TouchableWithoutFeedback>
-              </>
-            )}
-          />
-        </View>
-      </ScrollView>
-    </DrawerLayoutAndroid>
+              </TouchableWithoutFeedback>
+            </>
+          )}
+        />
+      </View>
+    </ScrollView>
   );
 };
 

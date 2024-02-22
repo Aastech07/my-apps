@@ -81,13 +81,8 @@ const Managepostdata = () => {
           <Text style={styles.descriptionText}>{Value.contactEmail}</Text>
         </View>
 
-        <View style={styles.buttonContainer}>
-          <View style={styles.button}>
-            <FontAwesome5Icon name="building" size={20} color={"#fff"} />
-          </View>
-        </View>
-
         <View style={styles.companyInfo}>
+        <Text style={styles.sectionTitle}>Company Nmae</Text>
           <Text style={styles.companyName}>{Value.company}</Text>
           <Text style={styles.companyDescription}>
             {Value.companyDescription}
@@ -187,7 +182,7 @@ const styles = StyleSheet.create({
   companyName: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 10,opacity:0.6
   },
   companyDescription: {
     fontSize: 16,

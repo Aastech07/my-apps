@@ -315,7 +315,7 @@ const Search = () => {
   return (
     <ScrollView
       style={{ flex: 1,backgroundColor:'#fff' }}
-      contentContainerStyle={{ paddingBottom: responsiveHeight(40) }}
+      contentContainerStyle={{ paddingBottom: responsiveHeight(50) }}
     >
       <Text
         style={{

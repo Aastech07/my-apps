@@ -65,7 +65,7 @@ const Matrimony = () => {
           component={New}
           options={{
             tabBarLabelStyle: {
-              fontSize: 10,
+              fontSize: 10,right:2.5
             },
           }}
         />

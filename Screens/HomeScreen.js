@@ -71,7 +71,6 @@ const HomeScreen = () => {
       try {
         const { data } = await axios.get(`${Api}/jobs`);
         setDetails(data);
-
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -83,7 +82,6 @@ const HomeScreen = () => {
     (async () => {
       try {
         const { data } = await axios.get(`${Api}/matrimonial/profiles`);
-
         setMatrimonial(data);
         setLoading(false);
       } catch (error) {
@@ -287,7 +285,7 @@ const HomeScreen = () => {
                       top: 25,
                       opacity: 0.9,
                     }}
-                    onPress={() => navigation.navigate("SeeAll ")}
+                    onPress={() => navigation.navigate("Events")}
                   >
                     See All ➤
                   </Text>
@@ -326,7 +324,7 @@ const HomeScreen = () => {
                                   },
                                   shadowOpacity: 0.8,
                                   shadowRadius: 16.0,
-                                  elevation: 8,
+                                  elevation: 6,
                                 }}
                               >
                                 <Image
@@ -377,11 +375,11 @@ const HomeScreen = () => {
                                 <View
                                   style={{
                                     position: "absolute",
-                                    top: 215,
+                                    top: 210,
                                     left: 30,
                                   }}
                                 >
-                                  <Text style={{}}>📍 Mumbai, Maharastra</Text>
+                                  <Text style={{}}>📍{item.address}</Text>
                                 </View>
 
                                 <View
@@ -441,7 +439,7 @@ const HomeScreen = () => {
                         left: responsiveWidth(80),
                         opacity: 0.9,
                       }}
-                      onPress={() => navigation.navigate("JobsSeeAll")}
+                      onPress={() => navigation.navigate("jobs")}
                     >
                       See All ➤
                     </Text>
@@ -612,7 +610,7 @@ const HomeScreen = () => {
                           left: responsiveWidth(80),
                           opacity: 0.9,
                         }}
-                        onPress={() => navigation.navigate("MatrimonySeeAll")}
+                        onPress={() => navigation.navigate("matrimonys")}
                       >
                         See All ➤
                       </Text>
@@ -648,7 +646,7 @@ const HomeScreen = () => {
                             >
                               <TouchableWithoutFeedback
                                 onPress={() =>
-                                  navigation.navigate("Mymatchdata", {
+                                  navigation.navigate("MatrimonyData", {
                                     data: item,
                                   })
                                 }
@@ -707,7 +705,9 @@ const HomeScreen = () => {
                                     color: "#000",
                                     fontSize: 10,
                                   }}
-                                ></Text>
+                                >
+                                  {item.profileId.maritalStatus}
+                                </Text>
                               </View>
 
                               <View
@@ -721,7 +721,9 @@ const HomeScreen = () => {
                                   borderRadius: 10,
                                 }}
                               >
-                                <Text style={{}}>📍{} </Text>
+                                <Text style={{}}>
+                                  📍{item.profileId.address.country}
+                                </Text>
                               </View>
                             </View>
                           </View>

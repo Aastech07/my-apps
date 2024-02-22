@@ -17,7 +17,6 @@ import MatrimonySeeAll from "./Screens/Matrimony/MatrimonySeeAll";
 import ProfileScreen from "./Screens/ProfileScreen";
 import Calendars from "./Screens/Calendars";
 import OtpScreen from "./Screens/AuthFile/OtpScreen";
-import Mymatchdata from "./Screens/MemberSearch/MemberProfile";
 import Jobsfirstscreen from "./Screens/Jobsfirstscreen";
 import Recruiter from "./Screens/Recruiter";
 import Managepostdata from "./Screens/Jobs/Managepostdata";
@@ -61,6 +60,7 @@ import FurnitureDetail from "./Screens/By&Sell/SellDetails/FurnitureDetail";
 import ManageViewDetails from "./Screens/Propertylist/ManageViewDetails";
 import ManageViewDetail from "./Screens/By&Sell/ManageViewDetails";
 import BlogDetails from "./Screens/Blogs/BlogDetails";
+import MatrimonyData from "./Screens/Matrimony/MatrimonyData";
 function App() {
   const [data, setData] = React.useState();
   useEffect(() => {
@@ -173,8 +173,8 @@ function App() {
               component={EventsDetails}
             />
             <Stack.Screen
-              name="SeeAll "
-              options={{ headerShown: false }}
+              name="Events"
+              options={{ headerShown: true }}
               component={SeeAll}
             />
 
@@ -194,13 +194,13 @@ function App() {
               component={Blog}
             />
             <Stack.Screen
-              name="JobsSeeAll"
-              options={{ headerShown: false }}
+              name="jobs"
+              options={{ headerShown: true }}
               component={JobsSeeAll}
             />
             <Stack.Screen
-              name="MatrimonySeeAll"
-              options={{ headerShown: false }}
+              name="matrimonys"
+              options={{ headerShown: true }}
               component={MatrimonySeeAll}
             />
             <Stack.Screen
@@ -213,11 +213,7 @@ function App() {
               options={{ headerShown: false }}
               component={Calendars}
             />
-            <Stack.Screen
-              name="Mymatchdata"
-              options={{ headerShown: false }}
-              component={Mymatchdata}
-            />
+          
             <Stack.Screen
               name="Matrimony"
               options={{ headerShown: false }}
@@ -387,6 +383,13 @@ function App() {
               options={{ headerShown: true }}
               component={BlogDetails}
             />
+
+            <Stack.Screen
+              name="MatrimonyData"
+              options={{ headerShown: false }}
+              component={MatrimonyData}
+            />
+
             <Stack.Screen name="directroy" component={Directroydata} />
 
             <Stack.Screen name="Verification" component={OtpScreen} />

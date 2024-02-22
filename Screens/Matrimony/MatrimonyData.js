@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Share,
+  Image,
+} from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { ChevronLeftIcon } from "react-native-heroicons/outline";
 
@@ -13,33 +20,37 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { StatusBar } from "react-native";
 import {
   responsiveFontSize,
-  responsiveHeight,
   responsiveWidth,
 } from "react-native-responsive-dimensions";
-import * as Sharing from "expo-sharing";
-const Mymatchdata = () => {
+
+const MatrimonyData = () => {
   const navigation = useNavigation();
   const Data = useRoute();
   const Value = Data.params.data;
   const [show, setShow] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    try {
-      const value = Value.somePropertyThatMightNotExist;
-      console.log("Value:", value);
-    } catch (error) {
-      handleError(error);
-    }
-  }, []);
-
-  const handleError = (error) => {
-    console.error("Error:", error);
-    setError(error);
-  };
 
   const handleNavigateBack = () => {
-    navigation.goBack("EventsDetails");
+    navigation.goBack();
+  };
+
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message:
+          "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg",
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
   };
 
   const calculateAge = (dateOfBirth) => {
@@ -102,16 +113,19 @@ const Mymatchdata = () => {
             bottom: 400,
             padding: 5,
             borderRadius: 50,
-            shadowColor: "black",
-            shadowOpacity: 0.9,
             left: responsiveWidth(35),
             shadowRadius: 50,
-            elevation: 6,
+            elevation: 2,
             marginTop: 10,
           }}
         >
           <TouchableOpacity>
-            <FontAwesome5 name="camera" color={"#fff"} size={17} style={{}} />
+            <FontAwesome5
+              name="camera"
+              color={"#f2f2f2"}
+              size={17}
+              style={{}}
+            />
           </TouchableOpacity>
         </Animated.View>
 
@@ -119,19 +133,15 @@ const Mymatchdata = () => {
           entering={FadeInRight.duration(500).damping()}
           style={{
             bottom: 390,
-            padding: 5,
-            borderRadius: 50,
-            shadowColor: "black",
-            shadowOpacity: 0.9,
+
             left: responsiveWidth(33),
-            shadowRadius: 50,
-            elevation: 6,
           }}
         >
-          <TouchableOpacity>
-            <Text style={{ color: "#fff", fontSize: 25, position: "absolute" }}>
-              ...
-            </Text>
+          <TouchableOpacity onPress={() => onShare()}>
+            <Image
+              source={require("/Community/my-apps/my-apps/assets/share.png")}
+              style={{ width: 20, height: 22, top: 10, left: 10, opacity: 0.4 }}
+            />
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -146,9 +156,7 @@ const Mymatchdata = () => {
           size={18}
           style={{ position: "absolute", left: -25, top: 3 }}
         />
-        <Text style={{ fontWeight: "600", fontSize: 16, color: "#fff" }}>
-       
-        </Text>
+        <Text style={{ fontWeight: "600", fontSize: 16, color: "#fff" }}></Text>
         <Text
           style={{
             fontWeight: "600",
@@ -159,7 +167,7 @@ const Mymatchdata = () => {
             left: -20,
           }}
         >
-           yrs, 5'2" .
+          yrs, 5'2" .
         </Text>
         <Text
           style={{
@@ -180,17 +188,7 @@ const Mymatchdata = () => {
             position: "absolute",
             left: -20,
           }}
-        >
-          {Value.locationOfGroom && Value.locationOfGroom.countryLivingIn
-            ? `${Value.locationOfGroom.countryLivingIn},`
-            : null}
-          {Value.locationOfGroom && Value.locationOfGroom.cityLivingIn
-            ? `${Value.locationOfGroom.cityLivingIn},`
-            : null}
-          {Value.locationOfGroom && Value.locationOfGroom.stateLivingIn
-            ? `${Value.locationOfGroom.stateLivingIn}`
-            : null}
-        </Text>
+        ></Text>
       </Animated.View>
 
       <View style={{ bottom: 100 }}>
@@ -444,7 +442,7 @@ const Mymatchdata = () => {
               borderColor: "green",
             }}
           >
-           yrs old
+            yrs old
           </Text>
 
           <Text
@@ -483,9 +481,7 @@ const Mymatchdata = () => {
             <Text style={{ fontSize: 13, left: 10 }}>Birth Date</Text>
             <Text
               style={{ fontSize: 15, left: 45, position: "absolute", top: 15 }}
-            >
-              
-            </Text>
+            ></Text>
           </View>
 
           <View style={{ flexDirection: "row", right: 90, marginTop: 20 }}>
@@ -533,17 +529,7 @@ const Mymatchdata = () => {
             <Text style={{ fontSize: 13, left: 10 }}>Lives in</Text>
             <Text
               style={{ fontSize: 15, left: 45, position: "absolute", top: 15 }}
-            >
-              {Value.locationOfGroom && Value.locationOfGroom.countryLivingIn
-                ? `${Value.locationOfGroom.countryLivingIn},`
-                : null}
-              {Value.locationOfGroom && Value.locationOfGroom.cityLivingIn
-                ? `${Value.locationOfGroom.cityLivingIn},`
-                : null}
-              {Value.locationOfGroom && Value.locationOfGroom.stateLivingIn
-                ? `${Value.locationOfGroom.stateLivingIn}`
-                : null}
-            </Text>
+            ></Text>
           </View>
 
           <View style={{ flexDirection: "row", right: 55, marginTop: 20 }}>
@@ -941,4 +927,4 @@ const Mymatchdata = () => {
   );
 };
 
-export default Mymatchdata;
+export default MatrimonyData;

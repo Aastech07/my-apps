@@ -89,7 +89,7 @@ const New = () => {
                 >
                   <TouchableWithoutFeedback
                     onPress={() =>
-                      navigation.navigate("Mymatchdata", { data: item })
+                      navigation.navigate("MatrimonyData", { data: item })
                     }
                   >
                     <View
@@ -165,9 +165,9 @@ const New = () => {
                             left: -20,
                           }}
                         >
-                          {item.locationOfGroom.countryLivingIn},Digambar .{" "}
-                          {item.locationOfGroom.cityLivingIn},
-                          {item.locationOfGroom.stateLivingIn}
+                          
+                          
+
                         </Text>
                       </Animated.View>
                       <Animated.View
