@@ -16,7 +16,9 @@ const ManageViewDetail = () => {
       <View style={styles.container}>
         <View style={styles.sliderContainer}>
           <SliderBox
-            images={propertyData.images || []}
+            images={
+              Array.isArray(propertyData.images) ? propertyData.images : []
+            }
             sliderBoxHeight={200}
             dotColor="#F2f2f2"
             inactiveDotColor="#ffff"
@@ -36,64 +38,6 @@ const ManageViewDetail = () => {
             <FontAwesome5 name="info-circle" style={[styles.icon]} />
             {propertyData.adTitle}
           </Text>
-          <View style={styles.infoContainer}>
-            <FontAwesome5 name="align-left" style={styles.icon} />
-            <Text style={[styles.infoText, { paddingBottom: 6, left: 5 }]}>
-              {propertyData.description}
-            </Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <FontAwesome5 name="dollar-sign" style={styles.icon} />
-            <Text style={styles.infoText}>Price: ${propertyData.price}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <FontAwesome5 name="map-marker-alt" style={styles.icon} />
-            <Text style={styles.infoText}>Address: {propertyData.address}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <FontAwesome5 name="building" style={styles.icon} />
-            <Text style={styles.infoText}>Brand: {propertyData.brand}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <FontAwesome5 name="calendar" style={styles.icon} />
-            <Text style={styles.infoText}>Year: {propertyData.year}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <FontAwesome5 name="car" style={styles.icon} />
-            <Text style={styles.infoText}>
-              Car Number: {propertyData.number}
-            </Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <FontAwesome5 name="gas-pump" style={styles.icon} />
-            <Text style={styles.infoText}>
-              FuelType: {propertyData.fuelType}
-            </Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <FontAwesome5 name="compass" style={styles.icon} />
-            <Text style={styles.infoText}>
-              Transmission: {propertyData.transmission}
-            </Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <FontAwesome5 name="road" style={styles.icon} />
-            <Text style={styles.infoText}>
-              km Driven: {propertyData.kmDriven}
-            </Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <FontAwesome5 name="map-pin" style={styles.icon} />
-            <Text style={styles.infoText}>
-              Landmark: {propertyData.landmark}
-            </Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <FontAwesome5 name="users" style={styles.icon} />
-            <Text style={styles.infoText}>
-              Number Of Owners: {propertyData.numberOfOwners}
-            </Text>
-          </View>
         </View>
       </View>
     </ScrollView>

@@ -18,7 +18,6 @@ const ManageViewDetails = () => {
           <View
             style={{
               backgroundColor: "#fff",
-
               shadowColor: "#000",
               shadowOpacity: 0.6,
               shadowRadius: 10,
@@ -27,7 +26,7 @@ const ManageViewDetails = () => {
             }}
           >
             <SliderBox
-              images={propertyData.image}
+              images={propertyData.image || []}
               sliderBoxHeight={200}
               dotColor="#F2f2f2"
               inactiveDotColor="#ffff"

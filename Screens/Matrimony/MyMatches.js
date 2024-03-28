@@ -1,298 +1,311 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  ImageBackground,
-  Text,
   View,
+  StyleSheet,
+  Text,
+  Image,
+  FlatList,
+  TouchableWithoutFeedback,
   TouchableOpacity,
-  ScrollView,
+  TextInput,
 } from "react-native";
-import TinderCard from "react-tinder-card";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import {
-  responsiveHeight,
   responsiveWidth,
+  responsiveHeight,
 } from "react-native-responsive-dimensions";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { ScrollView } from "react-native-virtualized-view";
+import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../Api";
-import axios from "axios";
-
-const styles = {
-  container: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
-  },
-  header: {
-    color: "#000",
-    fontSize: 23,
-    marginBottom: 30,
-    right: 90,
-    top: 15,
-  },
-  cardContainer: {
-    width: "100%",
-    maxWidth: 260,
-    height: 300,
-  },
-  card: {
-    position: "absolute",
-    backgroundColor: "#fff",
-    width: responsiveWidth(100),
-    maxWidth: responsiveWidth(90),
-    height: responsiveHeight(60),
-    shadowColor: "black",
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    borderRadius: 20,
-    resizeMode: "cover",
-    alignSelf: "center",
-    top: 10,
-  },
-  cardImage: {
-    width: "100%",
-    height: "100%",
-    overflow: "hidden",
-    borderRadius: 20,
-  },
-  cardTitle: {
-    position: "absolute",
-    bottom: 0,
-    margin: 10,
-    color: "#fff",
-  },
-  buttons: {
-    zIndex: -100,
-  },
-  infoText: {
-    height: 28,
-    justifyContent: "center",
-    display: "flex",
-    zIndex: -100,
-  },
-};
-
-const db = [
-  {
-    name: "Richard Hendricks",
-    img: "https://assets.cntraveller.in/photos/60ba26c0bfe773a828a47146/4:3/w_1440,h_1080,c_limit/Burgers-Mumbai-Delivery.jpg  ",
-  },
-  {
-    name: "Erlich Bachman",
-    img: "https://assets.cntraveller.in/photos/60ba26c0bfe773a828a47146/4:3/w_1440,h_1080,c_limit/Burgers-Mumbai-Delivery.jpg  ",
-  },
-  {
-    name: "Monica Hall",
-    img: "https://assets.cntraveller.in/photos/60ba26c0bfe773a828a47146/4:3/w_1440,h_1080,c_limit/Burgers-Mumbai-Delivery.jpg  ",
-  },
-  {
-    name: "Jared Dunn",
-    img: "https://assets.cntraveller.in/photos/60ba26c0bfe773a828a47146/4:3/w_1440,h_1080,c_limit/Burgers-Mumbai-Delivery.jpg  ",
-  },
-  {
-    name: "Dinesh Chugtai",
-    img: "https://assets.cntraveller.in/photos/60ba26c0bfe773a828a47146/4:3/w_1440,h_1080,c_limit/Burgers-Mumbai-Delivery.jpg  ",
-  },
-];
-
-const alreadyRemoved = [];
-let charactersState = db; // This fixes issues with updating characters state forcing it to use the current state and not the state that was active when the card was created.
+import Animated, { FadeInLeft, FadeInRight } from "react-native-reanimated";
+import SearchBar from "react-native-dynamic-search-bar";
 
 const MyMatches = () => {
-  const [characters, setCharacters] = useState([]);
-  const [lastDirection, setLastDirection] = useState();
-  const navigation = useNavigation();
-  const childRefs = useMemo(() => characters.map(() => React.createRef()), []);
   const Api = api;
+  const navigation = useNavigation();
+  const [apidata, setApiData] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+
   useEffect(() => {
     (async () => {
       try {
         const { data } = await axios.get(`${Api}/matrimonial/profiles`);
-        setCharacters(data);
-       
+        setApiData(data);
+        setFilteredData(data); // Initialize filtered data with all data
       } catch (error) {
         console.log(error);
       }
     })();
   }, []);
 
-  const [showLikeIndicator, setShowLikeIndicator] = useState(false);
-  const [showNoMatchIndicator, setShowNoMatchIndicator] = useState(false);
-  const swiped = (direction, nameToDelete) => {
-    if (direction === "left") {
-      setShowNoMatchIndicator(true);
-      setShowNoMatchIndicator(false);
-    } else if (direction === "right") {
-      setShowLikeIndicator(true);
-      setShowLikeIndicator(false);
-      console.warn(showLikeIndicator);
+  const calculateAge = (dateOfBirth) => {
+    const birthDate = new Date(dateOfBirth);
+    const currentDate = new Date();
+    const age = currentDate.getFullYear() - birthDate.getFullYear();
+    if (
+      currentDate.getMonth() < birthDate.getMonth() ||
+      (currentDate.getMonth() === birthDate.getMonth() &&
+        currentDate.getDate() < birthDate.getDate())
+    ) {
+      return age - 1;
+    } else {
+      return age;
     }
-
-    setLastDirection(direction);
   };
-  const outOfFrame = (name) => {
-    console.log(name + " left the screen!");
-    setCharacters((prevCharacters) =>
-      prevCharacters.filter((character) => character.name !== name)
+
+  // Function to handle search input and filter data
+  const handleSearch = (text) => {
+    setSearchInput(text);
+    const filtered = apidata.filter(
+      (item) =>
+        item.profileId.address.street
+          .toLowerCase()
+          .includes(text.toLowerCase()) ||
+        item.profileId.address.city
+          .toLowerCase()
+          .includes(text.toLowerCase()) ||
+        item.profileId.address.state
+          .toLowerCase()
+          .includes(text.toLowerCase()) ||
+        item.profileId.address.country
+          .toLowerCase()
+          .includes(text.toLowerCase()) ||
+        item.profileId.address.postalCode
+          .toLowerCase()
+          .includes(text.toLowerCase()) ||
+        (
+          item.profileId.firstName.toLowerCase() +
+          " " +
+          item.profileId.lastName.toLowerCase()
+        ).includes(text.toLowerCase())
     );
+    setFilteredData(filtered);
   };
-  const swipe = (dir) => {
-    const cardsLeft = characters.filter(
-      (person) => !alreadyRemoved.includes(person.name)
-    );
-
-    if (cardsLeft.length) {
-      const toBeRemoved = cardsLeft[cardsLeft.length - 1].name;
-      const index = characters
-        .map((person) => person.name)
-        .indexOf(toBeRemoved);
-
-      if (index > -1 && childRefs[index].current) {
-        alreadyRemoved.push(toBeRemoved);
-        childRefs[index].current.swipe(dir);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (characters.length === 0) {
-      setCharacters(characters);
-      alreadyRemoved.length = 0;
-    }
-  }, [characters]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Nearby You</Text>
-
+    <View
+      style={{ flex: 1, backgroundColor: "#fff" }}
+      contentContainerStyle={{ paddingBottom: 130 }}
+    >
       <View
         style={{
-          position: "absolute",
-          top: responsiveHeight(1.5),
-          left: responsiveWidth(95),
+          backgroundColor: "#ffff",
+          shadowColor: "#000",
+          shadowOffset: 0.5,
+          shadowOpacity: 0.6,
+          shadowRadius: 10,
+          elevation: 2,
+          padding: 10,
         }}
       >
-        <TouchableOpacity
-          style={{ position: "absolute" }}
-          onPress={() => navigation.navigate("Search")}
-        >
-          <FontAwesome5
-            name="filter"
-            style={{
-              right: 20,
-              backgroundColor: "#fff",
-              padding: 10,
-              position: "absolute",
-              borderRadius: 10,
-              shadowColor: "#000",
-              shadowOpacity: 0.6,
-              shadowRadius: 10,
-              elevation: 3,
-            }}
-            size={16}
-            color={"blue"}
-          />
-        </TouchableOpacity>
+        <SearchBar
+          placeholder="Search here"
+          onChangeText={handleSearch}
+          value={searchInput}
+        />
       </View>
 
-      <View style={styles.cardContainer}>
-        {characters.map((character, index) => (
-          
-          <TinderCard
-            ref={childRefs[index]}
-            key={character._id}
-            onSwipe={(dir) => swiped(dir, character.profileId.firstName)}
-            onCardLeftScreen={() => outOfFrame(character.profileId.firstName)}
-          >
-           
-            <View style={styles.card}>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("Mymatchdata", { data: character })
-                }
-              >
-                <ImageBackground
-                  style={styles.cardImage}
-                  source={{ uri: character.images[0]}}
+      <ScrollView style={{ top: 10 }} contentContainerStyle={{}}>
+        <View style={{ flex: 1, marginTop: responsiveHeight(9) }}>
+          <FlatList
+            style={{}}
+            data={filteredData} // Render filtered data
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <>
+                <View
+                  style={{
+                    alignSelf: "center",
+                  }}
                 >
-                  {showNoMatchIndicator && (
-                    <Text
+                  <TouchableWithoutFeedback
+                    onPress={() =>
+                      navigation.navigate("MatrimonyData", { data: item })
+                    }
+                  >
+                    <View
                       style={{
-                        color: "green",
-                        backgroundColor: "green",
+                        shadowColor: "black",
+                        shadowOpacity: 0.9,
+                        shadowRadius: 50,
+                        elevation: 20,
+                        marginTop: 18,
                       }}
                     >
-                      No Match
-                    </Text>
-                  )}
-                  {showLikeIndicator && (
-                    <Text
-                      style={{
-                        color: "green",
-                        backgroundColor: "#fff",
-                      }}
-                    >
-                      Like
-                    </Text>
-                  )}
-                  <Text style={styles.cardTitle}>
-                    {character.profileId.firstName}
-                  </Text>
-                </ImageBackground>
-              </TouchableOpacity>
-            </View>
-          </TinderCard>
-        ))}
-      </View>
-      <View
-        style={{
-          backgroundColor: "#fff",
-          alignSelf: "center",
-          borderRadius: 50,
-          shadowColor: "#000",
-          shadowOffset: 50,
-          shadowOpacity: 0.9,
-          shadowRadius: 50,
-          elevation: 3,
-          paddingHorizontal: 12,
-          paddingVertical: 6,
-          left: responsiveWidth(20),
-          top: responsiveHeight(67),
-          position: "absolute",
-        }}
-      >
-        <TouchableOpacity onPress={() => swipe("left")}>
-          <FontAwesome5 name="times" style={{}} size={30} color={"blue"} />
-        </TouchableOpacity>
-      </View>
+                      <Image
+                        source={{ uri: item.images[0] }}
+                        style={{
+                          width: responsiveWidth(90),
+                          height: responsiveHeight(60),
+                          bottom: 52,
+                          marginTop: -20,
+                          borderRadius: 10,
+                          alignSelf: "center",
+                        }}
+                      />
 
-      <View
-        style={{
-          backgroundColor: "#fff",
-          alignSelf: "center",
-          borderRadius: 50,
-          shadowColor: "#000",
-          shadowOffset: 50,
-          shadowOpacity: 0.9,
-          shadowRadius: 50,
-          elevation: 3,
-          paddingHorizontal: 12,
-          paddingVertical: 11,
-          left: responsiveWidth(70),
-          top: responsiveHeight(67),
-          position: "absolute",
-        }}
-      >
-        <TouchableOpacity onPress={() => swipe("right")}>
-          <FontAwesome5
-            name="heart"
-            style={{ alignSelf: "center" }}
-            size={20}
-            color={"red"}
+                      <Animated.View
+                        entering={FadeInLeft.duration(500).damping()}
+                        style={{ left: responsiveWidth(13), bottom: 200 }}
+                      >
+                        <FontAwesome5
+                          name="check-circle"
+                          color={"green"}
+                          size={18}
+                          style={{ position: "absolute", left: -25, top: 3 }}
+                        />
+                        <Text
+                          style={{
+                            fontWeight: "600",
+                            fontSize: 16,
+                            color: "#fff",
+                          }}
+                        >
+                          {item.profileId.firstName} {item.profileId.lastName}
+                        </Text>
+                        <Text
+                          style={{
+                            fontWeight: "600",
+                            fontSize: 14,
+                            color: "#fff",
+                            top: 29,
+                            position: "absolute",
+                            left: -20,
+                          }}
+                        >
+                          {calculateAge(item.profileId.dateOfBirth)} yrs, 5'2" .
+                        </Text>
+                        <Text
+                          style={{
+                            fontWeight: "600",
+                            fontSize: 14,
+                            color: "#fff",
+                            top: 28,
+                            position: "absolute",
+                            left: 60,
+                          }}
+                        >
+                          {/*item.educationAndCareer.workingWith*/}
+                        </Text>
+                        <Text
+                          style={{
+                            fontWeight: "600",
+                            fontSize: 14,
+                            color: "#fff",
+                            top: 55,
+                            position: "absolute",
+                            left: -20,
+                          }}
+                        ></Text>
+                      </Animated.View>
+                      <Animated.View
+                        entering={FadeInRight.duration(500).damping()}
+                        style={{
+                          position: "absolute",
+                          left: responsiveWidth(75),
+                        }}
+                      >
+                        <TouchableOpacity style={{}}>
+                          <Text
+                            style={{
+                              color: "#fff",
+                              fontSize: 35,
+                              bottom: 60,
+                            }}
+                          >
+                            ...
+                          </Text>
+                        </TouchableOpacity>
+                      </Animated.View>
+                      <View
+                        style={{
+                          borderWidth: 0.5,
+                          paddingHorizontal: responsiveWidth(44),
+                          alignSelf: "center",
+                          top: responsiveHeight(-17),
+                          borderColor: "#fff",
+                          opacity: 0.8,
+                        }}
+                      ></View>
+                      <View style={{ bottom: responsiveHeight(15), left: 30 }}>
+                        <Text style={{ color: "#fff", fontWeight: 500 }}>
+                          Like this Profile?
+                        </Text>
+                        <Text
+                          style={{
+                            color: "lightblue",
+                            fontWeight: 500,
+                            position: "absolute",
+                            left: 120,
+                            fontSize: 17,
+                            bottom: 1,
+                          }}
+                        >
+                          Connect Now
+                        </Text>
+                        <TouchableOpacity
+                          style={{
+                            backgroundColor: "pink",
+                            position: "absolute",
+                            shadowColor: "#000",
+                            shadowOpacity: 0.6,
+                            shadowRadius: 10,
+                            elevation: 20,
+                            padding: 10,
+                            left: responsiveWidth(64),
+                            bottom: 10,
+                            borderRadius: 50,
+                          }}
+                        >
+                          <FontAwesome5
+                            name="check"
+                            size={30}
+                            style={{}}
+                            color={"#fff"}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </TouchableWithoutFeedback>
+                </View>
+              </>
+            )}
+            showsHorizontalScrollIndicator={false}
           />
-        </TouchableOpacity>
-      </View>
+        </View>
+      </ScrollView>
     </View>
   );
 };
 
 export default MyMatches;
+
+const styles = StyleSheet.create({
+  inputView: {
+    width: "90%",
+    backgroundColor: "#fff",
+    borderRadius: 50,
+    height: 50,
+    marginBottom: 20,
+    justifyContent: "center",
+    padding: 20,
+    top: responsiveHeight(6),
+    alignSelf: "center",
+    shadowColor: "#984065",
+    shadowOffset: {
+      width: 0,
+      height: 50,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 16.0,
+    elevation: 5,
+    paddingLeft: 30,
+    paddingRight: 50,
+  },
+  inputText: {
+    height: 50,
+    color: "black",
+  },
+});

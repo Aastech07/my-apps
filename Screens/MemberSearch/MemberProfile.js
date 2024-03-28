@@ -119,19 +119,14 @@ const Mymatchdata = () => {
           style={{
             bottom: 390,
             padding: 5,
-            borderRadius: 50,
-            shadowColor: "black",
-            shadowOpacity: 0.9,
+          
+         
             left: responsiveWidth(33),
-            shadowRadius: 50,
-            elevation: 6,
+           
+
           }}
         >
-          <TouchableOpacity onPress={{}}>
-            <Text style={{ color: "#fff", fontSize: 25, position: "absolute" }}>
-              ...
-            </Text>
-          </TouchableOpacity>
+        
         </Animated.View>
       </View>
 
@@ -702,7 +697,7 @@ const Mymatchdata = () => {
             <Text
               style={{ fontSize: 15, left: 48, position: "absolute", top: 15 }}
             >
-              {Value.collegeAttended}
+              {Value?.collegeAttended}
             </Text>
           </View>
         </View>

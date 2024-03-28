@@ -20,6 +20,7 @@ import { api } from "../../Api";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ImagePicker } from "expo-image-multiple-picker";
+import { useRoute } from "@react-navigation/native";
 const BikeDetails = () => {
   const [brand, setBrand] = useState("");
   const [year, setYears] = useState("");
@@ -37,6 +38,10 @@ const BikeDetails = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalVisible1, setModalVisible1] = useState(false);
   const [profileid, setProfileid] = useState("");
+
+  const Data = useRoute();
+  const Value = Data.params?.data;
+  const Num = Data.params?.num;
 
   const handleSave = (selectedAssets) => {
     setAssets(selectedAssets);
@@ -59,6 +64,24 @@ const BikeDetails = () => {
   };
 
   useEffect(() => {
+    const getproperties = async () => {
+      const { data } = await axios.get(`${api}/bikes/${Value._id}`);
+      setBrand(data.brand);
+      setAdTitle(data.adTitle);
+      setDescription(data.description);
+      setPrice(data.price);
+      setAddress(data.address);
+      setLandmark(data.landmark);
+      setYears(data.year);
+      setNumber(data.number);
+      setDriven(data.kmDriven);
+      setNumberofOwners(data.numberOfOwners);
+      setSelectedImage(data.images);
+    };
+    getproperties();
+  }, []);
+
+  useEffect(() => {
     const getData = async () => {
       try {
         const value = await AsyncStorage.getItem("profileid");
@@ -73,7 +96,6 @@ const BikeDetails = () => {
   }, []);
 
   const POSTPRO = async () => {
-   
     try {
       const { data } = await axios.post(`${api}/bikes`, {
         profileId: profileid,
@@ -82,7 +104,7 @@ const BikeDetails = () => {
         number: number,
         kmDriven: driven,
         numberOfOwners: numberofOwners,
-        adTitle: "Bike",
+        adTitle: adtitle,
         description: description,
         price: price,
         address: address,
@@ -91,6 +113,50 @@ const BikeDetails = () => {
       });
       console.warn(data);
       // ToastAndroid.show("Your Property Add !", ToastAndroid.SHORT);
+    } catch (error) {
+      console.log("Error during login:", error.message);
+    }
+  };
+
+  useEffect(()=>{
+    const getproperties = async()=>{
+       const {data} = await axios.get(`${api}/bikes/${Value._id}`)
+       setBrand(data.brand);
+       setYears(data.year);
+       setNumber(data.number);
+       setDriven(data.kmDriven);
+       setNumberofOwners(data.numberOfOwners);
+       setAdTitle(data.adTitle);
+       setDescription(data.description);
+       setPrice(data.price);
+       setAddress(data.address);
+       setLandmark(data.landmark);
+       setSelectedImage(data.images)
+     }
+     getproperties()
+   },[])
+
+
+
+  const POSTPROS = async () => {
+    try {
+      const { data } = await axios.put(`${api}/bikes/${Value._id}`, {
+        brand: brand,
+        adTitle: adtitle,
+        description: description,
+        price: price, brand: brand,
+        year: year,
+        number: number,
+        kmDriven: driven,
+        numberOfOwners: numberofOwners,
+        adTitle: adtitle,
+        description: description,
+        price: price,
+        address: address,
+        landmark: landmark,
+        images: selectedImage,
+      });
+      console.warn(data);
     } catch (error) {
       console.log("Error during login:", error.message);
     }
@@ -177,7 +243,6 @@ const BikeDetails = () => {
           </View>
         </View>
 
-        
         <View style={{ bottom: 40 }}>
           <View style={{ bottom: 130 }}>
             <Text
@@ -454,22 +519,30 @@ const BikeDetails = () => {
       </ScrollView>
 
       <View style={{ paddingBottom: 20 }}>
-        <TouchableOpacity style={styles.loginBtn} onPress={() => POSTPRO()}>
-          <Text style={{ color: "white", fontSize: 18, fontWeight: "500" }}>
-            Post
-          </Text>
-          <FontAwesome5Icon
-            name="arrow-right"
-            style={{
-              position: "absolute",
-              left: 215,
-              backgroundColor: "#3D56F0",
-              padding: 12,
-              borderRadius: 50,
-              color: "#fff",
-            }}
-          />
-        </TouchableOpacity>
+        {Num == 1 ? (
+          <TouchableOpacity style={styles.loginBtn1} onPress={() => POSTPROS()}>
+            <Text style={{ color: "tomato", fontSize: 18, fontWeight: "500" }}>
+              Update
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.loginBtn} onPress={() => POSTPRO()}>
+            <Text style={{ color: "white", fontSize: 18, fontWeight: "500" }}>
+              Post
+            </Text>
+            <FontAwesome5Icon
+              name="arrow-right"
+              style={{
+                position: "absolute",
+                left: 215,
+                backgroundColor: "#3D56F0",
+                padding: 12,
+                borderRadius: 50,
+                color: "#fff",
+              }}
+            />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -525,5 +598,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
+  },
+  loginBtn1: {
+    width: "88%",
+
+    borderRadius: 5,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 50,
+
+    alignSelf: "center",
+    top: 10,
+    borderWidth: 1,
+    borderColor: "tomato",
   },
 });

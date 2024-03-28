@@ -19,25 +19,26 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../Api";
 import Animated, { FadeInLeft, FadeInRight } from "react-native-reanimated";
-
+import SearchBar from "react-native-dynamic-search-bar";
 
 const Nearby = () => {
   const Api = api;
   const navigation = useNavigation();
   const [apidata, setApiData] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
     (async () => {
       try {
         const { data } = await axios.get(`${Api}/matrimonial/profiles`);
         setApiData(data);
+        setFilteredData(data); // Initialize filtered data with all data
       } catch (error) {
         console.log(error);
       }
     })();
   }, []);
-
-
 
   const calculateAge = (dateOfBirth) => {
     const birthDate = new Date(dateOfBirth);
@@ -54,100 +55,58 @@ const Nearby = () => {
     }
   };
 
+  // Function to handle search input and filter data
+  const handleSearch = (text) => {
+    setSearchInput(text);
+    const filtered = apidata.filter(
+      (item) =>
+        item.profileId.address.street
+          .toLowerCase()
+          .includes(text.toLowerCase()) ||
+        item.profileId.address.city
+          .toLowerCase()
+          .includes(text.toLowerCase()) ||
+        item.profileId.address.state
+          .toLowerCase()
+          .includes(text.toLowerCase()) ||
+        item.profileId.address.country
+          .toLowerCase()
+          .includes(text.toLowerCase()) ||
+        item.profileId.address.postalCode
+          .toLowerCase()
+          .includes(text.toLowerCase())
+    );
+    setFilteredData(filtered);
+  };
+
   return (
-    <ScrollView
-      style={{ flex: 1,backgroundColor:'#fff' }}
+    <View
+      style={{ flex: 1, backgroundColor: "#fff" }}
       contentContainerStyle={{ paddingBottom: 130 }}
     >
-      <View style={{}}>
-        <View
-          style={{
-            backgroundColor: "#fff",
+      <View
+        style={{
+          backgroundColor: "#ffff",
+          shadowColor: "#000",
+          shadowOffset: 0.5,
+          shadowOpacity: 0.6,
+          shadowRadius: 10,
+          elevation: 2,
+          padding: 10,
+        }}
+      >
+        <SearchBar
+          placeholder="Search here"
+          onChangeText={handleSearch}
+          value={searchInput}
+        />
+      </View>
 
-            marginBottom: 20,
-            shadowColor: "#984065",
-            shadowOffset: {
-              width: 0,
-              height: 50,
-            },
-            shadowOpacity: 0.8,
-            shadowRadius: 16.0,
-            elevation: 2,
-          }}
-        >
-          <TextInput
-            style={{
-              width: "80%",
-              backgroundColor: "#fff",
-              borderRadius: 50,
-              height: 45,
-              marginBottom: 20,
-              justifyContent: "center",
-              top: responsiveHeight(1.5),
-              alignSelf: "center",
-              shadowColor: "#984065",
-              shadowOffset: {
-                width: 0,
-                height: 50,
-              },
-              shadowOpacity: 0.8,
-              shadowRadius: 16.0,
-              elevation: 3,
-              paddingLeft: 40,
-              paddingRight: 20,
-              right: responsiveWidth(7),
-            }}
-            placeholder="Matches near you"
-          />
-          <FontAwesome5
-            name="map-pin"
-            size={20}
-            style={{
-              position: "absolute",
-              top: responsiveHeight(3.5),
-              left: 25,
-            }}
-            color={"#4383f2"}
-          />
-
-          <View
-            style={{
-              backgroundColor: "#fff",
-              borderRadius: 50,
-              height: 45,
-              marginBottom: 20,
-              justifyContent: "center",
-
-              alignSelf: "center",
-              shadowColor: "#984065",
-              shadowOffset: {
-                width: 0,
-                height: 50,
-              },
-              shadowOpacity: 0.8,
-              shadowRadius: 16.0,
-              elevation: 3,
-              paddingHorizontal: 13,
-              right: responsiveWidth(3),
-              position: "absolute",
-              top: responsiveHeight(1.5),
-            }}
-          >
-            <TouchableOpacity>
-              <FontAwesome5
-                name="search"
-                size={20}
-                style={{}}
-                color={"#4383f2"}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
+      <ScrollView style={{ top: 10 }} contentContainerStyle={{}}>
         <View style={{ flex: 1, marginTop: responsiveHeight(9) }}>
           <FlatList
             style={{}}
-            data={apidata}
+            data={filteredData} // Render filtered data
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
               <>
@@ -158,7 +117,7 @@ const Nearby = () => {
                 >
                   <TouchableWithoutFeedback
                     onPress={() =>
-                      navigation.navigate("Mymatchdata", { data: item })
+                      navigation.navigate("MatrimonyData", { data: item })
                     }
                   >
                     <View
@@ -167,6 +126,7 @@ const Nearby = () => {
                         shadowOpacity: 0.9,
                         shadowRadius: 50,
                         elevation: 20,
+                        marginTop: 18,
                       }}
                     >
                       <Image
@@ -233,11 +193,7 @@ const Nearby = () => {
                             position: "absolute",
                             left: -20,
                           }}
-                        >
-                          {item.locationOfGroom.countryLivingIn},Digambar .{" "}
-                          {item.locationOfGroom.cityLivingIn},
-                          {item.locationOfGroom.stateLivingIn}
-                        </Text>
+                        ></Text>
                       </Animated.View>
                       <Animated.View
                         entering={FadeInRight.duration(500).damping()}
@@ -246,7 +202,7 @@ const Nearby = () => {
                           left: responsiveWidth(75),
                         }}
                       >
-                        <TouchableOpacity  style={{}}>
+                        <TouchableOpacity style={{}}>
                           <Text
                             style={{
                               color: "#fff",
@@ -281,7 +237,6 @@ const Nearby = () => {
                             fontSize: 17,
                             bottom: 1,
                           }}
-                        
                         >
                           Connect Now
                         </Text>
@@ -315,12 +270,13 @@ const Nearby = () => {
             showsHorizontalScrollIndicator={false}
           />
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 export default Nearby;
+
 const styles = StyleSheet.create({
   inputView: {
     width: "90%",

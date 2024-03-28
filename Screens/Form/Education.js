@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
-  Pressable,
+  Platform,
 } from "react-native";
 import Animated, { FadeInLeft } from "react-native-reanimated";
 import {
@@ -22,42 +22,94 @@ import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
 import axios from "axios";
 import { api } from "../Api";
-import { MyContext } from "../../App";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const Education = () => {
   const navigation = useNavigation();
   const [degree, setDegree] = useState("");
   const [institution, setInstitution] = useState("");
   const [completionYear, setCompletionYear] = useState(dayjs().format("YYYY"));
   const [modalVisible1, setModalVisible1] = useState("");
-  const id = useContext(MyContext);
+  const [degreeError, setDegreeError] = useState(false);
+  const [institutionerror, setInstitutionError] = useState(false);
+  const [completionYearError, setCompletionYearError] = useState(false);
+  const [Screens, setScreens] = useState("");
   const Value = useRoute();
-  const ids = Value.params.data;
-  console.warn(ids);
-  const Api = api;
+  const ids = Value.params?.data;
+
   const validate = () => {
-    if (!degree || !institution || !completionYear) {
+    let hasError = false;
+
+    if (!degree) {
+      hasError = true;
+    } else {
+      setDegreeError("");
+    }
+
+    if (!institution) {
+      hasError = true;
+    } else {
+      setInstitutionError("");
+    }
+
+    if (!completionYear) {
+      hasError = true;
+    } else {
+      setCompletionYearError("");
+    }
+
+    if (hasError) {
+      // There are errors, do not proceed
       Alert.alert(
         "Incomplete Information",
         "Please fill in all the required fields before proceeding."
       );
+
+      setDegreeError(0);
+      setInstitutionError(0);
+      setCompletionYearError(0);
+      return;
+    }
+
+    // No errors, proceed with navigation and API call
+    if (Screens === "Business") {
+      PostEducation();
+      navigation.navigate("Directorys");
     } else {
       PostEducation();
-      navigation.navigate("Directorys", { data: ids });
+      navigation.navigate("Matrimonys");
     }
   };
-  const handleDateChange = (event, selectedDate) => {
-    if (selectedDate !== undefined) {
-      const year = selectedDate.getFullYear();
-      setCompletionYear(parseInt(year));
+
+  const Skip = () => {
+    if (Screens == "Business") {
+      navigation.navigate("Directorys");
+    } else {
+      navigation.navigate("Matrimonys");
     }
   };
+
+  const onChange = (date, selectedDate) => {
+    const formattedDate = dayjs(date).format("YYYY");
+    setModalVisible1(Platform.OS === "ios");
+    setCompletionYear(formattedDate);
+    setCompletionYearError(formattedDate);
+  };
+
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() - 15); // Minimum date: 15 days ago
+
+  const [data, setData] = React.useState();
 
   useEffect(() => {
     const storeData = async () => {
       try {
-        await AsyncStorage.setItem("UserID", ids);
+        // await AsyncStorage.setItem("UserID", ids);
+        const value = await AsyncStorage.getItem("profileid");
+        const screens = await AsyncStorage.getItem("ShowScreen");
+        setScreens(screens);
+        setData(value);
       } catch (e) {
         console.log(e);
       }
@@ -67,14 +119,13 @@ const Education = () => {
 
   const PostEducation = async () => {
     try {
-      const response = await axios.put(`${Api}/profiles/${id}`, {
+      const response = await axios.put(`${api}/profiles/${data}`, {
         education: {
           degree: degree,
           institution: institution,
           completionYear: completionYear,
         },
       });
-      console.warn(response);
     } catch (error) {
       console.log("Error during login:", error.message);
     }
@@ -90,7 +141,7 @@ const Education = () => {
           style={{
             width: responsiveWidth(100),
             height: 90,
-            backgroundColor: "#3468C0",
+            backgroundColor: "#874d3b",
             position: "absolute",
             bottom: 0,
             top: -1,
@@ -121,7 +172,7 @@ const Education = () => {
               left: responsiveWidth(80),
             }}
           >
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity>
               <FontAwesome5Icon
                 name="arrow-left"
                 size={18}
@@ -135,6 +186,7 @@ const Education = () => {
                   shadowOpacity: 0.6,
                   shadowRadius: 10,
                 }}
+                onPress={() => navigation.goBack()}
               />
             </TouchableOpacity>
           </View>
@@ -161,23 +213,22 @@ const Education = () => {
                 fontSize: 15,
                 fontWeight: "500",
                 opacity: 0.6,
+                color:
+                  degreeError === 0 && degree.trim() === "" ? "red" : "#000",
               }}
             >
-              Enter Degree
+              Degree
             </Text>
-            <View style={styles.inputView}>
+            <View style={[styles.inputView]}>
               <TextInput
                 style={styles.inputText}
-                placeholder="Enter Degree"
-                placeholderTextColor="black"
-                onChangeText={(txt) => setDegree(txt)}
+                placeholder="Degree"
+                placeholderTextColor={"#000"}
+                onChangeText={(text) => {
+                  setDegree(text);
+                  setDegreeError(text.length);
+                }}
                 value={degree}
-              />
-              <FontAwesome5Icon
-                name="user-graduate"
-                size={16}
-                style={{ position: "absolute", left: 8, top: 18, opacity: 0.6 }}
-                color={"#000"}
               />
             </View>
           </View>
@@ -190,23 +241,21 @@ const Education = () => {
                 fontSize: 15,
                 fontWeight: "500",
                 opacity: 0.6,
+                color:
+                  institutionerror === 0 && institution.trim() === ""
+                    ? "red"
+                    : "#000",
               }}
             >
-              Enter institution Name
+              Institution Name
             </Text>
-            <View style={styles.inputView}>
+            <View style={[styles.inputView]}>
               <TextInput
                 style={styles.inputText}
-                placeholder="Enter institution Name"
-                placeholderTextColor="black"
+                placeholder="Institution Name"
+                placeholderTextColor={"#000"}
                 onChangeText={(txt) => setInstitution(txt)}
                 value={institution}
-              />
-              <FontAwesome5Icon
-                name="university"
-                size={16}
-                style={{ position: "absolute", left: 8, top: 18, opacity: 0.6 }}
-                color={"#000"}
               />
             </View>
           </View>
@@ -220,15 +269,23 @@ const Education = () => {
                 fontSize: 15,
                 fontWeight: "500",
                 opacity: 0.6,
+                color: completionYearError === 0 ? "red" : "#000",
               }}
             >
               Completion Year
             </Text>
-            <View style={styles.inputView}>
+            <View style={[styles.inputView]}>
               <TouchableOpacity
                 onPress={() => setModalVisible1(!modalVisible1)}
               >
-                <Text style={{ top: 15, opacity: 0.7 }}>{completionYear}</Text>
+                <Text
+                  style={{
+                    top: 15,
+                    opacity: 0.7,
+                  }}
+                >
+                  {completionYear}
+                </Text>
               </TouchableOpacity>
             </View>
 
@@ -239,7 +296,7 @@ const Education = () => {
                   transparent={true}
                   visible={modalVisible1}
                   onRequestClose={() => {
-                    Alert.alert("Modal has been closed.");
+                    //  Alert.alert("Modal has been closed.");
                     setModalVisible1(!modalVisible1);
                   }}
                 >
@@ -247,17 +304,12 @@ const Education = () => {
                     <View style={styles.modalView1}>
                       <DateTimePicker
                         value={completionYear}
+                        onValueChange={onChange}
                         mode="date"
-                        display="default" // You can also use "spinner" or "calendar"
-                        onChange={handleDateChange}
+                        display="spinner"
+                        maximumDate={minDate}
+                        displayFullDays={false}
                       />
-
-                      <Pressable
-                        style={[styles.button1, styles.buttonClose1]}
-                        onPress={() => setModalVisible1(!modalVisible1)}
-                      >
-                        <Text style={styles.textStyle1}>Close</Text>
-                      </Pressable>
                     </View>
                   </View>
                 </Modal>
@@ -271,7 +323,7 @@ const Education = () => {
         <TouchableOpacity
           style={{
             width: "50%",
-            backgroundColor: "#3D50DF",
+            backgroundColor: "#874d3b",
             borderRadius: 5,
             height: 50,
             alignItems: "center",
@@ -291,7 +343,7 @@ const Education = () => {
             style={{
               position: "absolute",
               left: 135,
-              backgroundColor: "#3D56F0",
+              backgroundColor: "#874d3b",
               padding: 12,
               borderRadius: 50,
               color: "#fff",
@@ -313,7 +365,7 @@ const Education = () => {
             alignSelf: "center",
             borderColor: "tomato",
           }}
-          onPress={() => navigation.navigate("Directorys")}
+          onPress={() => Skip()}
         >
           <Text style={{ color: "tomato", fontSize: 16, fontWeight: "500" }}>
             Skip
@@ -335,7 +387,7 @@ const styles = StyleSheet.create({
 
     top: responsiveHeight(25),
     opacity: 0.8,
-    paddingLeft: 30,
+    paddingLeft: 15,
     paddingRight: 20,
 
     left: 20,

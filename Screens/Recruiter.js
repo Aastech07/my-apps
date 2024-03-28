@@ -1,75 +1,92 @@
-import React from "react";
-import { View } from "react-native";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Postjobs from "./Jobs/Postjobs";
 import ManagePost from "./Jobs/ManagePost";
 import Views from "./Jobs/Views";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-const Tab = createMaterialTopTabNavigator();
 
 const ByAndSellNav = () => {
-  return (
-    <View style={{ flex: 1 }}>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarLabelStyle: { fontSize: 16 },
-          tabBarStyle: { height: 55 },
-          swipeEnabled: false,
-          tabBarIcon: ({ focused, color }) => {
-            let IconComponent;
-            let iconName;
-            if (route.name === "Post job") {
-              IconComponent = FontAwesome5;
-              iconName = focused ? "briefcase" : "briefcase";
-            } else if (route.name === "Manage Post") {
-              IconComponent = FontAwesome5;
-              iconName = focused ? "list" : "list";
-            } else if (route.name === "View") {
-              IconComponent = FontAwesome5;
-              iconName = focused ? "eye" : "eye-slash";
-            }
-            return <IconComponent name={iconName} size={17} color={color} />;
-          },
-        })}
+  const [activeTab, setActiveTab] = useState("Post job");
+
+  const renderScreen = () => {
+    switch (activeTab) {
+      case "Post job":
+        return <Postjobs />;
+      case "Manage Post":
+        return <ManagePost />;
+      case "View":
+        return <Views />;
+      default:
+        return <Postjobs />;
+    }
+  };
+
+  const renderTab = (tabName, iconName) => {
+    const isActive = activeTab === tabName;
+    return (
+      <TouchableOpacity
+        key={tabName}
+        style={[styles.tab, isActive && styles.activeTab]}
+        onPress={() => setActiveTab(tabName)}
       >
-        <Tab.Screen
-          name="Post job"
-          component={Postjobs}
-          options={{
-            tabBarLabelStyle: {
-              fontSize: 10,
-              right: 2,
-              bottom: 5,
-            },
-          }}
+        <FontAwesome5
+          name={iconName}
+          size={17}
+          color={isActive ? "#1e90ff" : "#333"}
         />
+        <Text style={styles.tabText}>{tabName}</Text>
+      </TouchableOpacity>
+    );
+  };
 
-        <Tab.Screen
-          name="Manage Post"
-          component={ManagePost}
-          options={{
-            tabBarLabelStyle: {
-              fontSize: 10,
-              right: 2.5,
-              bottom: 5,
-            },
-          }}
-        />
+  return (
+    <View style={styles.container}>
+      {/* Tab Bar */}
+      <View style={styles.tabBar}>
+        {renderTab("Post job", "briefcase")}
+        {renderTab("Manage Post", "list")}
+        {renderTab("View", "eye")}
+      </View>
 
-        <Tab.Screen
-          name="View"
-          component={Views}
-          options={{
-            tabBarLabelStyle: {
-              fontSize: 10,
-              right: 2.5,
-              bottom: 5,
-            },
-          }}
-        />
-      </Tab.Navigator>
+      {/* Content */}
+      <View style={styles.content}>{renderScreen()}</View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  tabBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    elevation: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  tab: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: "#1e90ff",
+  },
+  tabText: {
+    fontSize: 12,
+    color: "#333",
+    marginTop: 5,
+  },
+  content: {
+    flex: 1,
+    backgroundColor: "#f9f9f9",
+    padding: 10,
+  },
+});
 
 export default ByAndSellNav;

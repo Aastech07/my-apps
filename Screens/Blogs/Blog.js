@@ -16,14 +16,21 @@ import {
 } from "react-native-responsive-dimensions";
 import SearchBar from "react-native-dynamic-search-bar";
 import { api } from "../Api";
-
+import { useRoute } from "@react-navigation/native";
 
 const SkeletonLoader = () => {
   const SkeletonCard = () => (
     <View style={styles.card}>
       <View style={[styles.image, { backgroundColor: "#f0f0f0" }]} />
-      <View style={[styles.title, { backgroundColor: "#f0f0f0", height: 20 }]} />
-      <View style={[styles.readText, { backgroundColor: "#f0f0f0", height: 18, marginTop: 5 }]} />
+      <View
+        style={[styles.title, { backgroundColor: "#f0f0f0", height: 20 }]}
+      />
+      <View
+        style={[
+          styles.readText,
+          { backgroundColor: "#f0f0f0", height: 18, marginTop: 5 },
+        ]}
+      />
     </View>
   );
 
@@ -37,29 +44,30 @@ const SkeletonLoader = () => {
 };
 
 const Blog = () => {
+
+
   const navigation = useNavigation();
   const [apidata, setApiData] = useState([]);
   const [searchText, setSearchText] = useState("");
-  const [loading, setLoading] = useState(true); // State to manage loading status
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  
   const fetchData = async () => {
     try {
       const { data } = await axios.get(`${api}/blogs`);
-
       setTimeout(() => {
         setApiData(data);
-        setLoading(false); 
+        setLoading(false);
       }, 500);
     } catch (error) {
       console.log(error);
-      setLoading(false); 
+      setLoading(false);
     }
   };
-  
 
   const filteredData = apidata.filter((item) =>
     item.title.toLowerCase().includes(searchText.toLowerCase())
@@ -76,7 +84,7 @@ const Blog = () => {
         />
       </View>
       <ScrollView>
-        {loading ? ( 
+        {loading ? (
           <SkeletonLoader />
         ) : (
           <FlatList

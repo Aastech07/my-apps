@@ -98,6 +98,7 @@ const Postjobs = () => {
         const value = await AsyncStorage.getItem("UserID");
         if (value !== null) {
           setUserID(value);
+          console.warn(value)
         }
       } catch (e) {
         console.log(e);

@@ -8,12 +8,12 @@ import {
   FlatList,
   TouchableWithoutFeedback,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../Api";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const ManageView = () => {
   const navigation = useNavigation();
 
@@ -33,6 +33,9 @@ const ManageView = () => {
             bicycles,
             fashion,
             furniture,
+            tablets,
+            phones,
+            accessories,
           ] = await Promise.all([
             axios.get(`${api}/cars`),
             axios.get(`${api}/bikes`),
@@ -40,8 +43,11 @@ const ManageView = () => {
             axios.get(`${api}/bicycles`),
             axios.get(`${api}/fashion`),
             axios.get(`${api}/furniture`),
+            axios.get(`${api}/tablets`),
+            axios.get(`${api}/phones`),
+            axios.get(`${api}/accessories`),
           ]);
-
+          
           const allData = [
             ...cars.data,
             ...bikes.data,
@@ -49,6 +55,9 @@ const ManageView = () => {
             ...bicycles.data,
             ...fashion.data,
             ...furniture.data,
+            ...tablets.data,
+            ...phones.data,
+            ...accessories.data,
           ];
 
           const filteredProperties = allData.filter(
@@ -61,13 +70,19 @@ const ManageView = () => {
             console.log("No properties found for the matching profileId.");
           }
         }
+
+        if (data === null || data.length === 0) {
+          await AsyncStorage.setItem("View", "0");
+        } else {
+          await AsyncStorage.setItem("View", "1");
+        }
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [data]);
 
   const toggleMenu = (itemId) => {
     setMenuVisibility((prevState) => ({
@@ -77,29 +92,68 @@ const ManageView = () => {
   };
 
   const handleUpdate = (item) => {
-    navigation.navigate("List Update", { data: item });
-  };
+    console.warn(item._id);
+    if (item.cars == "cars") {
+      navigation.navigate("CarDetails", { data: item, num: 1 });
+    }
+    if (item.phones == "phones") {
+      navigation.navigate("MobileDetails", { data: item, num: 1 });
+    }
+    if (item.bikes == "bikes") {
+      navigation.navigate("BikeDetails", { data: item, num: 1 });
+    }
+    if (item.electronics == "electronics") {
+      navigation.navigate("ElectronicsDetails", { data: item, num: 1 });
+    }
+    if (item.bicycles == "bicycles") {
+      navigation.navigate("BicycleDetails", { data: item, num: 1 });
+    }
+    if (item.accessories == "accessories") {
+      navigation.navigate("AccessoriesDetails", { data: item, num: 1 });
+    }
+    if (item.fashions == "fashions") {
+      navigation.navigate("FashionDetails", { data: item, num: 1 });
+    }
 
-  const handleDelete = async (item) => {
-    Alert.alert(
-      "Delete",
-      "Are you sure you want to delete?",
-      [
-        { text: "Cancel", onPress: () => {} },
-        {
-          text: "Delete",
-          onPress: async () => {
-            try {
-              await axios.delete(`${api}/cars`);
-              await axios.delete(`${api}/fashion`);
-            } catch (error) {
-              console.log("Error deleting item:", error);
-            }
-          },
-        },
-      ],
-      { cancelable: false }
-    );
+    if (item.furnitures == "furnitures") {
+      navigation.navigate("FurnitureDetail", { data: item, num: 1 });
+    }
+    if (item.tablets == "tablets") {
+      navigation.navigate("Tablets", { data: item, num: 1 });
+    }
+  };
+  //tablets
+
+  const handleDelete = async (postId) => {
+    try {
+      // Delete requests for all types
+      const deleteCar = axios.delete(`${api}/cars/${postId}`);
+      const deleteBike = axios.delete(`${api}/bikes/${postId}`);
+      const deleteElectronics = axios.delete(`${api}/electronics/${postId}`);
+      const deleteBicycles = axios.delete(`${api}/bicycles/${postId}`);
+      const deleteFashion = axios.delete(`${api}/fashion/${postId}`);
+      const deleteFurniture = axios.delete(`${api}/furniture/${postId}`);
+      const deletetablets = axios.delete(`${api}/tablets/${postId}`);
+      const deletephone = axios.delete(`${api}/phones/${postId}`);
+      // phones
+      await Promise.all([
+        deleteCar,
+        deleteBike,
+        deleteElectronics,
+        deleteBicycles,
+        deleteFashion,
+        deleteFurniture,
+        deletetablets,
+        deletephone,
+      ]);
+
+      // Filter out the deleted item from data
+      const updatedData = data.filter((post) => post._id !== postId);
+      // Update data state with the new array reference
+      setData(updatedData);
+    } catch (error) {
+      console.log("Error deleting post:", error);
+    }
   };
 
   const renderAnnouncementItem = ({ item }) => (
@@ -108,7 +162,9 @@ const ManageView = () => {
     >
       <View style={styles.announcementContainer}>
         <Image
-          source={{ uri: item.images[0] }}
+          source={{
+            uri: item.images && item.images.length > 0 ? item.images[0] : null,
+          }}
           style={styles.announcementImage}
         />
         <View style={styles.announcementDetails}>
@@ -140,8 +196,22 @@ const ManageView = () => {
                   Update
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDelete(item)}>
-                <Text style={styles.menuItem}>Delete</Text>
+              <TouchableOpacity onPress={() => handleDelete(item._id)}>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    marginBottom: 10,
+                    elevation: 2,
+                    backgroundColor: "#fff",
+                    padding: 3,
+                    paddingHorizontal: 10,
+                    borderRadius: 5,
+                    marginTop: 5,
+                    color: "tomato",
+                  }}
+                >
+                  Delete
+                </Text>
               </TouchableOpacity>
             </View>
           )}
@@ -204,7 +274,7 @@ const styles = StyleSheet.create({
   },
   menuText: {
     position: "absolute",
-    left: 180,
+    left: 165,
     fontSize: 25,
     bottom: 80,
   },
@@ -223,8 +293,7 @@ const styles = StyleSheet.create({
   menuItem: {
     fontSize: 15,
     marginBottom: 10,
-    elevation: 2,
-    backgroundColor: "red",
+    elevation: 0.5,
     padding: 3,
     paddingHorizontal: 10,
     borderRadius: 5,

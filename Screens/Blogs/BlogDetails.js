@@ -8,8 +8,8 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
-import { useRoute, useNavigation } from "@react-navigation/native";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { useRoute} from "@react-navigation/native";
+
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -20,10 +20,9 @@ import { StatusBar } from "react-native";
 const { width, height } = Dimensions.get("window");
 
 const ByDetails = () => {
-  const navigation = useNavigation();
+ 
   const route = useRoute();
-  const { data } = route.params;
-  const [isFavourite, setIsFavourite] = useState(false);
+  const { data } = route?.params;
   const item = data;
 
   const imageOpacity = useSharedValue(0);
@@ -53,10 +52,6 @@ const ByDetails = () => {
           style={[styles.image, imageStyle]}
         />
 
-        <TouchableOpacity
-          style={styles.favoriteButton}
-          onPress={() => setIsFavourite(!isFavourite)}
-        ></TouchableOpacity>
         <View style={styles.detailsContainer}>
           <Text style={styles.adTitle}>{item.title}</Text>
 
@@ -88,12 +83,7 @@ const styles = StyleSheet.create({
     left: 20,
     zIndex: 1,
   },
-  favoriteButton: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    zIndex: 1,
-  },
+ 
   detailsContainer: {
     padding: 20,
   },

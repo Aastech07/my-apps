@@ -7,20 +7,28 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
+  Animated,
 } from "react-native";
 import axios from "axios";
 import { api } from "../Api";
-import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
-import { responsiveHeight } from "react-native-responsive-dimensions";
 import { useNavigation } from "@react-navigation/native";
+import SkeletonLoader from "../skeletonloader/Skeletonloader";
+const { width } = Dimensions.get("window");
+
 const Album = () => {
   const [data, setData] = useState([]);
+  const [fadeAnim] = useState(new Animated.Value(0));
+  const [fadeHeader] = useState(new Animated.Value(0));
   const navigation = useNavigation();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${api}/gallery`);
         setData(response.data);
+        animateList();
+        animateHeader();
       } catch (error) {
         console.log(error);
       }
@@ -28,68 +36,113 @@ const Album = () => {
     fetchData();
   }, []);
 
-  const renderAlbumItem = ({ item }) => (
-    <View style={styles.albumContainer}>
-      <Text style={styles.albumTitle}>{item.Albumtitle}</Text>
-      <FlatList
-        data={item.image}
-        horizontal
-        renderItem={({ item }) => (
-          <Image source={{ uri: item }} style={styles.image} />
-        )}
-        keyExtractor={(image) => image}
-      />
-      <View
-        style={{ position: "absolute", left: responsiveHeight(40), top: 7 }}
-      >
-        <Text
-          style={{ fontWeight: "300" }}
-          onPress={() => navigation.navigate("Gellary", { data: item })}
-        >
-          SeeAll
-        </Text>
+  const animateList = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const animateHeader = () => {
+    Animated.timing(fadeHeader, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  if (!data) {
+    return (
+      <View style={{ flex: 1, backgroundColor: "#fff", bottom: 25 }}>
+        <SkeletonLoader />
       </View>
-    </View>
-  );
+    );
+  }
+
+  const renderAlbumItem = ({ item }) => {
+    const onPressAlbum = () => {
+      navigation.navigate("Gallery", { album: item });
+    };
+
+    const firstImage = item.image[0];
+    const imageCount = item.image.length;
+
+    return (
+      <TouchableOpacity
+        style={[styles.albumContainer, { opacity: fadeAnim }]}
+        onPress={onPressAlbum}
+      >
+        <Image source={{ uri: firstImage }} style={styles.image} />
+        <Text style={styles.albumTitle}>{item.Albumtitle}</Text>
+        <Text style={styles.imageCount}>{imageCount} Images</Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
-    <ScrollView contentContainerStyle={{ flex: 1, marginBottom: -50 }}>
-      <View style={{ top: 50, left: 20 }}>
-        <TouchableOpacity style={{}} onPress={() => navigation.goBack("")}>
-          <FontAwesome5Icon
-            name="arrow-left"
-            color={"#000"}
-            size={30}
-            style={{ opacity: 0.7 }}
-          />
-        </TouchableOpacity>
-      </View>
-      <View style={{ top: 70, flex: 1, marginHorizontal: 10 }}>
+    <View style={styles.container}>
+      <Animated.Text style={[styles.header, { opacity: fadeHeader }]}>
+        <Text style={{ color: "tomato" }}>All</Text> Images..
+      </Animated.Text>
+      <ScrollView contentContainerStyle={styles.albumList}>
         <FlatList
           data={data}
           renderItem={renderAlbumItem}
           keyExtractor={(item) => item._id}
+          numColumns={2}
           scrollEnabled={false}
         />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f8f8f8",
+    paddingTop: 20,
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: "600",
+    textAlign: "left",
+    color: "#000",
+    left: 10,
+  },
+  albumList: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingBottom: 20,
+  },
   albumContainer: {
-    marginBottom: 10,
+    width: width * 0.45,
+    margin: 10,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 10,
+    elevation: 4,
+    alignItems: "center",
   },
   albumTitle: {
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: "bold",
-    marginBottom: 10,
+    textAlign: "center",
+    marginVertical: 5,
+    paddingHorizontal: 5,
+    color: "#000",
   },
   image: {
-    width: 150,
+    width: "100%",
     height: 150,
-    marginRight: 10,
-    borderRadius: 5,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  imageCount: {
+    fontSize: 12,
+    color: "#333",
+    marginBottom: 5,
   },
 });
 

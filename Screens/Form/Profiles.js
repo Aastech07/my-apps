@@ -10,6 +10,7 @@ import {
   Modal,
   Pressable,
   Alert,
+  Platform,
 } from "react-native";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import {
@@ -29,16 +30,14 @@ import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
 import { api } from "../Api";
 import { useNavigation } from "@react-navigation/native";
-import { MotherTongue } from "../By&Sell/SellDetails/Api";
 
 const Profiles = ({ id }) => {
   const navigation = useNavigation();
-  const ids = id.user._id;
+  const ids = id?.user._id;
   const img =
     "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.632798143.1705622400&semt=ais";
 
   const [firstName, setFirstName] = useState("");
-  const [error, setError] = useState("");
   const [lastName, setLastName] = useState("");
   const [age, setAge] = useState(dayjs().format("YYYY-MM-DD"));
   const [marital, setMarital] = useState("");
@@ -60,13 +59,36 @@ const Profiles = ({ id }) => {
   const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
   const [genders, setGender] = useState();
   const [modalVisible1, setModalVisible1] = useState(false);
-
+  const [firstNameError, setFirstNameError] = useState(false);
+  const [lastNameError, setLastNameError] = useState(false);
+  const [motherNameError, setMotherNameError] = useState(false);
+  const [fatherNameError, setFatherNameError] = useState(false);
+  const [countryError, setCountryError] = useState(false);
+  const [stateError, setStateError] = useState(false);
+  const [cityError, setCityError] = useState(false);
+  const [streetError, setStreetError] = useState(false);
+  const [postalCodeError, setPostalCodeError] = useState(false);
+  const [professionError, setProfessionError] = useState(false);
+  const [ageError, setAgeError] = useState(false);
+  const [genderError, setGenderError] = useState(false);
+  const [languagesError, setLanguagesError] = useState(false);
+  const [maritalError, setMaritalError] = useState(false);
+  const [countrys, setCountrys] = useState([]);
+  const [states, setStates] = useState([]);
+  const [Citys, setCitys] = useState([]);
   const Api = api;
 
   const Professions = [
     { key: "1", value: "Business" },
     { key: "2", value: "Employee" },
     { key: "3", value: "Self Employee" },
+  ];
+
+  const Languages = [
+    { key: "1", value: "Hindi" },
+    { key: "2", value: "English" },
+    { key: "3", value: "Gujarati" },
+    { key: "4", value: "Marathi" },
   ];
 
   const MaritalStatus = [
@@ -77,8 +99,8 @@ const Profiles = ({ id }) => {
   ];
 
   const Genders = [
-    { key: "1", value: "male" },
-    { key: "2", value: "female" },
+    { key: "1", value: "Male" },
+    { key: "2", value: "Female" },
   ];
 
   const validate = () => {
@@ -92,16 +114,96 @@ const Profiles = ({ id }) => {
       !city ||
       !street ||
       !postalcode ||
-      !profession
+      !profession ||
+      !age ||
+      !languages ||
+      !genders
     ) {
       Alert.alert(
         "Incomplete Information",
         "Please fill in all the required fields before proceeding."
       );
+
+      setFirstNameError(0);
+      setLastNameError(0);
+      setCountryError(0);
+      setMotherNameError(0);
+      setFatherNameError(0);
+      setCityError(0);
+      setPostalCodeError(0);
+      setProfession(0);
+      setStateError(0);
+      setStreetError(0);
+      setProfessionError(0);
+      setAgeError(0);
+      setGenderError(0);
+      setLanguagesError(0);
+      setMaritalError(0);
     } else {
       loginUser();
-      ImageUpload();
+      //ImageUpload();
       navigation.navigate("FamilyTree", { data: ids, profileid: profileid });
+    }
+  };
+
+  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "https://api.countrystatecity.in/v1/countries",
+          {
+            headers: {
+              "X-CSCAPI-KEY":
+                "YWdZbVBYYTRXNml4WEFuMGdvYlVZeEhmaUZoOHFWWm9oUXFiQm03Rw==",
+            },
+          }
+        );
+        let newArray = response.data.map((item) => {
+          return { key: item.id, value: item.name };
+        });
+        setCountrys(newArray);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const fetchState = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.countrystatecity.in/v1/countries/${country[0] +
+          country[1]}/states`,
+        {
+          headers: {
+            "X-CSCAPI-KEY":
+              "YWdZbVBYYTRXNml4WEFuMGdvYlVZeEhmaUZoOHFWWm9oUXFiQm03Rw==",
+          },
+        }
+      );
+      setStates(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchCity = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.countrystatecity.in/v1/countries/${country[0] +
+          country[1]}/states/${state[0] + state[1]}/cities`,
+        {
+          headers: {
+            "X-CSCAPI-KEY":
+              "YWdZbVBYYTRXNml4WEFuMGdvYlVZeEhmaUZoOHFWWm9oUXFiQm03Rw==",
+          },
+        }
+      );
+      setCitys(response.data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -162,7 +264,32 @@ const Profiles = ({ id }) => {
     );
   };
 
+  const handelText = (text) => {
+    setPostalCode(text);
+    setPostalCodeError(text.length === 0);
+    if (text.length >= 7) {
+      setPostalCode(false);
+      alert("Postal code should be 6 characters or less");
+    } else {
+      // You might want to clear the postalCode state here if it's not 6 characters
+      //   setPostalCode(""); // Clear the postalCode state
+    }
+  };
+
+  // setAge(date) + setAgeError(date)
+
+  const onChange = (date, selectedDate) => {
+    const formattedDate = dayjs(date).format("YYYY-MM-DD");
+    setModalVisible1(Platform.OS === "ios");
+    setAge(formattedDate);
+    setAgeError(formattedDate);
+  };
+
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() - 15); // Minimum date: 15 days ago
+
   const loginUser = async () => {
+    console.warn(ids)
     try {
       const { data } = await axios.post(`${Api}/profiles`, {
         userId: ids,
@@ -185,7 +312,11 @@ const Profiles = ({ id }) => {
         languages: languages,
         maritalStatus: marital,
       });
+      console.warn(data);
+      console.log(data._id)
       await AsyncStorage.setItem("profileid", data._id);
+      await AsyncStorage.setItem("UserID", ids);
+      await AsyncStorage.setItem("ShowScreen", profession);
     } catch (error) {
       console.error("Error during login:", error.message);
     }
@@ -206,6 +337,17 @@ const Profiles = ({ id }) => {
       console.error("Error during login:", error.message);
     }
   };
+
+  // const countryNames = countrys.map(
+  //   (country) => `(${country.iso2}) ${country.name}`
+  // );
+
+  const stateNames = states.map((state) => ({
+    value: `${state.iso2} ${state.name}`,
+    key: id,
+  }));
+
+  const cityNames = Citys.map((city) => ({ value: `${city.name}`, key: id }));
 
   return (
     <View style={{ backgroundColor: "#fff", marginBottom: 80 }}>
@@ -306,7 +448,7 @@ const Profiles = ({ id }) => {
             </Text>
           </View>
 
-          <View style={{ bottom: 5 }}>
+          <View style={{ bottom: 20 }}>
             <View style={{}}>
               <Text
                 style={{
@@ -315,16 +457,23 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color:
+                    firstNameError === 0 && firstName.trim() === ""
+                      ? "red"
+                      : "#000",
                 }}
               >
-                Enter firstName
+                First Name
               </Text>
-              <View style={styles.inputView}>
+              <View style={[styles.inputView]}>
                 <TextInput
-                  style={styles.inputText}
-                  placeholder="Enter firstName"
-                  placeholderTextColor="black"
-                  onChangeText={(text) => setFirstName(text)}
+                  style={[styles.inputText]}
+                  placeholder="First Name"
+                  placeholderTextColor={"#000"}
+                  onChangeText={(text) => {
+                    setFirstName(text);
+                    setFirstNameError(text.length);
+                  }}
                   value={firstName}
                 />
               </View>
@@ -338,21 +487,23 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color:
+                    lastNameError === 0 && lastName.trim() === ""
+                      ? "red"
+                      : "#000",
                 }}
               >
-                Enter LastName
+                Last Name
               </Text>
-              <View
-                style={[
-                  styles.inputView,
-                  { borderColor: error.length == 0 ? "#000" : "red" },
-                ]}
-              >
+              <View style={[styles.inputView]}>
                 <TextInput
                   style={styles.inputText}
-                  placeholder="Enter lastName"
-                  placeholderTextColor="black"
-                  onChangeText={(text) => setLastName(text)}
+                  placeholder="Last Name"
+                  placeholderTextColor={"#000"}
+                  onChangeText={(text) => {
+                    setLastName(text);
+                    setLastNameError(text.length);
+                  }}
                   value={lastName}
                 />
               </View>
@@ -366,13 +517,14 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color: genderError === 0 && genders == null ? "red" : "#000",
                 }}
               >
                 Select Gender
               </Text>
               <View style={{ top: responsiveHeight(25), marginBottom: 13 }}>
                 <SelectList
-                  setSelected={(val) => setGender(val)}
+                  setSelected={(val) => setGender(val) + setGenderError(val)}
                   data={Genders}
                   save="value"
                   boxStyles={{
@@ -397,11 +549,12 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color: ageError === 0 ? "red" : "#000",
                 }}
               >
                 Date of Birth
               </Text>
-              <View style={styles.inputView}>
+              <View style={[styles.inputView]}>
                 <TouchableOpacity
                   onPress={() => setModalVisible1(!modalVisible1)}
                 >
@@ -416,7 +569,6 @@ const Profiles = ({ id }) => {
                     transparent={true}
                     visible={modalVisible1}
                     onRequestClose={() => {
-                      Alert.alert("Modal has been closed.");
                       setModalVisible1(!modalVisible1);
                     }}
                   >
@@ -424,15 +576,11 @@ const Profiles = ({ id }) => {
                       <View style={styles.modalView1}>
                         <DateTimePicker
                           value={age}
-                          onValueChange={(date) => setAge(date)}
+                          onValueChange={onChange}
+                          mode="date"
+                          display="spinner"
+                          maximumDate={minDate}
                         />
-
-                        <Pressable
-                          style={[styles.button1, styles.buttonClose1]}
-                          onPress={() => setModalVisible1(!modalVisible1)}
-                        >
-                          <Text style={styles.textStyle1}>Close</Text>
-                        </Pressable>
                       </View>
                     </View>
                   </Modal>
@@ -448,16 +596,23 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color:
+                    fatherNameError === 0 && fatherName.trim() === ""
+                      ? "red"
+                      : "#000",
                 }}
               >
-                Enter Father Name
+                Father Name
               </Text>
-              <View style={styles.inputView}>
+              <View style={[styles.inputView]}>
                 <TextInput
                   style={styles.inputText}
-                  placeholder="Enter firstName"
-                  placeholderTextColor="black"
-                  onChangeText={(txt) => setFatherName(txt)}
+                  placeholder="Father Name"
+                  placeholderTextColor={"#000"}
+                  onChangeText={(text) => {
+                    setFatherName(text);
+                    setFatherNameError(text.length);
+                  }}
                   value={fatherName}
                 />
               </View>
@@ -471,16 +626,23 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color:
+                    motherNameError === 0 && motherName.trim() === ""
+                      ? "red"
+                      : "#000",
                 }}
               >
-                Enter Mother Name
+                Mother Name
               </Text>
-              <View style={styles.inputView}>
+              <View style={[styles.inputView]}>
                 <TextInput
                   style={styles.inputText}
-                  placeholder="Enter Mother Name"
-                  placeholderTextColor="black"
-                  onChangeText={(txt) => setMotherName(txt)}
+                  placeholder="Mother Name"
+                  placeholderTextColor={"#000"}
+                  onChangeText={(text) => {
+                    setMotherName(text);
+                    setMotherNameError(text.length);
+                  }}
                   value={motherName}
                 />
               </View>
@@ -494,17 +656,30 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color: countryError === 0 && !country ? "red" : "#000",
                 }}
               >
-                Enter Country
+                Country
               </Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="Enter Country Name"
-                  placeholderTextColor="black"
-                  onChangeText={(text) => setCountry(text)}
-                  value={country}
+              <View style={{ top: responsiveHeight(25), marginBottom: 13 }}>
+                <SelectList
+                  setSelected={(val) => {
+                    setCountry(val);
+                    setCountryError(val);
+                  }}
+                  data={countrys}
+                  save="value"
+                  boxStyles={{
+                    marginLeft: responsiveWidth(5),
+                    marginRight: responsiveWidth(5),
+
+                    // Check if countryError is truthy and country is "undefined"
+                  }}
+                  dropdownStyles={{
+                    marginLeft: responsiveWidth(5),
+                    marginRight: responsiveWidth(5),
+                  }}
+                  onSelect={fetchState}
                 />
               </View>
             </View>
@@ -517,17 +692,25 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color: stateError === 0 && !state ? "red" : "#000",
                 }}
               >
-                Enter State Name
+                State Name
               </Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="Enter State Name"
-                  placeholderTextColor="black"
-                  onChangeText={(txt) => setState(txt)}
-                  value={state}
+              <View style={{ top: responsiveHeight(25), marginBottom: 13 }}>
+                <SelectList
+                  setSelected={(val) => setState(val) + setStateError(val)}
+                  data={stateNames}
+                  save="value"
+                  boxStyles={{
+                    marginLeft: responsiveWidth(5),
+                    marginRight: responsiveWidth(5),
+                  }}
+                  dropdownStyles={{
+                    marginLeft: responsiveWidth(5),
+                    marginRight: responsiveWidth(5),
+                  }}
+                  onSelect={fetchCity}
                 />
               </View>
             </View>
@@ -540,17 +723,24 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color: cityError === 0 && !cityError ? "red" : "#000",
                 }}
               >
-                Enter City Name
+                City Name
               </Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="Enter City Name"
-                  placeholderTextColor="black"
-                  onChangeText={(txt) => setCity(txt)}
-                  value={city}
+              <View style={{ top: responsiveHeight(25), marginBottom: 13 }}>
+                <SelectList
+                  setSelected={(val) => setCity(val) + setCityError(val)}
+                  data={cityNames}
+                  save="value"
+                  boxStyles={{
+                    marginLeft: responsiveWidth(5),
+                    marginRight: responsiveWidth(5),
+                  }}
+                  dropdownStyles={{
+                    marginLeft: responsiveWidth(5),
+                    marginRight: responsiveWidth(5),
+                  }}
                 />
               </View>
             </View>
@@ -563,16 +753,21 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color:
+                    streetError === 0 && street.trim() === "" ? "red" : "#000",
                 }}
               >
-                Enter Street Name
+                Street Name
               </Text>
-              <View style={styles.inputView}>
+              <View style={[styles.inputView]}>
                 <TextInput
                   style={styles.inputText}
-                  placeholder="Enter Street Name"
-                  placeholderTextColor="black"
-                  onChangeText={(txt) => setStreet(txt)}
+                  placeholder="Street Name"
+                  placeholderTextColor={"#000"}
+                  onChangeText={(text) => {
+                    setStreet(text);
+                    setStreetError(text.length);
+                  }}
                   value={street}
                 />
               </View>
@@ -586,16 +781,20 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color:
+                    postalCodeError === 0 && postalcode.trim() === ""
+                      ? "red"
+                      : "#000",
                 }}
               >
-                Enter Postal Code
+                Postal Code
               </Text>
-              <View style={styles.inputView}>
+              <View style={[styles.inputView]}>
                 <TextInput
                   style={styles.inputText}
-                  placeholder="Enter Postal Code"
-                  placeholderTextColor="black"
-                  onChangeText={(txt) => setPostalCode(txt)}
+                  placeholder="Postal Code"
+                  placeholderTextColor={"#000"}
+                  onChangeText={(txt) => handelText(txt)}
                   value={postalcode}
                   keyboardType="numeric"
                 />
@@ -610,13 +809,17 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color: professionError === 0 && !profession ? "red" : "#000",
                 }}
               >
                 Enter profession
               </Text>
               <View style={{ top: responsiveHeight(25), marginBottom: 13 }}>
                 <SelectList
-                  setSelected={(text) => setProfession(text)}
+                  setSelected={(text) => {
+                    setProfession(text);
+                    setProfessionError(text.length === 0);
+                  }}
                   data={Professions}
                   save="value"
                   boxStyles={{
@@ -640,14 +843,22 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color: languagesError === 0 && !languages ? "red" : "#000",
                 }}
               >
                 Select Languages
               </Text>
               <View style={{ top: responsiveHeight(25), marginBottom: 13 }}>
                 <MultipleSelectList
-                  setSelected={(text) => setLanguages(text)}
-                  data={MotherTongue}
+                  setSelected={(text) => {
+                    setLanguages(text);
+                    setLanguagesError(
+                      text.length === 0
+                        ? "Please select at least one language"
+                        : ""
+                    );
+                  }}
+                  data={Languages}
                   save="value"
                   boxStyles={{
                     marginLeft: responsiveWidth(5),
@@ -670,13 +881,14 @@ const Profiles = ({ id }) => {
                   fontSize: 15,
                   fontWeight: "500",
                   opacity: 0.6,
+                  color: maritalError === 0 && !marital ? "red" : "#000",
                 }}
               >
                 Select Marital Status
               </Text>
               <View style={{ top: responsiveHeight(25), marginBottom: 13 }}>
                 <SelectList
-                  setSelected={setMarital}
+                  setSelected={(val) => setMarital(val) + setMaritalError(val)}
                   data={MaritalStatus}
                   save="value"
                   boxStyles={{
@@ -754,7 +966,7 @@ const Profiles = ({ id }) => {
             style={{
               position: "absolute",
               left: 215,
-              backgroundColor: "#3D56F0",
+              backgroundColor: "#874d3b",
               padding: 12,
               borderRadius: 50,
               color: "#fff",
@@ -795,7 +1007,7 @@ const styles = StyleSheet.create({
   },
   loginBtn: {
     width: "88%",
-    backgroundColor: "#3D50DF",
+    backgroundColor: "#874d3b",
     borderRadius: 5,
     height: 50,
     alignItems: "center",

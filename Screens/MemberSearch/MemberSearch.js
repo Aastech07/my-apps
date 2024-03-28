@@ -17,7 +17,10 @@ import {
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../Api";
-import { responsiveWidth,responsiveHeight } from "react-native-responsive-dimensions";
+import {
+  responsiveWidth,
+  responsiveHeight,
+} from "react-native-responsive-dimensions";
 const MemberSearch = () => {
   const [searchText, setSearchText] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -53,15 +56,13 @@ const MemberSearch = () => {
           ?.toLowerCase()
           ?.includes(lastName.toLowerCase());
 
-          
         return firstNameMatch && lastNameMatch;
       });
       setFilteredData(filtered);
     };
     filterData();
   }, [firstName, lastName, data]);
-  
-  
+
   const handleSearch = () => {
     Keyboard.dismiss();
     setModalVisible(true);
@@ -83,107 +84,81 @@ const MemberSearch = () => {
   );
 
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom:200 ,backgroundColor:'#fff'}}>
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{ paddingBottom: 200, backgroundColor: "#fff" }}
+    >
       <View style={styles.container}>
-        <Text style={{ fontSize: 20 ,top:50,textAlign:'center'}}>
-          Member <Text style={{ color: "tomato", fontWeight: "200" }}>Search..</Text>{" "}
+        <Text style={{ fontSize: 20, top: 50, textAlign: "center" }}>
+          Member{" "}
+          <Text style={{ color: "tomato", fontWeight: "200" }}>Search..</Text>{" "}
         </Text>
-        <View>
-          
-        </View>
+        <View></View>
 
-        <View style={{ top:80}}>
-
-     
-        <View style={styles.inputView1}>
-          <TextInput
-            style={styles.inputText}
-            placeholder="First Name"
-            onChangeText={(text) => setFirstName(text)}
-            value={firstName}
-          />
+        <View style={{ top: 80 }}>
+          <View style={styles.inputView1}>
+            <TextInput
+              style={styles.inputText}
+              placeholder="First Name"
+              onChangeText={(text) => setFirstName(text)}
+              value={firstName}
+            />
           </View>
           <View style={styles.inputView1}>
-          <TextInput
-            style={styles.inputText}
-            placeholder="Last Name"
-            onChangeText={(text) => setLastName(text)}
-            value={lastName}
-          />
+            <TextInput
+              style={styles.inputText}
+              placeholder="Last Name"
+              onChangeText={(text) => setLastName(text)}
+              value={lastName}
+            />
           </View>
           <View style={styles.inputView1}>
-          <TextInput
-            style={styles.inputText}
-            placeholder="Father's Name"
-            onChangeText={(text) => setFatherName(text)}
-            value={fatherName}
-          />
+            <TextInput
+              style={styles.inputText}
+              placeholder="Father's Name"
+              onChangeText={(text) => setFatherName(text)}
+              value={fatherName}
+            />
           </View>
           <View style={styles.inputView1}>
-          <TextInput
-            style={styles.inputText}
-            placeholder="Phone Number"
-            onChangeText={(text) => setPhoneNumber(text)}
-            value={phoneNumber}
-            keyboardType="phone-pad"
-          />
+            <TextInput
+              style={styles.inputText}
+              placeholder="Phone Number"
+              onChangeText={(text) => setPhoneNumber(text)}
+              value={phoneNumber}
+              keyboardType="phone-pad"
+            />
           </View>
           <View style={styles.inputView1}>
-          <TextInput
-            style={styles.inputText}
-            placeholder="Area"
-            onChangeText={(text) => setArea(text)}
-            value={area}
-          />
+            <TextInput
+              style={styles.inputText}
+              placeholder="Area"
+              onChangeText={(text) => setArea(text)}
+              value={area}
+            />
+          </View>
         </View>
- </View>
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
           <Text style={styles.searchButtonText}>Search</Text>
         </TouchableOpacity>
-  
-</View>
+      </View>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={closeModal}
-        >
-          <View style={styles.modalView}>
-           
-            <View style={styles.modalContent}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalView}>
+          <View style={styles.modalContent}>
             <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
               <Text style={styles.closeButtonText}>X</Text>
             </TouchableOpacity>
-              <FlatList
-                data={filteredData}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-              />
-            </View>
+            <FlatList data={filteredData} renderItem={renderItem} />
           </View>
-        </Modal>
-    
+        </View>
+      </Modal>
+      
     </ScrollView>
   );
 };
@@ -193,14 +168,13 @@ export default MemberSearch;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-   
   },
   inputView1: {
     width: "90%",
     backgroundColor: "#fff",
     borderRadius: 8,
     height: 50,
-    
+
     opacity: 0.8,
     paddingLeft: 20,
     paddingRight: 20,
@@ -208,20 +182,20 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     opacity: 0.7,
     borderWidth: 1,
-     
   },
-    inputText: {
-      height: 50,
-      color: "black",
-    },
-  
+  inputText: {
+    height: 50,
+    color: "black",
+  },
+
   searchButton: {
     backgroundColor: "#007bff",
     padding: 10,
     borderRadius: 5,
     marginTop: 100,
     height: 45,
-   width:'80%',alignSelf:'center'
+    width: "80%",
+    alignSelf: "center",
   },
   searchButtonText: {
     color: "#fff",
@@ -239,7 +213,7 @@ const styles = StyleSheet.create({
   itemText: {
     flex: 1,
     marginLeft: 70,
-    top:33
+    top: 33,
   },
   itemImage: {
     height: 50,
@@ -254,12 +228,11 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: "white",
     padding: 35,
-   
   },
   closeButton: {
     position: "absolute",
-   
-   right:15,
+
+    right: 15,
     backgroundColor: "transparent",
     padding: 5,
   },

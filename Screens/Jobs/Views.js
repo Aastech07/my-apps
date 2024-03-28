@@ -1,19 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
   View,
-  TextInput,
-  StyleSheet,
   Text,
   Image,
   FlatList,
-  DrawerLayoutAndroid,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
   Pressable,
 } from "react-native";
 import {
   responsiveWidth,
-  responsiveFontSize,
 } from "react-native-responsive-dimensions";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 

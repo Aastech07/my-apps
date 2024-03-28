@@ -8,43 +8,39 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRoute } from "@react-navigation/native";
 import { api } from "../Api";
 const OtpScreen = () => {
-
-   const data = useRoute();
-   const otp = data.params.id
-   const num = useRoute();
-   const phone = num.params.phone
-   const nums = otp.otp
+  const data = useRoute();
+  const otp = data.params.id;
+  const num = useRoute();
+  const phone = num.params.phone;
+  const nums = otp.otp;
 
   const navigation = useNavigation();
-  const [datas, setData] = useState("");
+
   const [otps, setOtp] = useState("");
 
+  const loginUser = async () => {
+    try {
+      const { data } = await axios.post(`${api}/verify-login`, {
+        phone: phone,
+        otp: otps,
+      });
 
-
-
-  
-const loginUser = async () => {
- 
-  try {
-    const { data } = await axios.post(`${api}/verify-login`, {
-      phone: phone,
-      otp: otps,
-    });
-
-    if (data.message == "Login successful") {
-      navigation.navigate("CreateProfile",{Datas:data});
-    } else {
-      Alert.alert("Login failed:");
+      //   console.warn(data.userProfile);
+      await AsyncStorage.setItem("UserID", data.user._id);
+      if (data.userProfile == null) {
+        navigation.navigate("CreateProfile", { Datas: data });
+      } else {
+        navigation.navigate("BottomNav", { Datas: data });
+        await AsyncStorage.setItem("profileid", data.userProfile._id);
+      }
+    } catch (error) {
+      console.log("Error during login:", error.message);
     }
-  } catch (error) {
-    console.log("Error during login:", error.message);
-   
-  }
-};
-
+  };
 
   const [timer, setTimer] = useState(30);
 
@@ -68,18 +64,12 @@ const loginUser = async () => {
     setOtp("");
   };
 
-
-
-
-
-
   return (
     <View style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ top: 50, left: 30 }}>
         <Text style={{ fontSize: 18, marginBottom: 8 }}>
           We've send you the verification.
         </Text>
-        <Text style={{ fontSize: 16, left: 6 }}>Otp on: {datas}.</Text>
       </View>
       <View style={{ top: 80 }}>
         <OtpInput
@@ -101,14 +91,14 @@ const loginUser = async () => {
       <View style={{ top: 150, position: "absolute", alignSelf: "center" }}>
         <TouchableOpacity onPress={() => loginUser()} style={styles.loginBtn}>
           <Text style={{ color: "white", fontSize: 18, fontWeight: "500" }}>
-            SIGN IN
+            Submit
           </Text>
           <FontAwsome5
             name="arrow-right"
             style={{
               position: "absolute",
               left: 215,
-              backgroundColor: "#3D56F0",
+              backgroundColor: "#874d3b",
               padding: 12,
               borderRadius: 50,
               color: "#fff",
@@ -129,15 +119,16 @@ const loginUser = async () => {
 
         <Text
           style={{
-            color: "blue",
+            color: "#874d3b",
             position: "absolute",
             left: responsiveWidth(68),
           }}
         >
           {`${minutes}:${seconds < 10 ? "0" : ""}${seconds}`}
         </Text>
-        <Text style={{position:"absolute",top:responsiveHeight(5)}}>OTP: {nums}</Text>
-      
+        <Text style={{ position: "absolute", top: responsiveHeight(5) }}>
+          OTP: {nums}
+        </Text>
       </View>
     </View>
   );
@@ -154,7 +145,7 @@ const styles = StyleSheet.create({
   },
   loginBtn: {
     width: "100%",
-    backgroundColor: "#3D50DF",
+    backgroundColor: "#874d3b",
     borderRadius: 15,
     height: 55,
     alignItems: "center",

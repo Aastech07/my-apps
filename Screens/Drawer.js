@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import { StatusBar } from "react-native";
 import {
@@ -12,9 +13,39 @@ import {
 } from "react-native-responsive-dimensions";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const NavigationView = () => {
   const navigation = useNavigation();
+
+  const handleSignOut = () => {
+    Alert.alert(
+      "Sign Out",
+      "Are you sure you want to sign out?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            // Clear AsyncStorage or any other local storage
+            try {
+              await AsyncStorage.removeItem("UserID");
+              await AsyncStorage.clear();
+              // Navigate to Home or any other initial screen after sign out
+              navigation.navigate("SignUp"); // Change 'Home' to your desired screen
+            } catch (error) {
+              console.error("Error clearing async storage:", error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <StatusBar
@@ -47,7 +78,7 @@ const NavigationView = () => {
           elevation: 2,
           zIndex: 10,
         }}
-        onPress={() => navigation.navigate("ProfileScreen")}
+        onPress={() => navigation.navigate("Profile")}
       >
         <FontAwesome name="user" size={22} color={"black"} />
       </TouchableOpacity>
@@ -142,10 +173,7 @@ const NavigationView = () => {
           <Text style={styles.itemText}>Helps & FAQs</Text>
         </TouchableOpacity>
         <View style={{ borderBottomWidth: 1, bottom: 5, opacity: 0.4 }}></View>
-        <TouchableOpacity
-          style={styles.item}
-          onPress={() => navigation.navigate("SignOut")}
-        >
+        <TouchableOpacity style={styles.item} onPress={() => handleSignOut()}>
           <FontAwesome name="sign-in-alt" size={17} style={{ opacity: 0.6 }} />
           <Text style={styles.itemText}>Sign Out</Text>
         </TouchableOpacity>

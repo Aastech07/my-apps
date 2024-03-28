@@ -1,75 +1,164 @@
-import React from "react";
-import { View } from "react-native";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Buy from "./Buy";
 import Sell from "./Sell";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import ManageView from "./ManageView";
-const Tab = createMaterialTopTabNavigator();
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { api } from "../Api";
 
 const ByAndSellNav = () => {
-  return (
-    <View style={{ flex: 1 }}>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarLabelStyle: { fontSize: 16 },
-          tabBarStyle: { height: 55 },
-          swipeEnabled: false,
-          tabBarIcon: ({ focused, color }) => {
-            let IconComponent;
-            let iconName;
-            if (route.name === "Buy") {
-              IconComponent = FontAwesome5;
-              iconName = focused ? "shopping-cart" : "shopping-cart";
-            } else if (route.name === "Sell") {
-              IconComponent = FontAwesome5;
-              iconName = focused ? "cash-register" : "cash-register";
-            } else if (route.name === "Manage View") {
-              IconComponent = FontAwesome5;
-              iconName = focused ? "eye" : "eye-slash";
-            }
-            return <IconComponent name={iconName} size={17} color={color} />;
-          },
-        })}
+  const [activeTab, setActiveTab] = useState("Buy");
+  const [data, setData] = useState("");
+  const [views, setView] = useState("Public Propertys");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const profileId = await AsyncStorage.getItem("profileid");
+
+        if (profileId !== null) {
+          const [
+            cars,
+            bikes,
+            electronics,
+            bicycles,
+            fashion,
+            furniture,
+            tablets,
+            phones,
+            accessories,
+          ] = await Promise.all([
+            axios.get(`${api}/cars`),
+            axios.get(`${api}/bikes`),
+            axios.get(`${api}/electronics`),
+            axios.get(`${api}/bicycles`),
+            axios.get(`${api}/fashion`),
+            axios.get(`${api}/furniture`),
+            axios.get(`${api}/tablets`),
+            axios.get(`${api}/phones`),
+            axios.get(`${api}/accessories`),
+          ]);
+
+          const allData = [
+            ...cars.data,
+            ...bikes.data,
+            ...electronics.data,
+            ...bicycles.data,
+            ...fashion.data,
+            ...furniture.data,
+            ...tablets.data,
+            ...phones.data,
+            ...accessories.data,
+          ];
+
+          const filteredProperties = allData.filter(
+            (property) => property.profileId._id === profileId
+          );
+
+          if (filteredProperties.length > 0) {
+            setData(filteredProperties);
+          } else {
+            console.log("No properties found for the matching profileId.");
+          }
+        }
+
+        const view = await AsyncStorage.getItem("View");
+        setView(view);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [data]);
+
+  const renderScreen = () => {
+    switch (activeTab) {
+      case "Buy":
+        return <Buy />;
+      case "Sell":
+        return <Sell />;
+      case "Manage View":
+        return <ManageView />;
+      default:
+        return <Buy />;
+    }
+  };
+
+  const renderTab = (tabName, iconName) => {
+    const isActive = activeTab === tabName;
+    const showTab = tabName !== "Manage View" || (tabName === "Manage View" && data !== null && data !== "");
+
+    if (!showTab) {
+      return null; // Don't render the tab
+    }
+
+    return (
+      <TouchableOpacity
+        key={tabName}
+        style={[styles.tab, isActive && styles.activeTab]}
+        onPress={() => setActiveTab(tabName)}
       >
-        <Tab.Screen
-          name="Buy"
-          component={Buy}
-          options={{
-            tabBarLabelStyle: {
-              fontSize: 10,
-              right: 2,
-              bottom: 5,
-            },
-          }}
+        <FontAwesome5
+          name={iconName}
+          size={17}
+          color={isActive ? "#1e90ff" : "#333"}
         />
+        <Text style={styles.tabText}>{tabName}</Text>
+      </TouchableOpacity>
+    );
+  };
 
-        <Tab.Screen
-          name="Sell"
-          component={Sell}
-          options={{
-            tabBarLabelStyle: {
-              fontSize: 10,
-              right: 2.5,
-              bottom: 5,
-            },
-          }}
-        />
+  return (
+    <View style={styles.container}>
+      {/* Tab Bar */}
+      <View style={styles.tabBar}>
+        {renderTab("Buy", "shopping-cart")}
+        {renderTab("Sell", "cash-register")}
+        {renderTab("Manage View", "eye")}
+      </View>
 
-        <Tab.Screen
-          name="Manage View"
-          component={ManageView}
-          options={{
-            tabBarLabelStyle: {
-              fontSize: 10,
-              right: 2.5,
-              bottom: 5,
-            },
-          }}
-        />
-      </Tab.Navigator>
+      {/* Content */}
+      <View style={styles.content}>{renderScreen()}</View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  tabBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    elevation: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  tab: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: "#1e90ff",
+  },
+  tabText: {
+    fontSize: 12,
+    color: "#333",
+    marginTop: 5,
+  },
+  content: {
+    flex: 1,
+    backgroundColor: "#f9f9f9",
+    padding: 10,
+  },
+});
 
 export default ByAndSellNav;

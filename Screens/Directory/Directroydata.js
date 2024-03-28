@@ -1,13 +1,25 @@
 import React from "react";
-import { ScrollView, View, Image, Text } from "react-native";
+import {
+  ScrollView,
+  View,
+  Image,
+  Text,
+  TouchableOpacity,
+  Linking,
+} from "react-native";
 import {
   responsiveFontSize,
   responsiveHeight,
 } from "react-native-responsive-dimensions";
 import { useRoute } from "@react-navigation/native";
+
 const Directroydata = () => {
   const Values = useRoute();
   const Apidata = Values.params.data;
+
+  const openLink = (url) => {
+    Linking.openURL(url);
+  };
 
   return (
     <ScrollView
@@ -36,7 +48,7 @@ const Directroydata = () => {
             }}
           >
             <Image
-              source={{ uri: Apidata.companyLogo }}
+              source={{ uri: Apidata.images[0] }}
               style={{ height: 100, width: 100 }}
             />
           </View>
@@ -53,26 +65,34 @@ const Directroydata = () => {
                 {Apidata.locality}
               </Text>
             </View>
-            <View
+
+            <TouchableOpacity
               style={{
                 flex: 1,
                 position: "absolute",
                 top: responsiveHeight(10),
                 left: 30,
               }}
+              onPress={() => openLink(`tel:${Apidata.contactNumber}`)}
             >
-              <Text style={{ fontWeight: "300" }}>{Apidata.contactNumber}</Text>
-            </View>
-            <View
+              <Text style={styles.link}>
+                {Apidata.contactNumber}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
               style={{
                 flex: 1,
                 position: "absolute",
                 top: responsiveHeight(13),
                 left: 30,
               }}
+              onPress={() => openLink(`mailto:${Apidata.companyEmail}`)}
             >
-              <Text style={{ fontWeight: "300" }}>{Apidata.companyEmail}</Text>
-            </View>
+              <Text style={styles.link}>
+                {Apidata.companyEmail}
+              </Text>
+            </TouchableOpacity>
 
             <View
               style={{
@@ -90,7 +110,6 @@ const Directroydata = () => {
                 flex: 1,
                 position: "absolute",
                 top: responsiveHeight(20),
-                right: responsiveHeight(20),
                 marginLeft: 50,
               }}
             >
@@ -114,7 +133,7 @@ const Directroydata = () => {
               }}
             >
               <Text style={{ fontWeight: "500" }}>
-                Company:{Apidata.companyName}.
+                Company: {Apidata.companyName}.
               </Text>
             </View>
 
@@ -151,33 +170,21 @@ const Directroydata = () => {
               </Text>
             </View>
 
-            <View
-              style={{
-                flex: 1,
-                position: "absolute",
-                top: responsiveHeight(45),
-                left: 30,
-              }}
-            >
-              <Text style={{ fontWeight: "400" }}>
-                GST Number: {Apidata.gstNumber}
-              </Text>
-            </View>
-
-            <View
+            <TouchableOpacity
               style={{
                 flex: 1,
                 position: "absolute",
                 top: responsiveHeight(48),
                 left: 30,
               }}
+              onPress={() => openLink(Apidata.website)}
             >
-              <Text style={{ fontWeight: "400" }}>
+              <Text style={styles.link}>
                 Website: {Apidata.website}
               </Text>
-            </View>
+            </TouchableOpacity>
 
-            <View
+            <TouchableOpacity
               style={{
                 flex: 1,
                 position: "absolute",
@@ -185,13 +192,16 @@ const Directroydata = () => {
                 left: 15,
                 margin: 15,
               }}
+              onPress={() =>
+                openLink(Apidata.socialMediaLinks && Apidata.socialMediaLinks.facebook)
+              }
             >
-              <Text style={{ fontWeight: "400" }}>
-                facebook: {Apidata.socialMediaLinks.facebook}
+              <Text style={styles.link}>
+                facebook: {Apidata.socialMediaLinks && Apidata.socialMediaLinks.facebook}
               </Text>
-            </View>
+            </TouchableOpacity>
 
-            <View
+            <TouchableOpacity
               style={{
                 flex: 1,
                 position: "absolute",
@@ -199,13 +209,16 @@ const Directroydata = () => {
                 left: 15,
                 margin: 15,
               }}
+              onPress={() =>
+                openLink(Apidata.socialMediaLinks && Apidata.socialMediaLinks.twitter)
+              }
             >
-              <Text style={{ fontWeight: "400" }}>
-                twitter: {Apidata.socialMediaLinks.twitter}
+              <Text style={styles.link}>
+                twitter: {Apidata.socialMediaLinks && Apidata.socialMediaLinks.twitter}
               </Text>
-            </View>
+            </TouchableOpacity>
 
-            <View
+            <TouchableOpacity
               style={{
                 flex: 1,
                 position: "absolute",
@@ -213,16 +226,27 @@ const Directroydata = () => {
                 left: 15,
                 margin: 15,
               }}
+              onPress={() =>
+                openLink(Apidata.socialMediaLinks && Apidata.socialMediaLinks.linkedin)
+              }
             >
-              <Text style={{ fontWeight: "400" }}>
-                linkedin: {Apidata.socialMediaLinks.linkedin}
+              <Text style={styles.link}>
+                linkedin: {Apidata.socialMediaLinks && Apidata.socialMediaLinks.linkedin}
               </Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
     </ScrollView>
   );
+};
+
+const styles = {
+  link: {
+    fontWeight: "400",
+    color: "#007bff", // Blue color for links
+    textDecorationLine: "underline", // Underline for links
+  },
 };
 
 export default Directroydata;

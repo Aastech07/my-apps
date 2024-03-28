@@ -66,7 +66,7 @@ const ManagePost = () => {
   };
 
   const handleUpdate = (post) => {
-    navigation.navigate("Edit",{data:post._id});
+    navigation.navigate("Edit", { data: post._id });
   };
 
   const renderItem = ({ item }) => (
@@ -80,7 +80,9 @@ const ManagePost = () => {
           {item.location} . {item.educationLevel} . {item.experienceLevel}
         </Text>
       </TouchableWithoutFeedback>
-      <View style={{ flexDirection: "row", justifyContent: "flex-end",top:10 }}>
+      <View
+        style={{ flexDirection: "row", justifyContent: "flex-end", top: 10 }}
+      >
         <TouchableOpacity onPress={() => toggleMenu(item._id)}>
           <Text style={styles.menuText}>...</Text>
         </TouchableOpacity>
@@ -116,13 +118,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingHorizontal: responsiveWidth(3),
+    paddingHorizontal: responsiveWidth(1),
     marginBottom: 55,
   },
   heading: {
     fontSize: 20,
     fontWeight: "bold",
     marginVertical: 10,
+    opacity: 0.7,
+    left: 10,
   },
   postContainer: {
     backgroundColor: "#fff",
@@ -133,7 +137,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 3,marginHorizontal:3,top:5
+    elevation: 3,
+    marginHorizontal: 3,
+    top: 5,
   },
   title: {
     fontSize: 18,

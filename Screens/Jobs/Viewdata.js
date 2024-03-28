@@ -8,7 +8,6 @@ const Viewdata = () => {
   const navigation = useNavigation();
   const Data = useRoute();
   const Value = Data.params.data;
-  const Id = Value.idMeal;
 
   const images =
     "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg";

@@ -6,9 +6,15 @@ const SplashScreen = () => {
   const navigation = useNavigation();
 
   const getData = async () => {
-    
+    const userId = await AsyncStorage.getItem("UserID")
+    const Profileid = await AsyncStorage.getItem("UserID")
     setTimeout(() => {
-      navigation.navigate("SignUp");
+      if (!userId && !Profileid) {
+        navigation.navigate("SignUp");
+      } else {
+        navigation.navigate("BottomNav");
+      }
+     
     }, 1000);
   };
 
@@ -16,24 +22,19 @@ const SplashScreen = () => {
     getData();
   }, []);
   return (
-    <View style={{ alignItems: "center", justifyContent: "center", flex: 1,backgroundColor:'#fff' }}>
-      <View style={{ bottom: 90 }}>
+    <View
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1,
+        backgroundColor: "#874d3b",
+      }}
+    >
+      <View style={{}}>
         <Image
-          source={require("../assets/Splashs.png")}
-          style={{ width: 48, height: 50 }}
+          source={require("../assets/PAREKH MOTU TAD LOGO.png")}
+          style={{ width: 300, height: 100 }}
         />
-        <Text
-          style={{
-            top: 70,
-            fontSize: 40,
-            position: "absolute",
-            fontWeight: "500",
-            alignSelf: "center",
-            color: "#5669FF",
-          }}
-        >
-          Community
-        </Text>
       </View>
     </View>
   );
