@@ -11,9 +11,7 @@ import {
   Modal,
   Alert,
 } from "react-native";
-import Animated, {
-  FadeInLeft
-} from "react-native-reanimated";
+import Animated, { FadeInLeft } from "react-native-reanimated";
 import {
   responsiveHeight,
   responsiveWidth,
@@ -25,16 +23,11 @@ import { SelectList } from "react-native-dropdown-select-list";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
-import { useNavigation,useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+
 import { api } from "../Api";
 const FamilyTree = () => {
-  const Api = api;
-  const datas = useRoute();
-  const ids = datas.params.data;
-  console.warn(ids)
-  
-  
   const [filteredData, setFilteredData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [fullname, setFullName] = useState("");
@@ -88,23 +81,39 @@ const FamilyTree = () => {
 
   const FetchUser = async () => {
     try {
-      const { data } = await axios.get(`${Api}/profiles`, {});
+      const { data } = await axios.get(`${api}/profiles`, {});
       setData(data);
     } catch (error) {
       console.error("Error during login:", error.message);
     }
   };
 
+  const [profileid, setProfileID] = useState("");
+  const [userid, setUserID] = useState("");
+  useEffect(() => {
+    const storeData = async () => {
+      try {
+        const userId = await AsyncStorage.getItem("UserID");
+        const ProfileId = await AsyncStorage.getItem("profileid");
+        setProfileID(ProfileId);
+        setUserID(userId);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    storeData();
+  }, []);
+
   const MemberPost = async () => {
-  
     try {
-      const { data } = await axios.post(`${Api}/members`, {
-        profileId: id,
-        userId:ids,
+      const { data } = await axios.post(`${api}/members`, {
+        profileId: profileid,
+        userId: userid,
         fullname: fullname,
         Relationship: relationship,
       });
       console.warn(data);
+      await AsyncStorage.setItem("Fmailyid", data._id);
     } catch (error) {
       console.log("Error during login:", error.message);
     }
@@ -128,7 +137,7 @@ const FamilyTree = () => {
         "Please fill in all the required fields before proceeding."
       );
     } else {
-      
+      Alert.alert("Save Information", "Save FamilyTree in members.");
     }
   };
 
@@ -155,7 +164,7 @@ const FamilyTree = () => {
 
   const addItemToList = async () => {
     if (fullname.trim() === "") {
-      return; 
+      return;
     }
 
     const newFamilyMember = { fullname, relationship };
@@ -175,7 +184,8 @@ const FamilyTree = () => {
     await saveListData(newListData);
   };
 
-  const img ="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.632798143.1705622400&semt=ais";
+  const img =
+    "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.632798143.1705622400&semt=ais";
 
   useEffect(() => {
     (async () => {
@@ -208,7 +218,6 @@ const FamilyTree = () => {
   }
 
   const pickImage = async () => {
-  
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -278,7 +287,7 @@ const FamilyTree = () => {
           style={{
             width: responsiveWidth(100),
             height: 90,
-            backgroundColor: "#3468C0",
+            backgroundColor: "#874d3b",
             position: "absolute",
             bottom: 0,
             top: -1,
@@ -550,69 +559,25 @@ const FamilyTree = () => {
                       opacity: 0.6,
                     }}
                   >
-                    Add Member
+                  Member
                   </Text>
-                  <View style={styles.inputView}>
-                    <TextInput
-                      style={styles.inputText}
-                      placeholder="Add Member"
-                      placeholderTextColor="black"
-                      onChangeText={(txt) => setFullName(txt)}
-                      value={fullname}
-                    />
-                    <FontAwesome5Icon
-                      name="users"
-                      size={16}
-                      style={{
-                        position: "absolute",
-                        left: 7,
-                        top: responsiveHeight(2.5),
-                        opacity: 0.6,
+                  <View style={{top:180}}>
+                  <SelectList
+                      setSelected={(val) => setRelationship(val)}
+                      data={Relationship}
+                      save="value"
+                      boxStyles={{
+                        marginLeft: responsiveWidth(5),
+                        marginRight: responsiveWidth(5),
                       }}
-                      color={"#000"}
+                      dropdownStyles={{
+                        marginLeft: responsiveWidth(5),
+                        marginRight: responsiveWidth(5),
+                      }}
                     />
-                  </View>
+                    </View>
                 </View>
 
-                <View style={styles.inputView}>
-                  <TouchableOpacity
-                    onPress={() => setSearchMember(!searchmember)}
-                  >
-                    {fullname ? (
-                      <Text
-                        style={{
-                          top: responsiveHeight(2),
-                          opacity: 0.7,
-                          left: 10,
-                        }}
-                      >
-                        {fullname}
-                      </Text>
-                    ) : (
-                      <Text
-                        style={{
-                          top: responsiveHeight(2),
-                          opacity: 0.7,
-                          left: 10,
-                        }}
-                      >
-                        Search Member
-                      </Text>
-                    )}
-
-                    <FontAwesome5Icon
-                      name="search"
-                      size={16}
-                      style={{
-                        position: "absolute",
-                        top: 16,
-                        opacity: 0.7,
-                        right: responsiveWidth(76),
-                      }}
-                      color={"#000"}
-                    />
-                  </TouchableOpacity>
-                </View>
 
                 <View style={{ marginTop: 15 }}>
                   <View style={{ top: responsiveHeight(24.5) }}>
@@ -695,44 +660,7 @@ const FamilyTree = () => {
               </View>
             </Modal>
 
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={searchmember}
-              onRequestClose={() => setSearchMember(!searchmember)}
-            >
-              <View style={{ flex: 1, backgroundColor: "#fff" }}>
-                <View style={{ flex: 1 }}>
-                  <View style={styles.inputView1}>
-                    <TextInput
-                      style={styles.inputText}
-                      placeholder="Search..."
-                      placeholderTextColor="black"
-                      edile={true}
-                      onChangeText={(txt) => setSearchText(txt)}
-                      value={searchText}
-                    />
-                    <FontAwesome5Icon
-                      name="search"
-                      size={19}
-                      style={{
-                        position: "absolute",
-
-                        opacity: 0.4,
-                        right: responsiveWidth(80),
-                      }}
-                      color={"#000"}
-                    />
-                  </View>
-
-                  <View style={{ top: 30, marginBottom: 120 }}>
-                    {searchText.length > 0 ? (
-                      <FlatList data={filteredData} renderItem={renderItem} />
-                    ) : null}
-                  </View>
-                </View>
-              </View>
-            </Modal>
+           
           </View>
         </View>
       </ScrollView>
@@ -740,7 +668,7 @@ const FamilyTree = () => {
         <TouchableOpacity
           style={{
             width: "50%",
-            backgroundColor: "#3D50DF",
+            backgroundColor: "#874d3b",
             borderRadius: 5,
             height: 50,
             alignItems: "center",
@@ -750,8 +678,8 @@ const FamilyTree = () => {
             alignSelf: "center",
             borderColor: "blue",
           }}
-          onPress={() => navigation.navigate("Education",{data:ids})} >
-
+          onPress={() => navigation.navigate("Education")}
+        >
           <Text style={{ color: "white", fontSize: 16, fontWeight: "500" }}>
             Next
           </Text>
@@ -760,7 +688,7 @@ const FamilyTree = () => {
             style={{
               position: "absolute",
               left: 135,
-              backgroundColor: "#3D56F0",
+              backgroundColor: "#874d3b",
               padding: 12,
               borderRadius: 50,
               color: "#fff",
@@ -783,10 +711,10 @@ const FamilyTree = () => {
             alignSelf: "center",
             borderColor: "tomato",
           }}
-          onPress={() => addItemToList() + MemberPost()}
+          onPress={() => addItemToList() + MemberPost() + validate()}
         >
           <Text style={{ color: "tomato", fontSize: 16, fontWeight: "500" }}>
-            Save
+            ADD
           </Text>
         </TouchableOpacity>
       </View>
@@ -904,5 +832,4 @@ const styles = StyleSheet.create({
     height: 50,
     color: "black",
   },
-  
 });

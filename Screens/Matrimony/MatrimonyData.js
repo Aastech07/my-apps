@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Share,
-  Image,
-} from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { ChevronLeftIcon } from "react-native-heroicons/outline";
 
@@ -16,7 +9,6 @@ import Animated, {
   FadeInDown,
 } from "react-native-reanimated";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-
 import { StatusBar } from "react-native";
 import {
   responsiveFontSize,
@@ -31,26 +23,6 @@ const MatrimonyData = () => {
 
   const handleNavigateBack = () => {
     navigation.goBack();
-  };
-
-  const onShare = async () => {
-    try {
-      const result = await Share.share({
-        message:
-          "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg",
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (error) {
-      Alert.alert(error.message);
-    }
   };
 
   const calculateAge = (dateOfBirth) => {
@@ -91,19 +63,16 @@ const MatrimonyData = () => {
         <Animated.View
           entering={FadeInLeft.duration(500).damping()}
           style={{
-            backgroundColor: "#000000",
             right: responsiveWidth(39),
             bottom: 360,
             padding: 5,
             borderRadius: 50,
-            shadowColor: "black",
-            shadowOpacity: 0.9,
+
             shadowRadius: 50,
-            elevation: 6,
           }}
         >
           <TouchableOpacity onPress={() => handleNavigateBack()}>
-            <ChevronLeftIcon size={27} strokeWidth={4.5} color={"#fff"} />
+            <ChevronLeftIcon size={27} strokeWidth={4.5} color={"#000"} />
           </TouchableOpacity>
         </Animated.View>
 
@@ -128,22 +97,6 @@ const MatrimonyData = () => {
             />
           </TouchableOpacity>
         </Animated.View>
-
-        <Animated.View
-          entering={FadeInRight.duration(500).damping()}
-          style={{
-            bottom: 390,
-
-            left: responsiveWidth(33),
-          }}
-        >
-          <TouchableOpacity onPress={() => onShare()}>
-            <Image
-              source={require("/Community/my-apps/my-apps/assets/share.png")}
-              style={{ width: 20, height: 22, top: 10, left: 10, opacity: 0.4 }}
-            />
-          </TouchableOpacity>
-        </Animated.View>
       </View>
 
       <Animated.View
@@ -154,7 +107,7 @@ const MatrimonyData = () => {
           name="check-circle"
           color={"green"}
           size={18}
-          style={{ position: "absolute", left: -25, top: 3 }}
+          style={{ position: "absolute", left: -25, top: 50 }}
         />
         <Text style={{ fontWeight: "600", fontSize: 16, color: "#fff" }}></Text>
         <Text
@@ -162,12 +115,12 @@ const MatrimonyData = () => {
             fontWeight: "600",
             fontSize: 14,
             color: "#fff",
-            top: 29,
+            top: 70,
             position: "absolute",
             left: -20,
           }}
         >
-          yrs, 5'2" .
+          {calculateAge(Value.profileId.dateOfBirth)} yrs, 5'2" .
         </Text>
         <Text
           style={{
@@ -191,7 +144,7 @@ const MatrimonyData = () => {
         ></Text>
       </Animated.View>
 
-      <View style={{ bottom: 100 }}>
+      <View style={{ bottom: 90, marginBottom: 10 }}>
         <View
           style={{
             alignItems: "center",
@@ -411,7 +364,7 @@ const MatrimonyData = () => {
               borderColor: "green",
             }}
           >
-            Created by Self
+            Created by {Value.profileCreatedBy}
           </Text>
           <Text
             style={{
@@ -442,7 +395,7 @@ const MatrimonyData = () => {
               borderColor: "green",
             }}
           >
-            yrs old
+            {calculateAge(Value.profileId.dateOfBirth)} yrs old
           </Text>
 
           <Text
@@ -458,7 +411,7 @@ const MatrimonyData = () => {
               borderColor: "green",
             }}
           >
-            Height - 5'2"
+            {Value.height} Height
           </Text>
 
           <View style={{ flexDirection: "row", right: 100 }}>
@@ -481,7 +434,9 @@ const MatrimonyData = () => {
             <Text style={{ fontSize: 13, left: 10 }}>Birth Date</Text>
             <Text
               style={{ fontSize: 15, left: 45, position: "absolute", top: 15 }}
-            ></Text>
+            >
+              {limets(Value.profileId.dateOfBirth)}
+            </Text>
           </View>
 
           <View style={{ flexDirection: "row", right: 90, marginTop: 20 }}>
@@ -505,7 +460,7 @@ const MatrimonyData = () => {
             <Text
               style={{ fontSize: 15, left: 45, position: "absolute", top: 15 }}
             >
-              {Value.maritalStatus}
+              {Value.profileId.maritalStatus}
             </Text>
           </View>
 
@@ -529,7 +484,9 @@ const MatrimonyData = () => {
             <Text style={{ fontSize: 13, left: 10 }}>Lives in</Text>
             <Text
               style={{ fontSize: 15, left: 45, position: "absolute", top: 15 }}
-            ></Text>
+            >
+              {Value.profileId.address.country}
+            </Text>
           </View>
 
           <View style={{ flexDirection: "row", right: 55, marginTop: 20 }}>
@@ -659,45 +616,28 @@ const MatrimonyData = () => {
               }}
             />
           </View>
-          <Text
-            style={{
-              fontSize: 13,
-              left: responsiveWidth(22),
-              position: "absolute",
-              bottom: 110,
-            }}
-          >
-            Contact No.
-          </Text>
-          <Text
-            style={{
-              fontSize: 15,
-              left: responsiveWidth(22),
-              position: "absolute",
-              bottom: 90,
-            }}
-          >
-            {/*Value.userId.phone*/}
-          </Text>
 
-          <View style={{ flexDirection: "row", right: 90, marginTop: 35 }}>
-            <FontAwesome5
-              name="envelope"
-              size={17}
-              color={"red"}
+          <View style={{ top: 100, right: 100 }}>
+            <Text
               style={{
-                backgroundColor: "#fff",
-                padding: 5,
-                borderRadius: 20,
-                shadowColor: "#000",
+                fontSize: 13,
 
-                shadowRadius: 20,
-                elevation: 2,
-                paddingHorizontal: 10,
-                right: 37,
-                paddingVertical: 9,
+                position: "absolute",
+                bottom: 110,
               }}
-            />
+            >
+              Contact No:
+            </Text>
+            <Text
+              style={{
+                fontSize: 15,
+
+                position: "absolute",
+                bottom: 90,
+              }}
+            >
+              {Value.userId.phone}
+            </Text>
           </View>
         </View>
       </View>
@@ -764,10 +704,10 @@ const MatrimonyData = () => {
             style={{
               fontSize: 17,
               fontWeight: 500,
-              right: responsiveWidth(25),
+              right: responsiveWidth(20),
             }}
           >
-            Basic Details
+            Career & Education
           </Text>
 
           <View style={{ flexDirection: "row", right: 100, marginTop: 10 }}>
@@ -841,7 +781,7 @@ const MatrimonyData = () => {
             <Text
               style={{ fontSize: 15, left: 45, position: "absolute", top: 15 }}
             >
-              {Value.educationAndCareer.annualIncome}
+              {Value.partnerPreferences.maxIncome},LPA
             </Text>
           </View>
 

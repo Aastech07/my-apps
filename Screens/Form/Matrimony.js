@@ -1,19 +1,14 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ScrollView,
   View,
   Text,
   StyleSheet,
   Modal,
-  Pressable,
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import Animated, {
-  FadeInUp,
-  FadeInLeft,
-  FadeInDown,
-} from "react-native-reanimated";
+import Animated, { FadeInLeft } from "react-native-reanimated";
 import {
   responsiveHeight,
   responsiveWidth,
@@ -21,14 +16,36 @@ import {
 } from "react-native-responsive-dimensions";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import { SelectList } from "react-native-dropdown-select-list";
-import DateTimePicker from "react-native-ui-datepicker";
-import Slider from "@react-native-community/slider";
 import dayjs from "dayjs";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { api } from "../Api";
-const Matrimonys = () => {
+import { ImagePicker } from "expo-image-multiple-picker";
+import { EthnicOriginOptions, Genders } from "./ProfileEdit/MatrimonyApi";
+import { GrewUpInOptions } from "./ProfileEdit/MatrimonyApi";
+import { WorkingAsOptions } from "./ProfileEdit/MatrimonyApi";
+import { HighestQualifications } from "./ProfileEdit/MatrimonyApi";
+import { Professions } from "./ProfileEdit/MatrimonyApi";
+import { Lifestyle } from "./ProfileEdit/MatrimonyApi";
+import { AstroDetails } from "./ProfileEdit/MatrimonyApi";
+import { FamilyValue } from "./ProfileEdit/MatrimonyApi";
+import { FamilyType } from "./ProfileEdit/MatrimonyApi";
+import { Disability } from "./ProfileEdit/MatrimonyApi";
+import { Educations } from "./ProfileEdit/MatrimonyApi";
+import { MotherStatus } from "./ProfileEdit/MatrimonyApi";
+import { fatherStatus } from "./ProfileEdit/MatrimonyApi";
+import { Community } from "./ProfileEdit/MatrimonyApi";
+import { Height } from "./ProfileEdit/MatrimonyApi";
+import { bloodGroup } from "./ProfileEdit/MatrimonyApi";
+import { HealthInformation } from "./ProfileEdit/MatrimonyApi";
+import { WorkingWithOptions } from "./ProfileEdit/MatrimonyApi";
+import { ProfileCreatedBy } from "./ProfileEdit/MatrimonyApi";
+import RangeSlider from "react-native-range-slider-expo";
+import { MaxIncome } from "./ProfileEdit/MatrimonyApi";
+
+const Matrimony = () => {
+  const navigation = useNavigation();
 
   const [userid, setUserID] = useState();
   const [profileid, setProfileid] = useState();
@@ -36,458 +53,23 @@ const Matrimonys = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const value = await AsyncStorage.getItem('UserID');
-        const value1 = await AsyncStorage.getItem('profileid');
+        const value = await AsyncStorage.getItem("UserID");
+        const value1 = await AsyncStorage.getItem("profileid");
         if (value !== null) {
-          setUserID(value)
-          setProfileid(value1)
-          console.warn(value)
+          setUserID(value);
+          setProfileid(value1);
         }
       } catch (e) {
-        console.log(e)
-
+        console.log(e);
       }
     };
-    getData()
-  }, [])
+    getData();
+  }, []);
 
-
-  const navigation = useNavigation();
-
-  const ProfileCreatedBy = [
-    { key: "1", value: "Self" },
-    { key: "2", value: "Parent/Guardian" },
-    { key: "3", value: "Sibling" },
-    { key: "4", value: "Friend" },
-    { key: "5", value: "Other" },
-  ];
-
-  const WorkingWithOptions = [
-    { key: "1", value: "Private Company" },
-    { key: "2", value: "Government/Public Sector" },
-    { key: "3", value: "Self-Employed" },
-    { key: "4", value: "Business/Entrepreneur" },
-    { key: "5", value: "Not Working" },
-    { key: "6", value: "Other" },
-  ];
-
-
-  const HealthInformation = [
-    { key: "1", value: "No Health Problems" },
-    { key: "2", value: "HIV positive" },
-    { key: "3", value: "Diabetes" },
-    { key: "4", value: "Low BP" },
-    { key: "5", value: "High BP" },
-    { key: "6", value: "Heart Ailments" },
-    { key: "7", value: "other" },
-  ];
-
-  const bloodGroup = [
-    { key: "1", value: "Don't Know" },
-    { key: "2", value: "A+" },
-    { key: "3", value: "A-" },
-    { key: "4", value: "B+" },
-    { key: "5", value: "B-" },
-    { key: "6", value: "AB+" },
-    { key: "7", value: "AB-" },
-    { key: "8", value: "O+" },
-    { key: "9", value: "O-" },
-  ];
-
-  const Height = [
-    { key: "1", value: "4ft" },
-    { key: "2", value: "4.11ft" },
-    { key: "3", value: "5ft" },
-    { key: "4", value: "5.11ft" },
-    { key: "5", value: "6ft" },
-  ];
-
-  const MaritalStatus = [
-    { key: "1", value: "Not married" },
-    { key: "2", value: "Married" },
-  ];
-
-  const Religion = [
-    { key: "1", value: "Doesn't Matter" },
-    { key: "2", value: "Hindu" },
-    { key: "3", value: "Muslim" },
-    { key: "4", value: "Christian" },
-    { key: "5", value: "Sikh" },
-    { key: "6", value: "Parsi" },
-    { key: "7", value: "Jain" },
-    { key: "8", value: "Buddhist" },
-    { key: "9", value: "Jewish" },
-    { key: "10", value: "No Religion" },
-    { key: "11", value: "Spritual - not religious" },
-    { key: "11", value: "Other" },
-  ];
-
-  const MotherTongue = [
-    { key: "1", value: "Doesn't Matter" },
-    { key: "2", value: "Assamese" },
-    { key: "3", value: "Bengali" },
-    { key: "4", value: "English" },
-    { key: "5", value: "Gujarati" },
-    { key: "6", value: "Hindi" },
-    { key: "7", value: "Kannada" },
-    { key: "8", value: "Konkani" },
-    { key: "9", value: "Malayalam" },
-    { key: "10", value: "Marathi" },
-    { key: "11", value: "Marwari" },
-    { key: "11", value: "Odia" },
-    { key: "12", value: "Punjabi" },
-    { key: "13", value: "Sindhi" },
-    { key: "14", value: "Tamil" },
-    { key: "15", value: "Telugu" },
-    { key: "16", value: "Urdu" },
-    { key: "17", value: "Aka" },
-    { key: "18", value: "Arabic" },
-    { key: "19", value: "Arunachali" },
-    { key: "20", value: "Awadhi" },
-    { key: "21", value: "Baluchi" },
-    { key: "22", value: "Bhojpuri" },
-    { key: "23", value: "Bhutia" },
-    { key: "24", value: "Brahui" },
-    { key: "25", value: "Brij" },
-    { key: "26", value: "Burmese" },
-    { key: "27", value: "Chattisgarhi" },
-    { key: "28", value: "Chinese" },
-    { key: "29", value: "Coorgi" },
-    { key: "30", value: "Dogi" },
-    { key: "31", value: "French" },
-    { key: "32", value: "Garhwali" },
-    { key: "33", value: "Garo" },
-    { key: "34", value: "Haryanavi" },
-    { key: "35", value: "Himachali/Pahari" },
-    { key: "36", value: "Hindko" },
-    { key: "37", value: "Kakbarak" },
-    { key: "38", value: "Kanauji" },
-    { key: "39", value: "Kashmiri" },
-    { key: "40", value: "Khandesi" },
-    { key: "41", value: "Khasi" },
-    { key: "42", value: "Koshali" },
-    { key: "43", value: "Kumaoni" },
-    { key: "44", value: "Kutchi" },
-    { key: "45", value: "Ladakhi" },
-    { key: "46", value: "Lepcha" },
-    { key: "47", value: "Magahi" },
-    { key: "48", value: "Maithili" },
-    { key: "49", value: "Malay" },
-    { key: "50", value: "Manipuri" },
-    { key: "51", value: "Miji" },
-    { key: "52", value: "Mizo" },
-    { key: "53", value: "Monpa" },
-    { key: "54", value: "Nepali" },
-    { key: "55", value: "Pashto" },
-    { key: "56", value: "Persian" },
-    { key: "57", value: "Rajasthani" },
-    { key: "58", value: "Russian" },
-    { key: "59", value: "Santhali" },
-    { key: "60", value: "Seraiki" },
-    { key: "61", value: "Sinhala" },
-    { key: "62", value: "Sourashtra" },
-    { key: "63", value: "Spanish" },
-    { key: "64", value: "Swedish" },
-    { key: "65", value: "Tagalog" },
-    { key: "66", value: "Tulu" },
-    { key: "67", value: "Other" },
-  ];
-
-  const Community = [
-    { key: "1", value: "Digambar" },
-    { key: "2", value: "Shetamber" },
-    { key: "3", value: "Vania" },
-    { key: "4", value: "Porwal" },
-  ];
-
-  const fatherStatus = [
-    { key: "1", value: "Employed" },
-    { key: "2", value: "Business" },
-    { key: "3", value: "Retired" },
-    { key: "4", value: "Not Employed" },
-    { key: "5", value: "Passed Away" },
-  ];
-
-  const MotherStatus = [
-    { key: "1", value: "Employed" },
-    { key: "2", value: "Business" },
-    { key: "3", value: "Retired" },
-    { key: "4", value: "Homemaker" },
-    { key: "5", value: "Passed Away" },
-  ];
-
-  const Education = [
-    { key: "1", value: "High School Graduate" },
-    { key: "2", value: "Associate's Degree" },
-    { key: "3", value: "Bachelor's Degree" },
-    { key: "4", value: "Master's Degree" },
-    { key: "5", value: "Doctorate or Professional Degree" },
-  ];
-
-
-  const Affluence = [
-    { key: "1", value: "Affluent" },
-    { key: "2", value: "Upper Middle Class" },
-    { key: "3", value: "Middle Class" },
-    { key: "4", value: "Lower Middle Class" },
-  ];
-
-
-
-  const Countrys = [
-    { key: "2", value: "India" },
-    { key: "3", value: "USA" },
-    { key: "4", value: "UK" },
-    { key: "5", value: "UAE" },
-    { key: "6", value: "Canada" },
-    { key: "7", value: "Australia" },
-    { key: "8", value: "New Zealand" },
-    { key: "9", value: "Pakistan" },
-    { key: "10", value: "Saudi Arabia" },
-    { key: "11", value: "Kuwait" },
-    { key: "12", value: "South Africa" },
-    { key: "13", value: "Germany" },
-    { key: "14", value: "France" },
-    { key: "15", value: "Brazil" },
-    { key: "16", value: "China" },
-    { key: "17", value: "Japan" },
-    { key: "18", value: "Singapore" },
-    { key: "19", value: "Malaysia" },
-    { key: "20", value: "Thailand" },
-    { key: "21", value: "Netherlands" },
-    { key: "22", value: "Sweden" },
-    { key: "23", value: "Norway" },
-    { key: "24", value: "Denmark" },
-    { key: "25", value: "Switzerland" },
-    { key: "26", value: "Spain" },
-    { key: "27", value: "Italy" },
-    { key: "28", value: "Portugal" },
-    { key: "29", value: "Russia" },
-    { key: "30", value: "South Korea" },
-    { key: "31", value: "Other" },
-    // Add more countries as needed
-  ];
-
-
-
-
-  const Genders = [
-    { key: "1", value: "Male" },
-    { key: "2", value: "Female" },
-  ];
-
-  const Disability = [
-    { key: "1", value: "None" },
-    { key: "2", value: "Physical Disability" },
-  ];
-
-  const Family = [
-    { key: "1", value: "Joint" },
-    { key: "2", value: "Nuclear" },
-  ];
-
-  const FamilyValue = [
-    { key: "1", value: "Traditional" },
-    { key: "2", value: "Moderate" },
-    { key: "3", value: "Liberal" },
-  ];
-
-  const AstroDetails = [
-    { key: "1", value: "yes" },
-    { key: "2", value: "No" },
-    { key: "3", value: "NotSure" },
-  ];
-
-  const Lifestyle = [
-    { key: "1", value: "Veg" },
-    { key: "2", value: "Non-Veg" },
-    { key: "3", value: "Occasionally Non-Veg" },
-    { key: "4", value: "Eggetarian" },
-    { key: "5", value: "Jain" },
-    { key: "5", value: "Vegan" },
-  ];
-
-  const Profession = [
-    { key: "1", value: "Software Engineer" },
-    { key: "2", value: "Teacher" },
-    { key: "3", value: "Doctor" },
-    { key: "4", value: "Accountant" },
-    { key: "5", value: "Marketing Manager" },
-    { key: "6", value: "Graphic Designer" },
-    { key: "7", value: "Nurse" },
-    { key: "8", value: "Engineer" },
-    { key: "9", value: "Architect" },
-    { key: "10", value: "Lawyer" },
-    { key: "11", value: "Chef" },
-    { key: "12", value: "Financial Analyst" },
-    { key: "13", value: "Pharmacist" },
-    { key: "14", value: "Police Officer" },
-    { key: "15", value: "Artist" },
-    // Add more professions as needed
-  ];
-
-  const Nakshatra = [
-    { key: "1", value: "Ashwini" },
-    { key: "2", value: "Bharani" },
-    { key: "3", value: "Krittika" },
-    { key: "4", value: "Rohini" },
-    { key: "5", value: "Mrigashira" },
-    { key: "6", value: "Ardra" },
-    { key: "7", value: "Punarvasu" },
-    { key: "8", value: "Pushya" },
-    { key: "9", value: "Ashlesha" },
-    { key: "10", value: "Magha" },
-    { key: "11", value: "Purva Phalguni" },
-    { key: "12", value: "Uttara Phalguni" },
-    { key: "13", value: "Hasta" },
-    { key: "14", value: "Chitra" },
-    { key: "15", value: "Swati" },
-    { key: "16", value: "Vishakha" },
-    { key: "17", value: "Anuradha" },
-    { key: "18", value: "Jyeshtha" },
-    { key: "19", value: "Mula" },
-    { key: "20", value: "Purva Ashadha" },
-    { key: "21", value: "Uttara Ashadha" },
-    { key: "22", value: "Shravana" },
-    { key: "23", value: "Dhanishta" },
-    { key: "24", value: "Shatabhisha" },
-    { key: "25", value: "Purva Bhadrapada" },
-    { key: "26", value: "Uttara Bhadrapada" },
-    { key: "27", value: "Revati" },
-    { key: "28", value: "Ashwini" },
-    { key: "29", value: "Bharani" },
-    { key: "30", value: "Krittika" },
-    // Add more Nakshatras as needed
-  ];
-
-  const HighestQualification = [
-    { key: "1", value: "High School Diploma" },
-    { key: "2", value: "Associate's Degree" },
-    { key: "3", value: "Bachelor's Degree" },
-    { key: "4", value: "Master's Degree" },
-    { key: "5", value: "Doctorate or Professional Degree" },
-    { key: "6", value: "Other" },
-  ];
-
-  const WorkingAsOptions = [
-    { key: "1", value: "Software Engineer" },
-    { key: "2", value: "Teacher" },
-    { key: "3", value: "Doctor" },
-    { key: "4", value: "Accountant" },
-    { key: "5", value: "Marketing Manager" },
-    { key: "6", value: "Business Analyst" },
-    { key: "7", value: "Artist" },
-    { key: "8", value: "Engineer" },
-    { key: "9", value: "Entrepreneur" },
-    { key: "10", value: "Not Applicable" },
-    { key: "11", value: "Other" },
-  ];
-
-  const StateLivingInIndiaOptions = [
-    { key: "1", value: "Andhra Pradesh" },
-    { key: "2", value: "Arunachal Pradesh" },
-    { key: "3", value: "Assam" },
-    { key: "4", value: "Bihar" },
-    { key: "5", value: "Chhattisgarh" },
-    { key: "6", value: "Goa" },
-    { key: "7", value: "Gujarat" },
-    { key: "8", value: "Haryana" },
-    { key: "9", value: "Himachal Pradesh" },
-    { key: "10", value: "Jharkhand" },
-    { key: "11", value: "Karnataka" },
-    { key: "12", value: "Kerala" },
-    { key: "13", value: "Madhya Pradesh" },
-    { key: "14", value: "Maharashtra" },
-    { key: "15", value: "Manipur" },
-    { key: "16", value: "Meghalaya" },
-    { key: "17", value: "Mizoram" },
-    { key: "18", value: "Nagaland" },
-    { key: "19", value: "Odisha" },
-    { key: "20", value: "Punjab" },
-    { key: "21", value: "Rajasthan" },
-    { key: "22", value: "Sikkim" },
-    { key: "23", value: "Tamil Nadu" },
-    { key: "24", value: "Telangana" },
-    { key: "25", value: "Tripura" },
-    { key: "26", value: "Uttar Pradesh" },
-    { key: "27", value: "Uttarakhand" },
-    { key: "28", value: "West Bengal" },
-    { key: "29", value: "Andaman and Nicobar Islands" },
-    { key: "30", value: "Chandigarh" },
-    { key: "31", value: "Dadra and Nagar Haveli and Daman and Diu" },
-    { key: "32", value: "Delhi" },
-    { key: "33", value: "Lakshadweep" },
-    { key: "34", value: "Puducherry" },
-    // Add more states or union territories as needed
-  ];
-
-  const CityLivingInIndiaOptions = [
-    { key: "1", value: "Mumbai" },
-    { key: "2", value: "Delhi" },
-    { key: "3", value: "Bangalore" },
-    { key: "4", value: "Hyderabad" },
-    { key: "5", value: "Chennai" },
-    { key: "6", value: "Kolkata" },
-    { key: "7", value: "Pune" },
-    { key: "8", value: "Ahmedabad" },
-    { key: "9", value: "Jaipur" },
-    { key: "10", value: "Lucknow" },
-    { key: "11", value: "Chandigarh" },
-    { key: "12", value: "Surat" },
-    { key: "13", value: "Bhopal" },
-    { key: "14", value: "Indore" },
-    { key: "15", value: "Vadodara" },
-    { key: "16", value: "Kochi" },
-    { key: "17", value: "Coimbatore" },
-    { key: "18", value: "Nagpur" },
-    { key: "19", value: "Ludhiana" },
-    { key: "20", value: "Amritsar" },
-    { key: "21", value: "Visakhapatnam" },
-    { key: "22", value: "Thane" },
-    { key: "23", value: "Bhubaneswar" },
-    { key: "24", value: "Agra" },
-    { key: "25", value: "Patna" },
-    { key: "26", value: "Ranchi" },
-    { key: "27", value: "Varanasi" },
-    { key: "28", value: "Nashik" },
-    { key: "29", value: "Faridabad" },
-    { key: "30", value: "Meerut" },
-    { key: "31", value: "Srinagar" },
-    { key: "32", value: "Jodhpur" },
-    { key: "33", value: "Raipur" },
-    { key: "34", value: "Kanpur" },
-    { key: "35", value: "Kozhikode" },
-    // Add more cities as needed
-  ];
-
-  const GrewUpInOptions = [
-    { key: "1", value: "India" },
-    { key: "2", value: "United States" },
-    { key: "3", value: "Canada" },
-    { key: "4", value: "United Kingdom" },
-    { key: "5", value: "Australia" },
-    { key: "6", value: "New Zealand" },
-    { key: "7", value: "South Africa" },
-    { key: "8", value: "Other" },
-  ];
-
-  const EthnicOriginOptions = [
-    { key: "1", value: "Caucasian" },
-    { key: "2", value: "African American" },
-    { key: "3", value: "Asian" },
-    { key: "4", value: "Hispanic/Latino" },
-    { key: "5", value: "Native American" },
-    { key: "6", value: "Middle Eastern" },
-    { key: "7", value: "Indian" },
-    { key: "8", value: "Pacific Islander" },
-    { key: "9", value: "Other" },
-  ];
-
-
+  const [fromValue, setFromValue] = useState(0);
+  const [toValue, setToValue] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [values, setValues] = useState(dayjs().format("YYYY-MM-DD"));
-
-
   const [profilecreatedby, setProfileCreatedBy] = useState("");
   const [nativePlace, setNativePlace] = useState("");
   const [healthInformation, setHealthInformation] = useState("");
@@ -495,14 +77,12 @@ const Matrimonys = () => {
   const [bloodgroup, setBloodGroup] = useState("");
   const [hobbies, setHobbies] = useState("");
   const [lifestyle, setLifestyle] = useState("");
-  const [moreAboutYourselfPartnerAndFamily, setMoreAboutYourselfPartnerAndFamily] = useState("");
+  const [
+    moreAboutYourselfPartnerAndFamily,
+    setMoreAboutYourselfPartnerAndFamily,
+  ] = useState("");
   const [height, setHeight] = useState("");
   const [aboutMe, setAboutMe] = useState("");
-  const [maritalstatus, setMaritalStatus] = useState("");
-  const [religion, setReligion] = useState("");
-  const [motherTongue, setMotherTongue] = useState("");
-  const [community, setCommunity] = useState("");
-  const [subCommunity, setSubCommunity] = useState("");
   const [gothraGothram, setGothraGothram] = useState("");
   const [fatherS, setFatherStatus] = useState("");
   const [withWhom, setWithWhom] = useState("");
@@ -513,7 +93,6 @@ const Matrimonys = () => {
   const [numberOfSiblings, setNumberOfSiblings] = useState({});
   const [familyType, setFamilyType] = useState("");
   const [familyValue, setFamilyValue] = useState("");
-  const [familyAffluence, setFamilyAffluence] = useState("");
   const [manglikChevvaidosham, setManglikChevvaidosham] = useState("");
   const [nakshatra, setNakshatra] = useState("");
   const [ageRange, setAgeRange] = useState("");
@@ -532,27 +111,134 @@ const Matrimonys = () => {
   const [grewUpIn, setGrewUpIn] = useState("");
   const [ethnicOrigin, setEthnicOrigin] = useState("");
   const [zipPinCode, setZipPinCode] = useState("");
+  const [modalVisible1, setModalVisible1] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [album, setAlbum] = useState(undefined);
+  const [assets, setAssets] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [countrys, setCountrys] = useState([]);
+  const [states, setStates] = useState([]);
+  const [Citys, setCitys] = useState([]);
 
+  const handleSave = (selectedAssets) => {
+    setAssets(selectedAssets);
+    setModalVisible1(!modalVisible1);
+    const imageUris = selectedAssets.map((asset) => asset.uri);
+    setSelectedImage(imageUris);
+  };
+
+  const handleCancel = () => {
+    setAlbum(undefined);
+    setOpen(false);
+  };
+
+  const handleSelectAlbum = (selectedAlbum) => {
+    setAlbum(selectedAlbum);
+  };
+
+  const removeImage = () => {
+    setAssets("");
+  };
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const profileId = await AsyncStorage.getItem("profileid");
+
+        if (profileId !== null) {
+          const { data } = await axios.get(`${api}/profiles/${profileId}`);
+          //setCountryLivingIn(data.address.country);
+          //setStateLivingIn(data.address.state);
+          //setCityLivingIn(data.address.city);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "https://api.countrystatecity.in/v1/countries",
+          {
+            headers: {
+              "X-CSCAPI-KEY":
+                "YWdZbVBYYTRXNml4WEFuMGdvYlVZeEhmaUZoOHFWWm9oUXFiQm03Rw==",
+            },
+          }
+        );
+        let newArray = response.data.map((item) => {
+          return { key: item.id, value: item.name };
+        });
+        setCountrys(newArray);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const fetchState = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.countrystatecity.in/v1/countries/${countryLivingIn[0] +
+          countryLivingIn[1]}/states`,
+        {
+          headers: {
+            "X-CSCAPI-KEY":
+              "YWdZbVBYYTRXNml4WEFuMGdvYlVZeEhmaUZoOHFWWm9oUXFiQm03Rw==",
+          },
+        }
+      );
+      setStates(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchCity = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.countrystatecity.in/v1/countries/${countryLivingIn[0] +
+          countryLivingIn[1]}/states/${stateLivingIn[0] +
+          stateLivingIn[1]}/cities`,
+        {
+          headers: {
+            "X-CSCAPI-KEY":
+              "YWdZbVBYYTRXNml4WEFuMGdvYlVZeEhmaUZoOHFWWm9oUXFiQm03Rw==",
+          },
+        }
+      );
+      setCitys(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const stateNames = states.map((state) => ({
+    value: `${state.iso2} ${state.name}`,
+    key: state.id,
+  }));
+
+  const cityNames = Citys.map((city) => ({
+    value: `${city.name}`,
+    key: city.id,
+  }));
 
   const PostMatri = async () => {
-   console.warn(profileid)
-   console.warn(profilecreatedby)
     try {
       const { data } = await axios.post(`${api}/matrimonial/profiles`, {
-        userId:userid,
-        profileId:profileid,
+        userId: userid,
+        profileId: profileid,
         Profilecreatedby: profilecreatedby,
-        maritalStatus: maritalstatus,
         nativePlace: nativePlace,
         healthInformation: healthInformation,
         anyDisabiliy: anyDisability,
         bloodGroup: bloodgroup,
         religiousBackground: {
-          religion: religion,
-          motherTongue: motherTongue,
-          community: community,
-          subCommunity: subCommunity,
-          gothraGothram: gothraGothram
+          gothraGothram: gothraGothram,
         },
         family: {
           fatherStatus: fatherS,
@@ -561,18 +247,20 @@ const Matrimonys = () => {
           numberOfSiblings: numberOfSiblings,
           familyType: familyType,
           familyValue: familyValue,
-          familyAffluence: familyAffluence
         },
         astroDetails: {
           manglikChevvaidosham: manglikChevvaidosham,
-          nakshatra: nakshatra
         },
         partnerPreferences: {
-         
           gender: gender,
           education: education,
           profession: profession,
-          
+          ageRange: {
+            min: fromValue,
+            max: toValue,
+          },
+          // minHeight: minHeight,
+          // maxIncome: maxIncome,
         },
         educationAndCareer: {
           highestQualification: highestQualification,
@@ -587,34 +275,30 @@ const Matrimonys = () => {
           cityLivingIn: cityLivingIn,
           grewUpIn: grewUpIn,
           ethnicOrigin: ethnicOrigin,
-          zipPinCode: zipPinCode
+          zipPinCode: zipPinCode,
         },
         moreAboutYourselfPartnerAndFamily: moreAboutYourselfPartnerAndFamily,
         height: height,
-      
-
-
-      })
-      console.warn(data)
+        // images: selectedImage,
+      });
+      console.warn(data);
+      await AsyncStorage.getItem("Matrymonyid", data._id);
     } catch (error) {
-      console.error("Error during login:", error.message);
+      console.log("Error during login:", error.message);
     }
   };
 
-
-
- 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 800 }}
+        contentContainerStyle={{ paddingBottom: 600 }}
       >
         <View
           style={{
             width: responsiveWidth(100),
             height: 90,
-            backgroundColor: "#3468C0",
+            backgroundColor: "#874d3b",
             position: "absolute",
             bottom: 0,
             top: -1,
@@ -645,28 +329,25 @@ const Matrimonys = () => {
               left: responsiveWidth(80),
             }}
           >
-            <TouchableOpacity
-              onPress={() => navigation.navigate("JobsScreens")}
-            >
-              <FontAwesome5Icon
-                name="arrow-left"
-                size={18}
-                style={{
-                  backgroundColor: "#fff",
-                  padding: 5,
-                  paddingHorizontal: 7,
-                  borderRadius: 50,
-                  elevation: 3,
-                  shadowColor: "#000",
-                  shadowOpacity: 0.6,
-                  shadowRadius: 10,
-                }}
-              />
-            </TouchableOpacity>
+            <FontAwesome5Icon
+              name="arrow-left"
+              size={18}
+              style={{
+                backgroundColor: "#fff",
+                padding: 5,
+                paddingHorizontal: 7,
+                borderRadius: 50,
+                elevation: 3,
+                shadowColor: "#000",
+                shadowOpacity: 0.6,
+                shadowRadius: 10,
+              }}
+              onPress={() => navigation.goBack()}
+            />
           </View>
         </View>
 
-        <View style={{ flex: 1, top: 110 }}>
+        <View style={{ flex: 1, top: 100 }}>
           <Animated.Text
             style={{ left: 20, fontSize: 25, fontWeight: "300" }}
             entering={FadeInLeft.duration(500).damping()}
@@ -677,10 +358,10 @@ const Matrimonys = () => {
             </Text>
           </Animated.Text>
 
-          <View style={{}}>
-            <View style={{ left: 22, top: 20 }}>
+          <View style={{ bottom: 40 }}>
+            <View style={{ left: 22, top: 50 }}>
               <Text
-                style={{ fontSize: 17, color: "tomato", fontWeight: "300" }}
+                style={{ fontSize: 20, color: "tomato", fontWeight: "300" }}
               >
                 Basic{" "}
                 <Text style={{ color: "#000", fontWeight: "400" }}>
@@ -688,6 +369,79 @@ const Matrimonys = () => {
                 </Text>
               </Text>
             </View>
+
+            <View style={{ bottom: 70, right: 7 }}>
+              <Text
+                style={{
+                  position: "absolute",
+                  top: 135,
+                  left: 28,
+                  fontSize: 15,
+                  fontWeight: "500",
+                  opacity: 0.6,
+                }}
+              >
+                ADD Image :
+              </Text>
+
+              <View
+                style={{
+                  top: 140,
+                  alignSelf: "center",
+                  backgroundColor: "#fff",
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                  elevation: 1,
+                  right: 30,
+                  borderRadius: 5,
+                  position: "absolute",
+                }}
+              >
+                <TouchableOpacity onPress={() => removeImage()}>
+                  <FontAwesome5Icon
+                    name="trash-alt"
+                    size={15}
+                    style={{}}
+                    color={"tomato"}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              <View
+                style={{
+                  top: 135,
+                  alignSelf: "center",
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                  elevation: 1,
+                  borderRadius: 5,
+                  right: 50,
+                  marginBottom: 30,
+                  backgroundColor: "#fff",
+                }}
+              >
+                <FontAwesome5Icon
+                  name="folder-open"
+                  size={15}
+                  style={{}}
+                  color={"orange"}
+                  onPress={() =>
+                    setModalVisible1(!modalVisible1) + setOpen(true)
+                  }
+                />
+              </View>
+
+              <View style={{ top: 85, alignItems: "center", left: 10 }}>
+                {assets.length === 0 ? (
+                  <Text style={{ opacity: 0.6, left: 20 }}>{"No images "}</Text>
+                ) : (
+                  <Text
+                    style={{ opacity: 0.6, left: 20 }}
+                  >{`${assets.length} images `}</Text>
+                )}
+              </View>
+            </View>
+
             <View style={{ bottom: responsiveHeight(20) }}>
               <Text
                 style={{
@@ -698,7 +452,7 @@ const Matrimonys = () => {
                   opacity: 0.6,
                 }}
               >
-                Select Profile Created By
+                Select Profile Created for
               </Text>
               <View style={{ top: responsiveHeight(25) }}>
                 <SelectList
@@ -718,134 +472,8 @@ const Matrimonys = () => {
               </View>
             </View>
 
-            <View style={{ bottom: 120 }}>
-              <Text
-                style={{
-                  top: responsiveHeight(24),
-                  left: 23,
-                  fontSize: 15,
-                  fontWeight: "500",
-                  opacity: 0.6,
-                }}
-              >
-                Select Gender
-              </Text>
-              <View style={{ top: responsiveHeight(25), marginBottom: 13 }}>
-                <SelectList
-                  setSelected={(val) => setGender(val)}
-                  data={Genders}
-                  save="value"
-                  boxStyles={{
-                    marginLeft: responsiveWidth(5),
-                    marginRight: responsiveWidth(5),
-                  }}
-                  dropdownStyles={{
-                    marginLeft: responsiveWidth(5),
-                    marginRight: responsiveWidth(5),
-                  }}
-                  search={false}
-                />
-              </View>
-            </View>
-
             <View style={{ bottom: responsiveHeight(15) }}>
-              <Text
-                style={{
-                  top: responsiveHeight(24),
-                  left: 23,
-                  fontSize: 15,
-                  fontWeight: "500",
-                  opacity: 0.6,
-                }}
-              >
-                Date of Birth :
-                <Text style={{ color: "tomato" }}> {values}</Text>
-              </Text>
-
-              <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <Text
-                  style={{
-                    position: "absolute",
-                    top: responsiveHeight(21),
-                    left: responsiveWidth(79),
-                    fontWeight: "400",
-                    borderRadius: 4,
-                    backgroundColor: "#fff",
-                    padding: 3,
-                    paddingHorizontal: 7,
-                    shadowColor: "#000",
-                    shadowOpacity: 0.5,
-                    shadowRadius: 10,
-                    elevation: 1,
-                    color: "tomato",
-                  }}
-                >
-                  Clike
-                </Text>
-              </TouchableOpacity>
-
-              <View style={{ top: responsiveHeight(25) }}>
-                <View style={styles.centeredView}>
-                  <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                      Alert.alert("Modal has been closed.");
-                      setModalVisible(!modalVisible);
-                    }}
-                  >
-                    <View style={styles.centeredView}>
-                      <View style={styles.modalView}>
-                        <DateTimePicker
-                          value={values}
-                          onValueChange={(date) => setValues(date)}
-                        />
-
-                        <Pressable
-                          style={[styles.button, styles.buttonClose]}
-                          onPress={() => setModalVisible(!modalVisible)}
-                        >
-                          <Text style={styles.textStyle}>Close</Text>
-                        </Pressable>
-                      </View>
-                    </View>
-                  </Modal>
-                </View>
-              </View>
-
-              <View style={{ bottom: responsiveHeight(1) }}>
-                <Text
-                  style={{
-                    top: responsiveHeight(24),
-                    left: 23,
-                    fontSize: 15,
-                    fontWeight: "500",
-                    opacity: 0.6,
-                  }}
-                >
-                  Marital status
-                </Text>
-                <View style={{ top: responsiveHeight(25) }}>
-                  <SelectList
-                    setSelected={(val) => setMaritalStatus(val)
-                    }
-                    data={MaritalStatus}
-                    save="value"
-                    boxStyles={{
-                      marginLeft: responsiveWidth(5),
-                      marginRight: responsiveWidth(5),
-                    }}
-                    dropdownStyles={{
-                      marginLeft: responsiveWidth(5),
-                      marginRight: responsiveWidth(5),
-                    }}
-                    search={false}
-                  />
-                </View>
-              </View>
-
-              <View style={{ bottom: responsiveHeight(-1.5) }}>
+              <View style={{ bottom: responsiveHeight(3) }}>
                 <Text
                   style={{
                     top: responsiveHeight(24),
@@ -875,7 +503,7 @@ const Matrimonys = () => {
                 </View>
               </View>
 
-              <View style={{ bottom: responsiveHeight(-4) }}>
+              <View style={{ bottom: responsiveHeight(1) }}>
                 <Text
                   style={{
                     top: responsiveHeight(24),
@@ -905,7 +533,7 @@ const Matrimonys = () => {
                 </View>
               </View>
 
-              <View style={{ bottom: responsiveHeight(-7) }}>
+              <View style={{ bottom: responsiveHeight(-1) }}>
                 <Text
                   style={{
                     top: responsiveHeight(24),
@@ -919,9 +547,7 @@ const Matrimonys = () => {
                 </Text>
                 <View style={{ top: responsiveHeight(25), marginBottom: 13 }}>
                   <SelectList
-                    setSelected={(val) =>
-                      setAnyDisability(val)
-                    }
+                    setSelected={(val) => setAnyDisability(val)}
                     data={Disability}
                     save="value"
                     boxStyles={{
@@ -937,7 +563,7 @@ const Matrimonys = () => {
                 </View>
               </View>
 
-              <View style={{ bottom: responsiveHeight(-8) }}>
+              <View style={{ bottom: responsiveHeight(-2) }}>
                 <Text
                   style={{
                     top: responsiveHeight(24),
@@ -951,9 +577,7 @@ const Matrimonys = () => {
                 </Text>
                 <View style={{ top: responsiveHeight(25) }}>
                   <SelectList
-                    setSelected={(val) =>
-                      setBloodGroup(val)
-                    }
+                    setSelected={(val) => setBloodGroup(val)}
                     data={bloodGroup}
                     save="value"
                     boxStyles={{
@@ -969,224 +593,10 @@ const Matrimonys = () => {
                 </View>
               </View>
 
-              <View style={{ bottom: responsiveHeight(-10) }}>
-                <Text
-                  style={{
-                    top: responsiveHeight(24),
-                    left: 23,
-                    fontSize: 15,
-                    fontWeight: "500",
-                    opacity: 0.6,
-                  }}
-                >
-                  Set Age Range
-                </Text>
-
-                <Text
-                  style={{
-                    top: responsiveHeight(26),
-                    left: responsiveWidth(10),
-                    fontSize: 13,
-                    fontWeight: "500",
-                    opacity: 0.6,
-                  }}
-                >
-                  min Age 18
-                </Text>
-
-                <Text
-                  style={{
-                    top: responsiveHeight(29),
-                    left: responsiveWidth(72),
-                    fontSize: 13,
-                    fontWeight: "500",
-                    opacity: 0.6,
-                    position: "absolute",
-                  }}
-                >
-                  max Age 38
-                </Text>
-
-                <View style={{ top: responsiveHeight(26), left: 15 }}>
-                  <Slider
-                    style={{ width: responsiveWidth(95), height: 40 }}
-                    minimumValue={0}
-                    maximumValue={1}
-                    minimumTrackTintColor="red"
-                    maximumTrackTintColor="#000000"
-                    vertical={true}
-                  />
-                </View>
-              </View>
-
-              <View style={{ bottom: responsiveHeight(-10) }}>
-                <Text
-                  style={{
-                    top: responsiveHeight(25.5),
-                    left: 23,
-                    fontSize: 15,
-                    fontWeight: "500",
-                    opacity: 0.6,
-                  }}
-                >
-                  Set Height
-                </Text>
-
-                <Text
-                  style={{
-                    top: responsiveHeight(26),
-                    left: responsiveWidth(10),
-                    fontSize: 13,
-                    fontWeight: "500",
-                    opacity: 0.6,
-                  }}
-                >
-                  min Height 5.5
-                </Text>
-
-                <Text
-                  style={{
-                    top: responsiveHeight(29),
-                    left: responsiveWidth(72),
-                    fontSize: 13,
-                    fontWeight: "500",
-                    opacity: 0.6,
-                    position: "absolute",
-                  }}
-                >
-                  max Height 6.2
-                </Text>
-
-                <View style={{ top: responsiveHeight(26), left: 15 }}>
-                  <Slider
-                    style={{ width: responsiveWidth(95), height: 40 }}
-                    minimumValue={0}
-                    maximumValue={1}
-                    minimumTrackTintColor="red"
-                    maximumTrackTintColor="#000000"
-                    vertical={true}
-                  />
-                </View>
-              </View>
-
-              <View style={{ bottom: responsiveHeight(-10) }}>
-                <Text
-                  style={{
-                    top: responsiveHeight(25.5),
-                    left: 23,
-                    fontSize: 15,
-                    fontWeight: "500",
-                    opacity: 0.6,
-                  }}
-                >
-                  Set Max Income
-                </Text>
-
-                <Text
-                  style={{
-                    top: responsiveHeight(26),
-                    left: responsiveWidth(10),
-                    fontSize: 13,
-                    fontWeight: "500",
-                    opacity: 0.6,
-                  }}
-                >
-                  min Income 5lpa
-                </Text>
-
-                <Text
-                  style={{
-                    top: responsiveHeight(29),
-                    left: responsiveWidth(68),
-                    fontSize: 13,
-                    fontWeight: "500",
-                    opacity: 0.6,
-                    position: "absolute",
-                  }}
-                >
-                  max Income 20lpa
-                </Text>
-
-                <View style={{ top: responsiveHeight(26), left: 15 }}>
-                  <Slider
-                    style={{ width: responsiveWidth(95), height: 40 }}
-                    minimumValue={0}
-                    maximumValue={1}
-                    minimumTrackTintColor="red"
-                    maximumTrackTintColor="#000000"
-                    vertical={true}
-                  />
-                </View>
-              </View>
-
-              <View style={{ bottom: responsiveHeight(-11), marginBottom: 10 }}>
-                <Text
-                  style={{
-                    top: responsiveHeight(24),
-                    left: 23,
-                    fontSize: 15,
-                    fontWeight: "500",
-                    opacity: 0.6,
-                  }}
-                >
-                  Education
-                </Text>
-                <View style={{ top: responsiveHeight(25) }}>
-                  <SelectList
-                    setSelected={(val) =>
-                      setEducation(val)
-                    }
-                    data={Education}
-                    save="value"
-                    boxStyles={{
-                      marginLeft: responsiveWidth(5),
-                      marginRight: responsiveWidth(5),
-                    }}
-                    dropdownStyles={{
-                      marginLeft: responsiveWidth(5),
-                      marginRight: responsiveWidth(5),
-                    }}
-                    search={false}
-                  />
-                </View>
-              </View>
-
-              <View style={{ bottom: responsiveHeight(-12), marginBottom: 13 }}>
-                <Text
-                  style={{
-                    top: responsiveHeight(24),
-                    left: 23,
-                    fontSize: 15,
-                    fontWeight: "500",
-                    opacity: 0.6,
-                  }}
-                >
-                  Profession
-                </Text>
-                <View style={{ top: responsiveHeight(25) }}>
-                  <SelectList
-                    setSelected={(val) =>
-                      setProfession(val)
-                    }
-                    data={Profession}
-                    save="value"
-                    boxStyles={{
-                      marginLeft: responsiveWidth(5),
-                      marginRight: responsiveWidth(5),
-                    }}
-                    dropdownStyles={{
-                      marginLeft: responsiveWidth(5),
-                      marginRight: responsiveWidth(5),
-                    }}
-                    search={false}
-                  />
-                </View>
-              </View>
-
-              <View style={{}}>
+              <View style={{ bottom: 40 }}>
                 <View style={{ left: 22, top: responsiveHeight(36.6) }}>
                   <Text
-                    style={{ fontSize: 17, color: "tomato", fontWeight: "300" }}
+                    style={{ fontSize: 20, color: "tomato", fontWeight: "300" }}
                   >
                     Religious{" "}
                     <Text style={{ color: "#000", fontWeight: "400" }}>
@@ -1195,136 +605,8 @@ const Matrimonys = () => {
                   </Text>
                 </View>
 
-                <View style={{ top: 110 }}>
-                  <View style={{ bottom: responsiveHeight(1) }}>
-                    <Text
-                      style={{
-                        top: responsiveHeight(24),
-                        left: 23,
-                        fontSize: 15,
-                        fontWeight: "500",
-                        opacity: 0.6,
-                      }}
-                    >
-                      Religion
-                    </Text>
-                    <View style={{ top: responsiveHeight(25) }}>
-                      <SelectList
-                        setSelected={(val) =>
-                          setReligion(val)
-                        }
-                        data={Religion}
-                        save="value"
-                        boxStyles={{
-                          marginLeft: responsiveWidth(5),
-                          marginRight: responsiveWidth(5),
-                        }}
-                        dropdownStyles={{
-                          marginLeft: responsiveWidth(5),
-                          marginRight: responsiveWidth(5),
-                        }}
-                        search={false}
-                      />
-                    </View>
-                  </View>
-
-                  <View style={{ bottom: responsiveHeight(-1.5) }}>
-                    <Text
-                      style={{
-                        top: responsiveHeight(24),
-                        left: 23,
-                        fontSize: 15,
-                        fontWeight: "500",
-                        opacity: 0.6,
-                      }}
-                    >
-                      Mother Tongue
-                    </Text>
-                    <View style={{ top: responsiveHeight(25) }}>
-                      <SelectList
-                        setSelected={(val) =>
-                          setMotherTongue(val)
-                        }
-                        data={MotherTongue}
-                        save="value"
-                        boxStyles={{
-                          marginLeft: responsiveWidth(5),
-                          marginRight: responsiveWidth(5),
-                        }}
-                        dropdownStyles={{
-                          marginLeft: responsiveWidth(5),
-                          marginRight: responsiveWidth(5),
-                        }}
-                        search={false}
-                      />
-                    </View>
-                  </View>
-
-                  <View style={{ bottom: responsiveHeight(-4) }}>
-                    <Text
-                      style={{
-                        top: responsiveHeight(24),
-                        left: 23,
-                        fontSize: 15,
-                        fontWeight: "500",
-                        opacity: 0.6,
-                      }}
-                    >
-                      Community
-                    </Text>
-                    <View style={{ top: responsiveHeight(25) }}>
-                      <SelectList
-                        setSelected={(val) =>
-                          setCommunity(val)
-                        }
-                        data={Community}
-                        save="value"
-                        boxStyles={{
-                          marginLeft: responsiveWidth(5),
-                          marginRight: responsiveWidth(5),
-                        }}
-                        dropdownStyles={{
-                          marginLeft: responsiveWidth(5),
-                          marginRight: responsiveWidth(5),
-                        }}
-                        search={false}
-                      />
-                    </View>
-                  </View>
-
-                  <View style={{ bottom: responsiveHeight(-7) }}>
-                    <Text
-                      style={{
-                        top: responsiveHeight(24),
-                        left: 23,
-                        fontSize: 15,
-                        fontWeight: "500",
-                        opacity: 0.6,
-                      }}
-                    >
-                      Sub Community
-                    </Text>
-                    <View style={{ top: responsiveHeight(25) }}>
-                      <SelectList
-                        setSelected={(val) =>
-                          setSubCommunity(val)
-                        }
-                        data={Community}
-                        save="value"
-                        boxStyles={{
-                          marginLeft: responsiveWidth(5),
-                          marginRight: responsiveWidth(5),
-                        }}
-                        dropdownStyles={{
-                          marginLeft: responsiveWidth(5),
-                          marginRight: responsiveWidth(5),
-                        }}
-                        search={false}
-                      />
-                    </View>
-                  </View>
-
-                  <View style={{ bottom: responsiveHeight(-10) }}>
+                <View style={{ top: 70 }}>
+                  <View style={{ bottom: responsiveHeight(-5) }}>
                     <Text
                       style={{
                         top: responsiveHeight(24),
@@ -1338,9 +620,7 @@ const Matrimonys = () => {
                     </Text>
                     <View style={{ top: responsiveHeight(25) }}>
                       <SelectList
-                        setSelected={(val) =>
-                          setGothraGothram(val)
-                        }
+                        setSelected={(val) => setGothraGothram(val)}
                         data={Community}
                         save="value"
                         boxStyles={{
@@ -1357,11 +637,11 @@ const Matrimonys = () => {
                   </View>
                 </View>
 
-                <View style={{ top: 120 }}>
+                <View style={{ top: 50 }}>
                   <View style={{ left: 22, top: responsiveHeight(36.6) }}>
                     <Text
                       style={{
-                        fontSize: 17,
+                        fontSize: 20,
                         color: "tomato",
                         fontWeight: "300",
                       }}
@@ -1388,9 +668,7 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(val) =>
-                            setFatherStatus(val)
-                          }
+                          setSelected={(val) => setFatherStatus(val)}
                           data={fatherStatus}
                           save="value"
                           boxStyles={{
@@ -1420,9 +698,7 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(text) =>
-                            setMotherStatus(text)
-                          }
+                          setSelected={(text) => setMotherStatus(text)}
                           data={MotherStatus}
                           save="value"
                           boxStyles={{
@@ -1453,23 +729,10 @@ const Matrimonys = () => {
                       <View style={styles.inputView}>
                         <TextInput
                           style={styles.inputText}
-                          placeholder="Example: Mumbai, India"
+                          placeholder="Family Location"
                           placeholderTextColor="black"
-                          onChangeText={(val) =>
-                            setFamilyLocation(val)
-                          }
+                          onChangeText={(val) => setFamilyLocation(val)}
                           value={familyLocation}
-                        />
-                        <FontAwesome5Icon
-                          name="map-pin"
-                          size={17}
-                          style={{
-                            position: "absolute",
-                            left: 10,
-                            top: 18,
-                            opacity: 0.6,
-                          }}
-                          color={"#000"}
                         />
                       </View>
                     </View>
@@ -1489,23 +752,10 @@ const Matrimonys = () => {
                       <View style={styles.inputView}>
                         <TextInput
                           style={styles.inputText}
-                          placeholder="Enter native place"
+                          placeholder="Native Place"
                           placeholderTextColor="black"
-                          onChangeText={(val) =>
-                            setNativePlace(val)
-                          }
+                          onChangeText={(val) => setNativePlace(val)}
                           value={nativePlace}
-                        />
-                        <FontAwesome5Icon
-                          name="map-pin"
-                          size={17}
-                          style={{
-                            position: "absolute",
-                            left: 10,
-                            top: 18,
-                            opacity: 0.6,
-                          }}
-                          color={"#000"}
                         />
                       </View>
                     </View>
@@ -1525,23 +775,11 @@ const Matrimonys = () => {
                       <View style={styles.inputView}>
                         <TextInput
                           style={styles.inputText}
-                          placeholder="Enter No.of Siblings"
+                          placeholder="No.of Siblings"
                           placeholderTextColor="black"
-                          onChangeText={(val) =>
-                            setNumberOfSiblings(val)
-                          }
+                          onChangeText={(val) => setNumberOfSiblings(val)}
                           value={numberOfSiblings}
-                        />
-                        <FontAwesome5Icon
-                          name="user-friends"
-                          size={17}
-                          style={{
-                            position: "absolute",
-                            left: 6,
-                            top: 18,
-                            opacity: 0.6,
-                          }}
-                          color={"#000"}
+                          keyboardType="numeric"
                         />
                       </View>
                     </View>
@@ -1562,10 +800,8 @@ const Matrimonys = () => {
                         style={{ top: responsiveHeight(25), marginBottom: 13 }}
                       >
                         <SelectList
-                          setSelected={(val) =>
-                            setFamilyType(val)
-                          }
-                          data={Family}
+                          setSelected={(val) => setFamilyType(val)}
+                          data={FamilyType}
                           save="value"
                           boxStyles={{
                             marginLeft: responsiveWidth(5),
@@ -1596,42 +832,8 @@ const Matrimonys = () => {
                         style={{ top: responsiveHeight(25), marginBottom: 13 }}
                       >
                         <SelectList
-                          setSelected={(val) =>
-                            setFamilyValue(val)
-                          }
+                          setSelected={(val) => setFamilyValue(val)}
                           data={FamilyValue}
-                          save="value"
-                          boxStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          dropdownStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          search={false}
-                        />
-                      </View>
-                    </View>
-
-                    <View style={{ bottom: responsiveHeight(-10) }}>
-                      <Text
-                        style={{
-                          top: responsiveHeight(24),
-                          left: 23,
-                          fontSize: 15,
-                          fontWeight: "500",
-                          opacity: 0.6,
-                        }}
-                      >
-                        Family Affluence
-                      </Text>
-                      <View style={{ top: responsiveHeight(25) }}>
-                        <SelectList
-                          setSelected={(val) =>
-                            setFamilyAffluence(val)
-                          }
-                          data={Affluence}
                           save="value"
                           boxStyles={{
                             marginLeft: responsiveWidth(5),
@@ -1648,11 +850,11 @@ const Matrimonys = () => {
                   </View>
                 </View>
 
-                <View style={{ top: 240 }}>
+                <View style={{ top: 150 }}>
                   <View style={{ left: 22, top: responsiveHeight(37) }}>
                     <Text
                       style={{
-                        fontSize: 17,
+                        fontSize: 20,
                         color: "tomato",
                         fontWeight: "300",
                       }}
@@ -1664,39 +866,7 @@ const Matrimonys = () => {
                     </Text>
                   </View>
 
-                  <View style={{ top: 100 }}>
-                    <View style={{ bottom: responsiveHeight(-1.5) }}>
-                      <Text
-                        style={{
-                          top: responsiveHeight(24),
-                          left: 23,
-                          fontSize: 15,
-                          fontWeight: "500",
-                          opacity: 0.6,
-                        }}
-                      >
-                        Nakshatra
-                      </Text>
-                      <View style={{ top: responsiveHeight(25) }}>
-                        <SelectList
-                          setSelected={(val) =>
-                            setNakshatra(val)
-                          }
-                          data={Nakshatra}
-                          save="value"
-                          boxStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          dropdownStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          search={false}
-                        />
-                      </View>
-                    </View>
-
+                  <View style={{ top: 75 }}>
                     <View style={{ bottom: responsiveHeight(-5) }}>
                       <Text
                         style={{
@@ -1711,9 +881,7 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(val) =>
-                            setManglikChevvaidosham(val)
-                          }
+                          setSelected={(val) => setManglikChevvaidosham(val)}
                           data={AstroDetails}
                           save="value"
                           boxStyles={{
@@ -1731,11 +899,11 @@ const Matrimonys = () => {
                   </View>
                 </View>
 
-                <View style={{ top: 300 }}>
+                <View style={{ top: 210 }}>
                   <View style={{ left: 22, top: responsiveHeight(37) }}>
                     <Text
                       style={{
-                        fontSize: 17,
+                        fontSize: 20,
                         color: "tomato",
                         fontWeight: "300",
                       }}
@@ -1758,14 +926,12 @@ const Matrimonys = () => {
                           opacity: 0.6,
                         }}
                       >
-                        highest Qualification
+                        Highest Qualification
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(val) =>
-                            setHighestQualification(val)
-                          }
-                          data={HighestQualification}
+                          setSelected={(val) => setHighestQualification(val)}
+                          data={HighestQualifications}
                           save="value"
                           boxStyles={{
                             marginLeft: responsiveWidth(5),
@@ -1797,21 +963,8 @@ const Matrimonys = () => {
                           style={styles.inputText}
                           placeholder="Specify highest degree college"
                           placeholderTextColor="black"
-                          onChangeText={(text) =>
-                            setCollegeAttended(text)
-                          }
+                          onChangeText={(text) => setCollegeAttended(text)}
                           value={collegeAttended}
-                        />
-                        <FontAwesome5Icon
-                          name="university"
-                          size={17}
-                          style={{
-                            position: "absolute",
-                            left: 10,
-                            top: 18,
-                            opacity: 0.6,
-                          }}
-                          color={"#000"}
                         />
                       </View>
                     </View>
@@ -1830,9 +983,7 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(val) =>
-                            setWorkingWith(val)
-                          }
+                          setSelected={(val) => setWorkingWith(val)}
                           data={WorkingWithOptions}
                           save="value"
                           boxStyles={{
@@ -1862,9 +1013,7 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(val) =>
-                            setWorkingAs(val)
-                          }
+                          setSelected={(val) => setWorkingAs(val)}
                           data={WorkingAsOptions}
                           save="value"
                           boxStyles={{
@@ -1882,11 +1031,11 @@ const Matrimonys = () => {
                   </View>
                 </View>
 
-                <View style={{ top: 370 }}>
-                  <View style={{ left: 22, top: responsiveHeight(38) }}>
+                <View style={{ top: 280 }}>
+                  <View style={{ left: 22, top: responsiveHeight(37) }}>
                     <Text
                       style={{
-                        fontSize: 17,
+                        fontSize: 20,
                         color: "tomato",
                         fontWeight: "300",
                       }}
@@ -1895,7 +1044,7 @@ const Matrimonys = () => {
                     </Text>
                   </View>
 
-                  <View style={{ top: responsiveHeight(15) }}>
+                  <View style={{ top: responsiveHeight(14) }}>
                     <View style={{ bottom: responsiveHeight(1) }}>
                       <Text
                         style={{
@@ -1910,9 +1059,7 @@ const Matrimonys = () => {
                       </Text>
                       <View style={{ top: responsiveHeight(25) }}>
                         <SelectList
-                          setSelected={(val) =>
-                            setLifestyle(val)
-                          }
+                          setSelected={(val) => setLifestyle(val)}
                           data={Lifestyle}
                           save="value"
                           boxStyles={{
@@ -1930,233 +1077,8 @@ const Matrimonys = () => {
                   </View>
                 </View>
 
-                <View style={{ top: 390 }}>
-                  <View style={{ left: 22, top: responsiveHeight(37) }}>
-                    <Text
-                      style={{
-                        fontSize: 17,
-                        color: "tomato",
-                        fontWeight: "300",
-                      }}
-                    >
-                      Location of{" "}
-                      <Text style={{ color: "#000", fontWeight: "400" }}>
-                        Groom...
-                      </Text>
-                    </Text>
-                  </View>
-
-                  <View style={{ top: responsiveHeight(15) }}>
-                    <View style={{ bottom: responsiveHeight(1) }}>
-                      <Text
-                        style={{
-                          top: responsiveHeight(24),
-                          left: 23,
-                          fontSize: 15,
-                          fontWeight: "500",
-                          opacity: 0.6,
-                        }}
-                      >
-                        Country Living In
-                      </Text>
-                      <View style={{ top: responsiveHeight(25) }}>
-                        <SelectList
-                          setSelected={(val) =>
-                            setCountryLivingIn(val)
-                          }
-                          data={Countrys}
-                          save="value"
-                          boxStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          dropdownStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          search={false}
-                        />
-                      </View>
-                    </View>
-                  </View>
-
-                  <View style={{ top: responsiveHeight(18) }}>
-                    <View style={{ bottom: responsiveHeight(1) }}>
-                      <Text
-                        style={{
-                          top: responsiveHeight(24),
-                          left: 23,
-                          fontSize: 15,
-                          fontWeight: "500",
-                          opacity: 0.6,
-                        }}
-                      >
-                        State Living In
-                      </Text>
-                      <View style={{ top: responsiveHeight(25) }}>
-                        <SelectList
-                          setSelected={(val) =>
-                            setStateLivingIn(val)
-                          }
-                          data={StateLivingInIndiaOptions}
-                          save="value"
-                          boxStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          dropdownStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          search={false}
-                        />
-                      </View>
-                    </View>
-                  </View>
-
-                  <View style={{ top: responsiveHeight(21) }}>
-                    <View style={{ bottom: responsiveHeight(1) }}>
-                      <Text
-                        style={{
-                          top: responsiveHeight(24),
-                          left: 23,
-                          fontSize: 15,
-                          fontWeight: "500",
-                          opacity: 0.6,
-                        }}
-                      >
-                        City Living In
-                      </Text>
-                      <View style={{ top: responsiveHeight(25) }}>
-                        <SelectList
-                          setSelected={(val) =>
-                            setCityLivingIn(val)
-                          }
-                          data={CityLivingInIndiaOptions}
-                          save="value"
-                          boxStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          dropdownStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          search={false}
-                        />
-                      </View>
-                    </View>
-                  </View>
-
-                  <View style={{ top: responsiveHeight(24) }}>
-                    <View style={{ bottom: responsiveHeight(1) }}>
-                      <Text
-                        style={{
-                          top: responsiveHeight(24),
-                          left: 23,
-                          fontSize: 15,
-                          fontWeight: "500",
-                          opacity: 0.6,
-                        }}
-                      >
-                        Grew up in
-                      </Text>
-                      <View style={{ top: responsiveHeight(25) }}>
-                        <SelectList
-                          setSelected={(val) =>
-                            setGrewUpIn(val)
-                          }
-                          data={GrewUpInOptions}
-                          save="value"
-                          boxStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          dropdownStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          search={false}
-                        />
-                      </View>
-                    </View>
-                  </View>
-
-                  <View style={{ top: responsiveHeight(27) }}>
-                    <View style={{ bottom: responsiveHeight(1) }}>
-                      <Text
-                        style={{
-                          top: responsiveHeight(24),
-                          left: 23,
-                          fontSize: 15,
-                          fontWeight: "500",
-                          opacity: 0.6,
-                        }}
-                      >
-                        Ethnic Origin
-                      </Text>
-                      <View style={{ top: responsiveHeight(25) }}>
-                        <SelectList
-                          setSelected={(val) =>
-                            setEthnicOrigin(val)
-                          }
-                          data={EthnicOriginOptions}
-                          save="value"
-                          boxStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          dropdownStyles={{
-                            marginLeft: responsiveWidth(5),
-                            marginRight: responsiveWidth(5),
-                          }}
-                          search={false}
-                        />
-                      </View>
-                    </View>
-                  </View>
-
-                  <View style={{ top: responsiveHeight(29) }}>
-                    <View style={{ bottom: responsiveHeight(1) }}>
-                      <Text
-                        style={{
-                          top: responsiveHeight(24),
-                          left: 23,
-                          fontSize: 15,
-                          fontWeight: "500",
-                          opacity: 0.6,
-                        }}
-                      >
-                        Zip/Pin Code
-                      </Text>
-                      <View style={styles.inputView}>
-                        <TextInput
-                          style={styles.inputText}
-                          placeholder="Example: 400072"
-                          placeholderTextColor="black"
-                          onChangeText={(val) =>
-                            setZipPinCode(val)
-                          }
-                          value={zipPinCode}
-                        />
-                        <FontAwesome5Icon
-                          name="sort-numeric-up-alt"
-                          size={17}
-                          style={{
-                            position: "absolute",
-                            left: 10,
-                            top: 18,
-                            opacity: 0.6,
-                          }}
-                          color={"#000"}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                </View>
-
-                <View style={{ top: 510 }}>
-                  <View style={{ left: 22, top: responsiveHeight(37) }}>
+                <View style={{ top: 300 }}>
+                  <View style={{ left: 22, top: responsiveHeight(38) }}>
                     <Text
                       style={{
                         fontSize: 17,
@@ -2171,7 +1093,7 @@ const Matrimonys = () => {
                     </Text>
                   </View>
 
-                  <View style={{ top: responsiveHeight(18) }}>
+                  <View style={{ top: responsiveHeight(16) }}>
                     <View style={{ bottom: responsiveHeight(1) }}>
                       <Text
                         style={{
@@ -2208,17 +1130,464 @@ const Matrimonys = () => {
                     </View>
                   </View>
                 </View>
+
+                <View style={{ top: 310 }}>
+                  <View style={{ left: 22, top: responsiveHeight(37) }}>
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        color: "tomato",
+                        fontWeight: "300",
+                      }}
+                    >
+                      Location of{" "}
+                      <Text style={{ color: "#000", fontWeight: "400" }}>
+                        Partner...
+                      </Text>
+                    </Text>
+                  </View>
+
+                  <View style={{ top: 100 }}>
+                    <Text
+                      style={{
+                        top: responsiveHeight(24),
+                        left: 23,
+                        fontSize: 15,
+                        fontWeight: "500",
+                        opacity: 0.6,
+                      }}
+                    >
+                      Country
+                    </Text>
+                    <View
+                      style={{ top: responsiveHeight(25), marginBottom: 13 }}
+                    >
+                      <SelectList
+                        setSelected={(val) => {
+                          setCountryLivingIn(val);
+                        }}
+                        data={countrys}
+                        save="value"
+                        boxStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+
+                          // Check if countryError is truthy and country is "undefined"
+                        }}
+                        dropdownStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        onSelect={fetchState}
+                      />
+                    </View>
+                  </View>
+
+                  <View style={{ top: 100 }}>
+                    <Text
+                      style={{
+                        top: responsiveHeight(24),
+                        left: 23,
+                        fontSize: 15,
+                        fontWeight: "500",
+                        opacity: 0.6,
+                      }}
+                    >
+                      State Name
+                    </Text>
+                    <View
+                      style={{ top: responsiveHeight(25), marginBottom: 13 }}
+                    >
+                      <SelectList
+                        setSelected={(val) => setStateLivingIn(val)}
+                        data={stateNames}
+                        save="value"
+                        boxStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        dropdownStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        onSelect={fetchCity}
+                      />
+                    </View>
+                  </View>
+
+                  <View style={{ top: 100 }}>
+                    <Text
+                      style={{
+                        top: responsiveHeight(24),
+                        left: 23,
+                        fontSize: 15,
+                        fontWeight: "500",
+                        opacity: 0.6,
+                      }}
+                    >
+                      City Name
+                    </Text>
+                    <View
+                      style={{ top: responsiveHeight(25), marginBottom: 13 }}
+                    >
+                      <SelectList
+                        setSelected={(val) => setCityLivingIn(val)}
+                        data={cityNames}
+                        save="value"
+                        boxStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        dropdownStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                      />
+                    </View>
+                  </View>
+
+                  <View style={{ top: responsiveHeight(15) }}>
+                    <View style={{ bottom: responsiveHeight(1) }}>
+                      <Text
+                        style={{
+                          top: responsiveHeight(24),
+                          left: 23,
+                          fontSize: 15,
+                          fontWeight: "500",
+                          opacity: 0.6,
+                        }}
+                      >
+                        Grew up in
+                      </Text>
+                      <View style={{ top: responsiveHeight(25) }}>
+                        <SelectList
+                          setSelected={(val) => setGrewUpIn(val)}
+                          data={countrys}
+                          save="value"
+                          boxStyles={{
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                          }}
+                          dropdownStyles={{
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                          }}
+                        />
+                      </View>
+                    </View>
+                  </View>
+
+                  <View style={{ top: responsiveHeight(18) }}>
+                    <View style={{ bottom: responsiveHeight(1) }}>
+                      <Text
+                        style={{
+                          top: responsiveHeight(24),
+                          left: 23,
+                          fontSize: 15,
+                          fontWeight: "500",
+                          opacity: 0.6,
+                        }}
+                      >
+                        Ethnic Origin
+                      </Text>
+                      <View style={{ top: responsiveHeight(25) }}>
+                        <SelectList
+                          setSelected={(val) => setEthnicOrigin(val)}
+                          data={countrys}
+                          save="value"
+                          boxStyles={{
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                          }}
+                          dropdownStyles={{
+                            marginLeft: responsiveWidth(5),
+                            marginRight: responsiveWidth(5),
+                          }}
+                        />
+                      </View>
+                    </View>
+                  </View>
+
+                  <View style={{ top: responsiveHeight(21) }}>
+                    <View style={{ bottom: responsiveHeight(1) }}>
+                      <Text
+                        style={{
+                          top: responsiveHeight(24),
+                          left: 23,
+                          fontSize: 15,
+                          fontWeight: "500",
+                          opacity: 0.6,
+                        }}
+                      >
+                        Zip/Pin Code
+                      </Text>
+                      <View style={styles.inputView}>
+                        <TextInput
+                          style={styles.inputText}
+                          placeholder="Example: 400072"
+                          placeholderTextColor="black"
+                          onChangeText={(val) => setZipPinCode(val)}
+                          value={zipPinCode}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                </View>
+
+                <View style={{ top: 390 }}>
+                  <View style={{ bottom: responsiveHeight(-10) }}>
+                    <View style={{ top: responsiveHeight(25), left: 20 }}>
+                      <Text
+                        style={{
+                          fontSize: 20,
+                          color: "tomato",
+                          fontWeight: "300",
+                        }}
+                      >
+                        Partner{" "}
+                        <Text style={{ color: "#000", fontWeight: "400" }}>
+                          Preference...
+                        </Text>
+                      </Text>
+                    </View>
+
+                    <Text
+                      style={{
+                        top: responsiveHeight(26),
+                        left: 23,
+                        fontSize: 15,
+                        fontWeight: "500",
+                        opacity: 0.6,
+                        marginBottom: 10,
+                      }}
+                    >
+                      Set Age Range
+                    </Text>
+
+                    <Text
+                      style={{
+                        top: responsiveHeight(26),
+                        left: responsiveWidth(7),
+                        fontSize: 15,
+                        fontWeight: "500",
+                        opacity: 0.6,
+                      }}
+                    >
+                      Min Age {fromValue}
+                    </Text>
+
+                    <Text
+                      style={{
+                        top: responsiveHeight(23),
+                        left: responsiveWidth(72),
+                        fontSize: 15,
+                        fontWeight: "500",
+                        opacity: 0.6,
+                      }}
+                    >
+                      Max Age {toValue}
+                    </Text>
+                    <View style={{ top: responsiveHeight(21) }}>
+                      <RangeSlider
+                        min={18}
+                        max={70}
+                        fromValueOnChange={(value) => setFromValue(value)}
+                        toValueOnChange={(value) => setToValue(value)}
+                        styleSize={"small"}
+                        barHeight={3}
+                        inRangeBarColor={"tomato"}
+                      />
+                    </View>
+                  </View>
+
+                  <View style={{ bottom: responsiveHeight(-5) }}>
+                    <Text
+                      style={{
+                        top: responsiveHeight(25.5),
+                        left: 23,
+                        fontSize: 15,
+                        fontWeight: "500",
+                        opacity: 0.6,
+                      }}
+                    >
+                      Height
+                    </Text>
+
+                    <View style={{ top: responsiveHeight(26) }}>
+                      <SelectList
+                        setSelected={(val) => setMinHeight(val)}
+                        data={Height}
+                        save="value"
+                        boxStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        dropdownStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        search={false}
+                      />
+                    </View>
+                  </View>
+
+                  <View style={{ bottom: responsiveHeight(-7) }}>
+                    <Text
+                      style={{
+                        top: responsiveHeight(25.5),
+                        left: 23,
+                        fontSize: 15,
+                        fontWeight: "500",
+                        opacity: 0.6,
+                      }}
+                    >
+                      Income
+                    </Text>
+
+                    <View style={{ top: responsiveHeight(26) }}>
+                      <SelectList
+                        setSelected={(val) => setMaxIncome(val)}
+                        data={MaxIncome}
+                        save="value"
+                        boxStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        dropdownStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        search={false}
+                      />
+                    </View>
+                  </View>
+
+                  <View
+                    style={{ bottom: responsiveHeight(-11), marginBottom: 10 }}
+                  >
+                    <Text
+                      style={{
+                        top: responsiveHeight(24),
+                        left: 23,
+                        fontSize: 15,
+                        fontWeight: "500",
+                        opacity: 0.6,
+                      }}
+                    >
+                      Education
+                    </Text>
+                    <View style={{ top: responsiveHeight(25) }}>
+                      <SelectList
+                        setSelected={(val) => setEducation(val)}
+                        data={Educations}
+                        save="value"
+                        boxStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        dropdownStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        search={false}
+                      />
+                    </View>
+                  </View>
+
+                  <View
+                    style={{ bottom: responsiveHeight(-12), marginBottom: 13 }}
+                  >
+                    <Text
+                      style={{
+                        top: responsiveHeight(24),
+                        left: 23,
+                        fontSize: 15,
+                        fontWeight: "500",
+                        opacity: 0.6,
+                      }}
+                    >
+                      Profession
+                    </Text>
+                    <View style={{ top: responsiveHeight(25) }}>
+                      <SelectList
+                        setSelected={(val) => setProfession(val)}
+                        data={Professions}
+                        save="value"
+                        boxStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        dropdownStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        search={false}
+                      />
+                    </View>
+                  </View>
+
+                  <View
+                    style={{ bottom: responsiveHeight(-12), marginBottom: 13 }}
+                  >
+                    <Text
+                      style={{
+                        top: responsiveHeight(24),
+                        left: 23,
+                        fontSize: 15,
+                        fontWeight: "500",
+                        opacity: 0.6,
+                      }}
+                    >
+                      Gender
+                    </Text>
+                    <View style={{ top: responsiveHeight(25) }}>
+                      <SelectList
+                        setSelected={(val) => setGender(val)}
+                        data={Genders}
+                        save="value"
+                        boxStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        dropdownStyles={{
+                          marginLeft: responsiveWidth(5),
+                          marginRight: responsiveWidth(5),
+                        }}
+                        search={false}
+                      />
+                    </View>
+                  </View>
+                </View>
               </View>
             </View>
           </View>
         </View>
+
+        <Modal
+          style={{}}
+          animationType="slide"
+          visible={modalVisible1}
+          onRequestClose={() => setModalVisible1(!modalVisible1)}
+        >
+          <View style={styles.container}>
+            <ImagePicker
+              onSave={handleSave}
+              onCancel={handleCancel}
+              onSelectAlbum={handleSelectAlbum}
+              selected={assets}
+              selectedAlbum={album}
+              multiple
+              limit={5}
+            />
+          </View>
+        </Modal>
       </ScrollView>
 
       <View style={{ bottom: 50, left: responsiveWidth(21) }}>
         <TouchableOpacity
           style={{
             width: "50%",
-            backgroundColor: "#3D50DF",
+            backgroundColor: "#874d3b",
             borderRadius: 5,
             height: 50,
             alignItems: "center",
@@ -2238,7 +1607,7 @@ const Matrimonys = () => {
             style={{
               position: "absolute",
               left: 135,
-              backgroundColor: "#3D56F0",
+              backgroundColor: "#874d3b",
               padding: 12,
               borderRadius: 50,
               color: "#fff",
@@ -2272,7 +1641,7 @@ const Matrimonys = () => {
   );
 };
 
-export default Matrimonys;
+export default Matrimony;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -2327,7 +1696,7 @@ const styles = StyleSheet.create({
 
     top: responsiveHeight(25),
     opacity: 0.8,
-    paddingLeft: 30,
+    paddingLeft: 10,
     paddingRight: 20,
 
     left: 20,
@@ -2339,5 +1708,17 @@ const styles = StyleSheet.create({
   inputText: {
     height: 50,
     color: "black",
+  },
+  loginBtn: {
+    width: "88%",
+    borderRadius: 5,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 50,
+    alignSelf: "center",
+    top: 10,
+    borderWidth: 1,
+    borderColor: "tomato",
   },
 });

@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
-
+import { useNavigation } from "@react-navigation/native";
 const CategoryBox = ({ iconName, title, onPress }) => {
   return (
     <TouchableWithoutFeedback onPress={onPress}>
@@ -23,48 +23,30 @@ const CategoryBox = ({ iconName, title, onPress }) => {
   );
 };
 
-const Sell = ({ navigation }) => {
+const AddProperty = () => {
+  const navigation = useNavigation();
+
   return (
     <ScrollView
       style={styles.mainContainer}
       contentContainerStyle={styles.scrollContentContainer}
     >
-      <View style={styles.table}>
+      {/* First Row */}
+      <View style={styles.rowContainer}>
         <CategoryBox
           iconName="car"
-          title="Car"
-          onPress={() => navigation.navigate("CarDetails")}
+          title="Vehicle"
+          onPress={() => navigation.navigate("Vehicle")}
         />
         <CategoryBox
-          iconName="mobile-alt"
-          title="Mobile"
-          onPress={() => navigation.navigate("MobileDetails")}
-        />
-        <CategoryBox
-          iconName="bicycle"
-          title="Bike"
-          onPress={() => navigation.navigate("BikeDetails")}
+          iconName="laptop"
+          title="Electronics"
+          onPress={() => navigation.navigate("Electronics")}
         />
       </View>
 
-      <View style={styles.table}>
-        <CategoryBox
-          iconName="laptop"
-          title="Electronics & Application"
-          onPress={() => navigation.navigate("ElectronicsDetails")}
-        />
-        <CategoryBox
-          iconName="bicycle"
-          title="cycle"
-          onPress={() => navigation.navigate("BicycleDetails")}
-        />
-        <CategoryBox
-          iconName="headphones-alt"
-          title="Accessories"
-          onPress={() => navigation.navigate("AccessoriesDetails")}
-        />
-      </View>
-      <View style={styles.table}>
+      {/* Second Row */}
+      <View style={styles.rowContainer}>
         <CategoryBox
           iconName="tshirt"
           title="Fashion"
@@ -89,7 +71,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  table: {
+  rowContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
@@ -98,16 +80,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   categoryContainer: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
     justifyContent: "center",
     alignItems: "center",
     margin: 10,
     borderColor: "black",
     borderRadius: 10,
-    padding: 5,
+    padding: 10,
     backgroundColor: "#fff",
-    shadowColor: "#000",
+    shadowColor: "tomato",
     shadowOpacity: 0.6,
     shadowRadius: 20,
     elevation: 3,
@@ -118,21 +100,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   iconContainer: {
-    width: 50,
-    height: 50,
+    width: 70,
+    height: 70,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 30,
-    backgroundColor: "lightgray",
-    marginBottom: 5,
+    borderRadius: 35,
+    backgroundColor: "#fff",
+    marginBottom: 10,
+    shadowColor: "tomato",
+    shadowOpacity: 0.6,
+    shadowRadius: 20,
+    elevation: 3,
   },
   icon: {
-    marginBottom: 5,
+    marginBottom: 10,
     opacity: 0.6,
+    color: "tomato",
   },
   categoryText: {
     textAlign: "center",
   },
 });
 
-export default Sell;
+export default AddProperty;

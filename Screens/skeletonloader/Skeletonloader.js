@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Animated, FlatList } from 'react-native';
-
+import { StatusBar } from 'react-native';
 const SkeletonLoader = () => {
   const [loadingAnimation] = useState(new Animated.Value(0));
 
@@ -37,6 +37,7 @@ const SkeletonLoader = () => {
   return (
     <View style={styles.container}>
         <Animated.View style={[styles.skeletonRow1, { opacity: interpolatedOpacity }]} />
+      
       <FlatList
         data={Array.from({ length: 7 })} // Adjust the length according to your needs
         renderItem={renderItem}

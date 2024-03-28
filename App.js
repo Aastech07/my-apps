@@ -14,10 +14,8 @@ import Message from "./Screens/Message";
 import Blog from "./Screens/Blogs/Blog";
 import JobsSeeAll from "./Screens/JobsSeeAll";
 import MatrimonySeeAll from "./Screens/Matrimony/MatrimonySeeAll";
-import ProfileScreen from "./Screens/ProfileScreen";
 import Calendars from "./Screens/Calendars";
 import OtpScreen from "./Screens/AuthFile/OtpScreen";
-import Jobsfirstscreen from "./Screens/Jobsfirstscreen";
 import Recruiter from "./Screens/Recruiter";
 import Managepostdata from "./Screens/Jobs/Managepostdata";
 import EditPost from "./Screens/Jobs/Edit.Post";
@@ -31,8 +29,6 @@ import Matrimonys from "./Screens/Form/Matrimony";
 import Profiles from "./Screens/Form/Profiles";
 import Directroydata from "./Screens/Directory/Directroydata";
 import JobsDetails from "./Screens/JobsDetails";
-import Announcement from "./Screens/Announcement/Announcement";
-import AnnouncementDetails from "./Screens/Announcement/AnnouncementDetails";
 import Gallery from "./Screens/Gallery/Gallery";
 import Album from "./Screens/Gallery/Album";
 import MemberSearch from "./Screens/MemberSearch/MemberSearch";
@@ -61,15 +57,35 @@ import ManageViewDetails from "./Screens/Propertylist/ManageViewDetails";
 import ManageViewDetail from "./Screens/By&Sell/ManageViewDetails";
 import BlogDetails from "./Screens/Blogs/BlogDetails";
 import MatrimonyData from "./Screens/Matrimony/MatrimonyData";
+import Tablets from "./Screens/By&Sell/SellDetails/Tablets";
+import ProfileEdits from "./Screens/Form/ProfileEdit/ProfileEdits";
+import ProfileDetails from "./Screens/Form/ProfileEdit/ProfileDetails";
+import EducationDetails from "./Screens/Form/ProfileEdit/EducationDetails";
+import DirectoriesDetails from "./Screens/Form/ProfileEdit/DirectoriesDetails";
+import MatrimonyDetails from "./Screens/Form/ProfileEdit/MatrimonyDetails";
+import PropertyForm from "./Screens/Propertylist/PropertyForm";
+import LandPlot from "./Screens/Propertylist/LandPlot";
+import PgGuestHouse from "./Screens/Propertylist/PgGuestHouse";
+import ShopOffice from "./Screens/Propertylist/ShopOffice";
+import Notification from "./Screens/Notification/Notification";
+import NotificationBlogs from "./Screens/Blogs/NotificationBlogs";
+import Announcement from "./Screens/Announcement/Announcement";
+import AnnouncementDetails from "./Screens/Announcement/AnnouncementDetails";
+import BuySellSeeAll from "./Screens/By&Sell/Buy&SellSeeAll";
+import PropertySeeAll from "./Screens/Propertylist/PropertySeeAll";
+import FilteredResult from "./Screens/Matrimony/FilteredResult";
+import { FilterDataProvider } from "./Screens/Matrimony/context/FilteredDataContext";
+import Vehicle from "./Screens/By&Sell/Vehicle";
+import Electronics from "./Screens/By&Sell/Electronics";
 function App() {
   const [data, setData] = React.useState();
   useEffect(() => {
     const getData = async () => {
       try {
         const value = await AsyncStorage.getItem("profileid");
-
         if (value !== null) {
           setData(value);
+          console.warn(value);
         }
       } catch (e) {
         console.log(e);
@@ -83,317 +99,446 @@ function App() {
       <StatusBar style="auto" barStyle="dark-content" />
       <MyContext.Provider value={data}>
         <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen
-              name="BottomNav"
-              options={{ headerShown: false }}
-              component={BottomNav}
-            />
+          <FilterDataProvider>
+            <Stack.Navigator>
+              <Stack.Screen
+                name="SplashScreen"
+                options={{ headerShown: false }}
+                component={SplashScreen}
+              />
 
-            <Stack.Screen
-              name="SplashScreen"
-              options={{ headerShown: false }}
-              component={SplashScreen}
-            />
+              <Stack.Screen
+                name="BottomNav"
+                options={{ headerShown: false }}
+                component={BottomNav}
+              />
 
-            <Stack.Screen
-              name="AddProperty"
-              options={{ headerShown: true }}
-              component={AddProperty}
-            />
+              <Stack.Screen
+                name="Education"
+                options={{ headerShown: false }}
+                component={Education}
+              />
 
-            <Stack.Screen
-              name="MemberSearch"
-              options={{ headerShown: true }}
-              component={MemberSearch}
-            />
+              <Stack.Screen
+                name="Profiles"
+                options={{ headerShown: false }}
+                component={Profiles}
+              />
 
-            <Stack.Screen
-              name="FamilyTree"
-              options={{ headerShown: false }}
-              component={FamilyTree}
-            />
+              <Stack.Screen
+                name="Matrimonys"
+                options={{ headerShown: false }}
+                component={Matrimonys}
+              />
 
-            <Stack.Screen
-              name="JobsScreens"
-              options={{ headerShown: false }}
-              component={JobsScreens}
-            />
+              <Stack.Screen
+                name="FamilyTree"
+                options={{ headerShown: false }}
+                component={FamilyTree}
+              />
 
-            <Stack.Screen
-              name="Matrimonys"
-              options={{ headerShown: false }}
-              component={Matrimonys}
-            />
+              <Stack.Screen
+                name="Directorys"
+                options={{ headerShown: false }}
+                component={Directorys}
+              />
 
-            <Stack.Screen
-              name="MemberProfile"
-              options={{ headerShown: false }}
-              component={MemberProfile}
-            />
+              <Stack.Screen
+                name="Matrimony"
+                options={{ headerShown: false }}
+                component={Matrimony}
+              />
 
-            <Stack.Screen
-              name="Directorys"
-              options={{ headerShown: false }}
-              component={Directorys}
-            />
+              <Stack.Screen
+                name="AddProperty"
+                options={{ headerShown: true }}
+                component={AddProperty}
+              />
 
-            <Stack.Screen
-              name="SignUp"
-              options={{ headerShown: false }}
-              component={SignUp}
-            />
+              <Stack.Screen
+                name="MemberSearch"
+                options={{ headerShown: true }}
+                component={MemberSearch}
+              />
 
-            <Stack.Screen
-              name="Profiles"
-              options={{ headerShown: false }}
-              component={Profiles}
-            />
+              <Stack.Screen
+                name="JobsScreens"
+                options={{ headerShown: true, title: "Job" }}
+                component={JobsScreens}
+              />
 
-            <Stack.Screen
-              name="CreateProfile"
-              options={{ headerShown: false }}
-              component={CreateProfile}
-            />
+              <Stack.Screen
+                name="MemberProfile"
+                options={{ headerShown: false }}
+                component={MemberProfile}
+              />
 
-            <Stack.Screen
-              name="Signin"
-              options={{ headerShown: false }}
-              component={Signin}
-            />
+              <Stack.Screen
+                name="SignUp"
+                options={{ headerShown: false }}
+                component={SignUp}
+              />
 
-            <Stack.Screen
-              name="HomeScreen"
-              options={{ headerShown: false }}
-              component={HomeScreen}
-            />
-            <Stack.Screen
-              name="EventsDetails"
-              options={{ headerShown: false }}
-              component={EventsDetails}
-            />
-            <Stack.Screen
-              name="Events"
-              options={{ headerShown: true }}
-              component={SeeAll}
-            />
+              <Stack.Screen
+                name="CreateProfile"
+                options={{ headerShown: false }}
+                component={CreateProfile}
+              />
 
-            <Stack.Screen
-              name="Directory"
-              options={{ headerShown: false }}
-              component={Directory}
-            />
-            <Stack.Screen
-              name="Message"
-              options={{ headerShown: false }}
-              component={Message}
-            />
-            <Stack.Screen
-              name="Blog"
-              options={{ headerShown: true }}
-              component={Blog}
-            />
-            <Stack.Screen
-              name="jobs"
-              options={{ headerShown: true }}
-              component={JobsSeeAll}
-            />
-            <Stack.Screen
-              name="matrimonys"
-              options={{ headerShown: true }}
-              component={MatrimonySeeAll}
-            />
-            <Stack.Screen
-              name="ProfileScreen"
-              options={{ headerShown: false }}
-              component={ProfileScreen}
-            />
-            <Stack.Screen
-              name="Calendars"
-              options={{ headerShown: false }}
-              component={Calendars}
-            />
-          
-            <Stack.Screen
-              name="Matrimony"
-              options={{ headerShown: false }}
-              component={Matrimony}
-            />
-            <Stack.Screen
-              name="Jobsfirstscreen"
-              options={{ headerShown: false }}
-              component={Jobsfirstscreen}
-            />
-            <Stack.Screen
-              name="Recruiter"
-              options={{ headerShown: false }}
-              component={Recruiter}
-            />
-            <Stack.Screen
-              name="details"
-              options={{ headerShown: true }}
-              component={Managepostdata}
-            />
-            <Stack.Screen
-              name="Edit"
-              options={{ headerShown: true }}
-              component={EditPost}
-            />
-            <Stack.Screen
-              name="Viewdata"
-              options={{ headerShown: false }}
-              component={Viewdata}
-            />
+              <Stack.Screen
+                name="Signin"
+                options={{ headerShown: false }}
+                component={Signin}
+              />
 
-            <Stack.Screen
-              name="Education"
-              options={{ headerShown: false }}
-              component={Education}
-            />
+              <Stack.Screen
+                name="HomeScreen"
+                options={{ headerShown: false }}
+                component={HomeScreen}
+              />
+              <Stack.Screen
+                name="EventsDetails"
+                options={{ headerShown: false }}
+                component={EventsDetails}
+              />
+              <Stack.Screen
+                name="Events"
+                options={{ headerShown: true }}
+                component={SeeAll}
+              />
 
-            <Stack.Screen
-              name="JobsDetails"
-              options={{ headerShown: true }}
-              component={JobsDetails}
-            />
+              <Stack.Screen
+                name="Directory"
+                options={{ headerShown: false }}
+                component={Directory}
+              />
+              <Stack.Screen
+                name="Message"
+                options={{ headerShown: false }}
+                component={Message}
+              />
+              <Stack.Screen
+                name="Blog"
+                options={{ headerShown: true }}
+                component={Blog}
+              />
+              <Stack.Screen
+                name="jobs"
+                options={{ headerShown: true }}
+                component={JobsSeeAll}
+              />
+              <Stack.Screen
+                name="matrimonys"
+                options={{ headerShown: true }}
+                component={MatrimonySeeAll}
+              />
+              <Stack.Screen
+                name="Calendars"
+                options={{ headerShown: false }}
+                component={Calendars}
+              />
 
-            <Stack.Screen
-              name="Announcement"
-              options={{ headerShown: false }}
-              component={Announcement}
-            />
+              <Stack.Screen
+                name="Recruiter"
+                options={{ headerShown: false }}
+                component={Recruiter}
+              />
+              <Stack.Screen
+                name="details"
+                options={{ headerShown: true }}
+                component={Managepostdata}
+              />
+              <Stack.Screen
+                name="Edit"
+                options={{ headerShown: true }}
+                component={EditPost}
+              />
+              <Stack.Screen
+                name="Viewdata"
+                options={{ headerShown: false }}
+                component={Viewdata}
+              />
 
-            <Stack.Screen
-              name="AnnouncementDetails"
-              options={{ headerShown: false }}
-              component={AnnouncementDetails}
-            />
+              <Stack.Screen
+                name="JobsDetails"
+                options={{ headerShown: true, title: "Details" }}
+                component={JobsDetails}
+              />
 
-            <Stack.Screen
-              name="Gellary"
-              options={{ headerShown: false }}
-              component={Gallery}
-            />
+              <Stack.Screen
+                name="Gallery"
+                options={{ headerShown: true }}
+                component={Gallery}
+              />
 
-            <Stack.Screen
-              name="Album"
-              options={{ headerShown: false }}
-              component={Album}
-            />
+              <Stack.Screen
+                name="Album"
+                options={{ headerShown: true }}
+                component={Album}
+              />
 
-            <Stack.Screen
-              name="PropertyList"
-              options={{ headerShown: true }}
-              component={PropertyList}
-            />
+              <Stack.Screen
+                name="PropertyList"
+                options={{ headerShown: true }}
+                component={PropertyList}
+              />
 
-            <Stack.Screen
-              name="Details"
-              options={{ headerShown: true }}
-              component={PropertyListDetails}
-            />
+              <Stack.Screen
+                name="Details"
+                options={{ headerShown: true }}
+                component={PropertyListDetails}
+              />
 
-            <Stack.Screen
-              name="PropertylistNav"
-              options={{ headerShown: true }}
-              component={PropertylistNav}
-            />
+              <Stack.Screen
+                name="List Update"
+                options={{ headerShown: true }}
+                component={UpdatePropertyList}
+              />
 
-            <Stack.Screen
-              name="List Update"
-              options={{ headerShown: true }}
-              component={UpdatePropertyList}
-            />
+              <Stack.Screen
+                name="Buy&Sell"
+                options={{ headerShown: true }}
+                component={ByAndSellNav}
+              />
+              <Stack.Screen
+                name="ByDetalis"
+                options={{ headerShown: false }}
+                component={ByDetalis}
+              />
+              <Stack.Screen
+                name="MemberProfilelist"
+                options={{ headerShown: false }}
+                component={MemberProfilelist}
+              />
 
-            <Stack.Screen
-              name="Buy&Sell"
-              options={{ headerShown: true }}
-              component={ByAndSellNav}
-            />
-            <Stack.Screen
-              name="ByDetalis"
-              options={{ headerShown: false }}
-              component={ByDetalis}
-            />
-            <Stack.Screen
-              name="MemberProfilelist"
-              options={{ headerShown: false }}
-              component={MemberProfilelist}
-            />
+              <Stack.Screen
+                name="CarDetails"
+                options={{ headerShown: true,title:'Car' }}
+                component={CarDetails}
+              />
 
-            <Stack.Screen
-              name="CarDetails"
-              options={{ headerShown: true }}
-              component={CarDetails}
-            />
+              <Stack.Screen
+                name="MobileDetails"
+                options={{ headerShown: true }}
+                component={MobileDetails}
+              />
+              <Stack.Screen
+                name="BikeDetails"
+                options={{ headerShown: true }}
+                component={BikeDetails}
+              />
 
-            <Stack.Screen
-              name="MobileDetails"
-              options={{ headerShown: true }}
-              component={MobileDetails}
-            />
-            <Stack.Screen
-              name="BikeDetails"
-              options={{ headerShown: true }}
-              component={BikeDetails}
-            />
+              <Stack.Screen
+                name="ElectronicsDetails"
+                options={{ headerShown: true }}
+                component={ElectronicsDetails}
+              />
 
-            <Stack.Screen
-              name="ElectronicsDetails"
-              options={{ headerShown: true }}
-              component={ElectronicsDetails}
-            />
+              <Stack.Screen
+                name="BicycleDetails"
+                options={{ headerShown: true }}
+                component={BicycleDetails}
+              />
 
-            <Stack.Screen
-              name="BicycleDetails"
-              options={{ headerShown: true }}
-              component={BicycleDetails}
-            />
+              <Stack.Screen
+                name="AccessoriesDetails"
+                options={{ headerShown: true }}
+                component={Accessories}
+              />
 
-            <Stack.Screen
-              name="AccessoriesDetails"
-              options={{ headerShown: true }}
-              component={Accessories}
-            />
+              <Stack.Screen
+                name="FashionDetails"
+                options={{ headerShown: true }}
+                component={FashionDetails}
+              />
+              <Stack.Screen
+                name="FurnitureDetail"
+                options={{ headerShown: true }}
+                component={FurnitureDetail}
+              />
 
-            <Stack.Screen
-              name="FashionDetails"
-              options={{ headerShown: true }}
-              component={FashionDetails}
-            />
-            <Stack.Screen
-              name="FurnitureDetail"
-              options={{ headerShown: true }}
-              component={FurnitureDetail}
-            />
+              <Stack.Screen
+                name="ManageViewDetails"
+                options={{ headerShown: true }}
+                component={ManageViewDetails}
+              />
+              <Stack.Screen
+                name="ManageViewDetail"
+                options={{ headerShown: true }}
+                component={ManageViewDetail}
+              />
 
-            <Stack.Screen
-              name="ManageViewDetails"
-              options={{ headerShown: true }}
-              component={ManageViewDetails}
-            />
-            <Stack.Screen
-              name="ManageViewDetail"
-              options={{ headerShown: true }}
-              component={ManageViewDetail}
-            />
+              <Stack.Screen
+                name="Blogs"
+                options={{ headerShown: true }}
+                component={BlogDetails}
+              />
 
-            <Stack.Screen
-              name="Blogs"
-              options={{ headerShown: true }}
-              component={BlogDetails}
-            />
+              <Stack.Screen
+                name="MatrimonyData"
+                options={{ headerShown: false }}
+                component={MatrimonyData}
+              />
 
-            <Stack.Screen
-              name="MatrimonyData"
-              options={{ headerShown: false }}
-              component={MatrimonyData}
-            />
+              <Stack.Screen
+                name="Tablets"
+                options={{ headerShown: true }}
+                component={Tablets}
+              />
 
-            <Stack.Screen name="directroy" component={Directroydata} />
+              <Stack.Screen
+                name="Profile"
+                options={{
+                  title: "Profile",
+                }}
+                component={ProfileEdits}
+              />
 
-            <Stack.Screen name="Verification" component={OtpScreen} />
-          </Stack.Navigator>
+              <Stack.Screen
+                name="ProfileDetails"
+                options={{
+                  title: "Profile",
+                }}
+                component={ProfileDetails}
+              />
+              <Stack.Screen
+                name="EducationDetails"
+                options={{
+                  title: "Education",
+                }}
+                component={EducationDetails}
+              />
+
+              <Stack.Screen
+                name="DirectoriesDetails"
+                options={{
+                  title: "Directorie",
+                }}
+                component={DirectoriesDetails}
+              />
+
+              <Stack.Screen
+                name="MatrimonyDetails"
+                options={{
+                  title: "Matrimony",
+                }}
+                component={MatrimonyDetails}
+              />
+
+              <Stack.Screen
+                name="PropertyForm"
+                options={{
+                  title: "Property",
+                }}
+                component={PropertyForm}
+              />
+
+              <Stack.Screen
+                name="LandPlot"
+                options={{
+                  title: "Lands & Plots",
+                }}
+                component={LandPlot}
+              />
+
+              <Stack.Screen
+                name="PgGuestHouse"
+                options={{
+                  title: "PG & GuestHouse",
+                }}
+                component={PgGuestHouse}
+              />
+
+              <Stack.Screen
+                name="ShopOffice"
+                options={{
+                  title: "Shop & Office",
+                }}
+                component={ShopOffice}
+              />
+
+              <Stack.Screen
+                name="Notification"
+                options={{
+                  title: "Notification",
+                }}
+                component={Notification}
+              />
+
+              <Stack.Screen
+                name="NotificationBlogs"
+                options={{
+                  title: "Blogs",
+                }}
+                component={NotificationBlogs}
+              />
+
+              <Stack.Screen
+                name="Announcement"
+                options={{
+                  title: "Announcement",
+                }}
+                component={Announcement}
+              />
+
+              <Stack.Screen
+                name="AnnouncementDetails"
+                options={{
+                  title: "Announcement",
+                }}
+                component={AnnouncementDetails}
+              />
+
+              <Stack.Screen
+                name="BuySellSeeAll"
+                options={{
+                  title: "Buy & Sell",
+                }}
+                component={BuySellSeeAll}
+              />
+
+              <Stack.Screen
+                name="PropertySeeAll"
+                options={{
+                  title: "Property",
+                }}
+                component={PropertySeeAll}
+              />
+
+              <Stack.Screen
+                name="FilteredResult"
+                options={{}}
+                component={FilteredResult}
+              />
+
+              <Stack.Screen
+                name="PropertylistNav"
+                options={{
+                  title: "Property",
+                }}
+                component={PropertylistNav}
+              />
+
+              <Stack.Screen
+                name="Vehicle"
+                options={{
+                  title: "Vehicle",
+                }}
+                component={Vehicle}
+              />
+
+              <Stack.Screen
+                name="Electronics"
+                options={{
+                  title: "Electronics",
+                }}
+                component={Electronics}
+              />
+              <Stack.Screen name="directroy" component={Directroydata} />
+
+              <Stack.Screen name="Verification" component={OtpScreen} />
+            </Stack.Navigator>
+          </FilterDataProvider>
         </NavigationContainer>
       </MyContext.Provider>
     </View>

@@ -1,124 +1,67 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  View,
-  StyleSheet,
   Text,
   Image,
+  StyleSheet,
   ScrollView,
-  TouchableOpacity,
   Modal,
-  Dimensions,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { responsiveHeight } from "react-native-responsive-dimensions";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import axios from "axios";
 import MasonryList from "@react-native-seoul/masonry-list";
-import { useNavigation } from "@react-navigation/native";
-import Animated, { FadeInDown } from "react-native-reanimated";
-import { StatusBar } from "react-native";
-import { api } from "../Api";
-import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-import { useRoute } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for the close icon
 
-const Gallery= () => {
-  const navigation = useNavigation();
-  const data = useRoute();
-  const id = data.params.data._id;
-  const [albums, setAlbums] = useState([]);
+const Gallery = ({ route }) => {
+  const { album } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedImage, setSelectedImage] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
 
-  useEffect(() => {
-    const getimg = async () => {
-      try {
-        const { data } = await axios.get(`${api}/gallery/${id}`);
-        setAlbums(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getimg();
-  }, []);
-
-  const renderMealItem = ({ item }) => (
-    <View style={{ top: 10 }}>
-      <TouchableOpacity
-        style={styles.mealItemContainer}
-        onPress={() => handleMealPress(item)}
-      >
-        <Animated.Image
-          entering={FadeInDown.duration(500)}
-          source={{ uri: item.uri }}
-          style={{
-            width: "90%",
-            height: 200,
-            alignSelf: "center",
-            borderRadius: 20,
-          }}
-        />
-        <Text
-          style={{ textAlign: "center", fontWeight: "600", marginBottom: 10 }}
-        >
-          {item.title}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const handleMealPress = (item) => {
-    setSelectedImage(item.uri);
+  const openModal = (image) => {
+    setSelectedImage(image);
     setModalVisible(true);
   };
 
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedImage(null);
+  };
+
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <StatusBar translucent backgroundColor="#fff" barStyle="dark-content" />
-
-      <View style={{ top: 60, left: 20 }}>
-        <TouchableOpacity style={{}} onPress={() => navigation.goBack("")}>
-          <FontAwesome5Icon
-            name="arrow-left"
-            color={"#000"}
-            size={30}
-            style={{ opacity: 0.7 }}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <View
-        style={{
-          paddingTop: 60,
-        }}
-      ></View>
-
-      <View style={{ flex: 1, alignItems: "center" }}>
-        <MasonryList
-          data={albums}
-          numColumns={2}
-          showsVerticalScrollIndicator={false}
-          renderItem={renderMealItem}
-          onEndReachedThreshold={0.1}
-          style={{ padding: 10 }}
-        />
-      </View>
-
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: 50 }}
+    >
+      <Text style={styles.albumTitle}>{album.Albumtitle}</Text>
+      <MasonryList
+        data={album.image.map((item) => ({ uri: item }))} // Convert data to format accepted by MasonryList
+        renderItem={({ item, index }) => (
+          <TouchableOpacity onPress={() => openModal(item.uri)}>
+            <Image
+              source={{ uri: item.uri }}
+              style={[
+                styles.image,
+                index % 2 === 0 ? styles.smallImage : styles.bigImage,
+              ]}
+            />
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item, index) => index.toString()} // Use index as key, change if you have unique IDs
+        numColumns={2}
+        imageContainerStyle={styles.imageContainer}
+      />
       <Modal
-        animationType="fade"
-        transparent={true}
+        animationType="slide"
+        transparent={false}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+        onRequestClose={closeModal}
       >
         <View style={styles.modalContainer}>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setModalVisible(false)}
-          >
-            <FontAwesome5 name="times" size={24} color="white" />
+          <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+            <Ionicons name="close" size={30} color="white" />
           </TouchableOpacity>
           <Image
             source={{ uri: selectedImage }}
-            style={{ width: screenWidth, height: screenHeight }}
+            style={styles.modalImage}
             resizeMode="contain"
           />
         </View>
@@ -127,31 +70,33 @@ const Gallery= () => {
   );
 };
 
-export default Gallery;
-
 const styles = StyleSheet.create({
-  inputView: {
-    width: "90%",
-    backgroundColor: "#fff",
-    borderRadius: 50,
-    height: 50,
-    marginBottom: 20,
-    justifyContent: "center",
-    padding: 20,
-    top: responsiveHeight(6),
-    alignSelf: "center",
-    shadowColor: "#984065",
-    shadowOffset: {
-      width: 0,
-      height: 50,
-    },
-    shadowOpacity: 0.8,
-    shadowRadius: 16.0,
-    elevation: 5,
+  container: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: "#ffff",
   },
-  inputText: {
-    height: 50,
-    color: "black",
+  albumTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 15,
+    textAlign: "left",
+  },
+  image: {
+    borderRadius: 8,
+    margin: 4,
+  },
+  smallImage: {
+    flex: 1,
+    height: 150, // Smaller height for images with even index
+  },
+  bigImage: {
+    flex: 2,
+    height: 250, // Bigger height for images with odd index
+  },
+  imageContainer: {
+    borderRadius: 8,
+    overflow: "hidden",
   },
   modalContainer: {
     flex: 1,
@@ -159,10 +104,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  modalImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 8,
+  },
   closeButton: {
     position: "absolute",
-    top: 50,
+    top: 20,
     right: 20,
-    zIndex: 999,
+    zIndex: 1,
   },
 });
+
+export default Gallery;

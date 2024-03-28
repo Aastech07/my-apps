@@ -1,95 +1,147 @@
-import React from "react";
-import { View } from "react-native";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import React, { useState ,useEffect} from "react";
+import { View, Text, TouchableOpacity, StyleSheet ,BackHandler,Alert} from "react-native";
 import MyMatches from "./MyMatches";
 import New from "./New";
-import Nearby from "./Nearby";
+
 import Search from "./Search";
-import { responsiveHeight } from "react-native-responsive-dimensions";
 import RecentlyView from "./RecentlyView";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-
-const Tab = createMaterialTopTabNavigator();
-
+import { StatusBar } from "react-native";
 const Matrimony = () => {
-  return (
-    <View style={{ flex: 1, marginTop: responsiveHeight(4) }}>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          swipeEnabled: false,
-          tabBarIcon: ({ focused, color, size }) => {
-            let IconComponent;
-            let iconName;
+  const [activeTab, setActiveTab] = useState("Search");
 
-            if (route.name === "Search") {
-              IconComponent = FontAwesome5;
-              iconName = focused ? "search" : "search";
-            } else if (route.name === "MyMatc") {
-              IconComponent = FontAwesome5;
-              iconName = focused ? "heart" : "heart";
-            } else if (route.name === "New") {
-              IconComponent = FontAwesome5;
-              iconName = focused ? "plus-circle" : "plus-circle";
-            } else if (route.name === "Nearby") {
-              IconComponent = FontAwesome5;
-              iconName = focused ? "map-marker-alt" : "map-marker-alt";
-            } else if (route.name === "View") {
-              IconComponent = FontAwesome5;
-              iconName = focused ? "eye" : "eye-slash";
-            }
+  const renderScreen = () => {
+    switch (activeTab) {
+      case "Search":
+        return <Search />;
+      case "MyMatch":
+        return <MyMatches />;
+      case "New":
+        return <New />;
+      case "View":
+        return <RecentlyView />;
+      default:
+        
+        return <Search />;
+    }
+  };
 
-            return <IconComponent name={iconName} size={18} color={color} />;
-          },
-        })}
+  const renderTab = (tabName, iconName) => {
+    const isActive = activeTab === tabName;
+    return (
+      <TouchableOpacity
+        key={tabName}
+        style={[styles.tab, isActive && styles.activeTab]}
+        onPress={() => setActiveTab(tabName)}
       >
-        <Tab.Screen
-          name="Search"
-          component={Search}
-          options={{
-            tabBarLabelStyle: {
-              fontSize: 10,
-            },
-          }}
+        <FontAwesome5
+          name={iconName}
+          size={17}
+          color={isActive ? "#874d3b" : "#333"}
         />
-        <Tab.Screen
-          name="MyMatc"
-          component={MyMatches}
-          options={{
-            tabBarLabelStyle: {
-              fontSize: 10,
-            },
-          }}
-        />
-        <Tab.Screen
-          name="New"
-          component={New}
-          options={{
-            tabBarLabelStyle: {
-              fontSize: 10,right:2.5
-            },
-          }}
-        />
-        <Tab.Screen
-          name="Nearby"
-          component={Nearby}
-          options={{
-            tabBarLabelStyle: {
-              fontSize: 10,
-            },
-          }}
-        />
-        <Tab.Screen
-          name="View"
-          component={RecentlyView}
-          options={{
-            tabBarLabelStyle: {
-              fontSize: 10,
-            },
-          }}
-        />
-      </Tab.Navigator>
+        <Text style={styles.tabText}>{tabName}</Text>
+      </TouchableOpacity>
+    );
+  };
+
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert(
+        "Hold on!",
+        "Are you sure you want to go back?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => null,
+            style: "destructive"
+          },
+          {
+            text: "YES",
+            onPress: () => BackHandler.exitApp(),
+            style:"destructive"
+          }
+        ],
+        { cancelable: false }
+      );
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
+
+
+  return (
+    <View style={styles.container}>
+      <StatusBar style="auto" barStyle="light-content" backgroundColor={"#874d3b"} />
+      {/* Header */}
+      <View style={styles.header}></View>
+
+      {/* Tab Bar */}
+      <View style={styles.tabBar}>
+        {renderTab("Search", "search")}
+        {renderTab("MyMatch", "heart")}
+        {renderTab("New", "plus-circle")}
+        {renderTab("View", "eye")}
+      </View>
+
+      {/* Content */}
+      <View style={styles.content}>{renderScreen()}</View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  header: {
+    backgroundColor: "#874d3b",
+    padding: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  tabBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    elevation: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  tab: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 10,
+    height:90,
+    top:25
+  },
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: "#874d3b",
+  },
+  tabText: {
+    fontSize: 12,
+    color: "#333",
+    marginTop: 5,
+  },
+  content: {
+    flex: 1,
+    backgroundColor: "#f9f9f9",
+    padding: 10,
+  },
+});
 
 export default Matrimony;

@@ -7,30 +7,131 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   ScrollView,
+  Dimensions,
+  BackHandler,
+  Alert,
 } from "react-native";
-import { responsiveWidth } from "react-native-responsive-dimensions";
+
 import FontAwesome5 from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
+import axios, { all } from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "./Api";
 import AnnouncementDetails from "./Announcement/AnnouncementDetails";
 import { Drawer } from "react-native-drawer-layout";
 import NavigationView from "./Drawer";
 import SkeletonLoader from "./skeletonloader/Skeletonloader";
+import { SliderBox } from "react-native-image-slider-box";
+import { StatusBar } from "react-native";
+import image1 from "../assets/Demoimage.jpeg";
+import image2 from "../assets/Demoimage1.jpeg";
+import image3 from "../assets/Demoimage2.jpeg";
+import { responsiveHeight } from "react-native-responsive-dimensions";
 const HomeScreen = () => {
   const Api = api;
   const navigation = useNavigation();
+  const { width: screenWidth } = Dimensions.get("window");
 
   const [open, setOpen] = React.useState(false);
   const [data, setData] = React.useState();
   const [loading, setLoading] = useState(true);
+  const [userid, setUserID] = useState(true);
+  const [buysell, setBuysell] = useState("");
+  const [Property, setProperty] = useState("");
+  const [filteredAnnouncement, setFilteredAnnouncement] = useState([]);
+
+  const responsiveWidth = (percentage) => {
+    const width = (percentage * screenWidth) / 100;
+    return Math.round(width);
+  };
+
+  const fetchData = async () => {
+    try {
+      // Fetch data from API endpoints
+      const accessoriesData = await axios.get(`${api}/accessories`);
+      const tabletsData = await axios.get(`${api}/tablets`);
+      const electronicsData = await axios.get(`${api}/electronics`);
+      const furnitureData = await axios.get(`${api}/furniture`);
+      const fashionData = await axios.get(`${api}/fashion`);
+      const phonesData = await axios.get(`${api}/phones`);
+
+      // Combine all fetched data into one array
+      const allData = [
+        ...accessoriesData.data,
+        ...tabletsData.data,
+        ...electronicsData.data,
+        ...furnitureData.data,
+        ...fashionData.data,
+        ...phonesData.data,
+      ];
+      const limitedData = allData.slice(0, 6);
+
+      setBuysell(limitedData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchDatas = async () => {
+    try {
+      // Fetch data from API endpoints
+      const properties = await axios.get(`${api}/properties`);
+      const pgGuestHouses = await axios.get(`${api}/pgGuestHouses`);
+      const landPlots = await axios.get(`${api}/landPlots`);
+      const shopOffices = await axios.get(`${api}/shopOffices`);
+
+      const allData = [
+        ...properties.data,
+        ...pgGuestHouses.data,
+        ...landPlots.data,
+        ...shopOffices.data,
+      ];
+      const limitedData = allData.slice(0, 6);
+
+      setProperty(limitedData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    fetchDatas();
+    const backAction = () => {
+      Alert.alert(
+        "Hold on!",
+        "Are you sure you want to go back?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => null,
+            style: "destructive",
+          },
+          {
+            text: "YES",
+            onPress: () => BackHandler.exitApp(),
+            style: "destructive",
+          },
+        ],
+        { cancelable: false }
+      );
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   useEffect(() => {
     const getData = async () => {
       try {
         const profileId = await AsyncStorage.getItem("profileid");
+       console.warn(profileId)
         if (profileId !== null) {
           const { data } = await axios.get(`${Api}/profiles/${profileId}`);
           setData(data.firstName);
@@ -39,14 +140,29 @@ const HomeScreen = () => {
         console.log(e);
       }
     };
+    getData();
+  }, []);
 
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const userid = await AsyncStorage.getItem("UserID");
+
+        if (userid !== null) {
+          const { data } = await axios.get(
+            `${Api}/notifications/count/${userid}`
+          );
+
+          setUserID(data.count);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
     getData();
   }, []);
 
   const [isEnabled, setIsEnabled] = useState(0);
-  const Image1 =
-    "https://communityappintegrate.s3.ap-south-1.amazonaws.com/Event/pexels-matheus-bertelli-2608515.jpg";
-  const MusicIcon = "https://cdn-icons-png.flaticon.com/128/7566/7566380.png";
   const [apidata, setApiData] = useState("");
 
   useEffect(() => {
@@ -65,6 +181,7 @@ const HomeScreen = () => {
   const [details, setDetails] = useState("");
   const [matrimonial, setMatrimonial] = useState("");
   const [announcement, setAnnouncement] = useState("");
+  const [allAnnounce, setAllAnnounce] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -94,6 +211,9 @@ const HomeScreen = () => {
     (async () => {
       try {
         const { data } = await axios.get(`${Api}/announcement-categories`);
+        const announce = await axios.get(`${api}/announcements`, {});
+        //       setAnnouncement(data);
+        setAllAnnounce(announce.data);
         setAnnouncement(data);
         setLoading(false);
       } catch (error) {
@@ -119,6 +239,29 @@ const HomeScreen = () => {
     }
   };
 
+  useEffect(() => {
+    const getProperties = async () => {
+      try {
+        const { data } = await axios.get(`${api}/properties`, {});
+        // setData(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    getProperties();
+  }, []);
+
+  const typeHandler = (value) => {
+    const filteredDate = allAnnounce.filter((e) => {
+      return value.toLowerCase().includes(e.announcementType.toLowerCase());
+    });
+    setFilteredAnnouncement(filteredDate);
+  };
+
+  const images = [image1, image2, image3];
+
   return (
     <Drawer
       open={open}
@@ -134,9 +277,14 @@ const HomeScreen = () => {
           style={{ flex: 1 }}
           contentContainerStyle={{ paddingBottom: 130 }}
         >
+          <StatusBar
+            style="auto"
+            barStyle="light-content"
+            backgroundColor={"#874d3b"}
+          />
           <View
             style={{
-              backgroundColor: "#4383f2",
+              backgroundColor: "#874d3b",
               paddingTop: 100,
             }}
           >
@@ -149,11 +297,13 @@ const HomeScreen = () => {
                 left: responsiveWidth(87),
                 top: 50,
                 borderRadius: 50,
-                backgroundColor: "#4383f2",
+                backgroundColor: "#874d3b",
                 paddingHorizontal: 7,
                 paddingVertical: 5,
               }}
+              onPress={() => navigation.navigate("Notification")}
             />
+
             <FontAwesome5
               name="message"
               size={20}
@@ -163,11 +313,29 @@ const HomeScreen = () => {
                 left: responsiveWidth(75.5),
                 top: 50,
                 borderRadius: 50,
-                backgroundColor: "#4383f2",
+                backgroundColor: "#874d3b",
                 paddingHorizontal: 6,
                 paddingVertical: 5,
               }}
             />
+            {userid !== null && userid !== 0 ? (
+              <Text
+                style={{
+                  position: "absolute",
+                  fontSize: 15,
+                  top: 45,
+                  left: responsiveWidth(91.8),
+                  backgroundColor: "red",
+                  padding: 0,
+                  borderRadius: 50,
+                  paddingHorizontal: 5,
+                  color: "#fff",
+                }}
+                onPress={() => navigation.navigate("Notification")}
+              >
+                {userid}
+              </Text>
+            ) : null}
 
             <Text
               style={{
@@ -200,7 +368,12 @@ const HomeScreen = () => {
                   showsHorizontalScrollIndicator={false}
                   data={announcement}
                   renderItem={({ item }) => (
-                    <TouchableWithoutFeedback onPress={() => setIsEnabled(1)}>
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        setIsEnabled(1);
+                        typeHandler(item.announcementCategoryName);
+                      }}
+                    >
                       <View
                         style={{
                           padding: 10,
@@ -236,32 +409,40 @@ const HomeScreen = () => {
               <>
                 <View
                   style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    bottom: 6,
+                    bottom: 0,
                   }}
                 >
-                  <Image
-                    source={{ uri: Image1 }}
-                    style={{
-                      width: responsiveWidth(99.8),
-                      height: 170,
-                      top: 5.7,
-                      paddingBottom: 30,
+                  <SliderBox
+                    images={images || []}
+                    sliderBoxHeight={180}
+                    dotColor="#F2f2f2"
+                    inactiveDotColor="#ffff"
+                    paginationBoxVerticalPadding={20}
+                    autoplay
+                    circleLoop
+                    resizeMethod={"resize"}
+                    resizeMode={"cover"}
+                    paginationBoxStyle={{
+                      bottom: 0,
+                      padding: 0,
+                      alignItems: "center",
+                      alignSelf: "center",
+                      justifyContent: "center",
                     }}
+                    dotStyle={{
+                      width: 7,
+                      height: 7,
+                      borderRadius: 5,
+                      marginHorizontal: 0,
+                      padding: 0,
+                      margin: 0,
+                      top: 10,
+                    }}
+                    ImageComponentStyle={{
+                      width: "100%",
+                    }}
+                    imageLoadingColor="#2196F3"
                   />
-                  <Text
-                    style={{
-                      color: "#fff",
-                      fontSize: 25,
-                      fontWeight: "bold",
-                      position: "absolute",
-                      top: 135,
-                    }}
-                  >
-                    {" "}
-                    ...{" "}
-                  </Text>
                 </View>
                 <View style={{ backgroundColor: "#fff" }}>
                   <Text
@@ -341,7 +522,7 @@ const HomeScreen = () => {
                                   style={{
                                     fontSize: 16,
                                     top: 110,
-                                    right: 20,
+                                    right: responsiveWidth(10), // Adjust the percentage as needed
                                     marginTop: 25,
                                     fontWeight: "600",
                                     position: "absolute",
@@ -375,11 +556,19 @@ const HomeScreen = () => {
                                 <View
                                   style={{
                                     position: "absolute",
-                                    top: 210,
-                                    left: 30,
+                                    top: 180,
+                                    left: 10,
                                   }}
                                 >
-                                  <Text style={{}}>📍{item.address}</Text>
+                                  <Text
+                                    style={{
+                                      fontSize: 12,
+                                      marginLeft: 5,
+                                      marginRight: 5,
+                                    }}
+                                  >
+                                    📍{item.address}
+                                  </Text>
                                 </View>
 
                                 <View
@@ -445,150 +634,104 @@ const HomeScreen = () => {
                     </Text>
 
                     <FlatList
-                      style={{ top: 100 }}
+                      style={{ marginTop: 100, left: 10 }}
                       horizontal
                       data={details}
                       showsHorizontalScrollIndicator={false}
+                      keyExtractor={(item, index) => index.toString()} // Add keyExtractor
                       renderItem={({ item }) => (
-                        <>
-                          <TouchableWithoutFeedback
-                            onPress={() =>
-                              navigation.navigate("JobsDetails", { data: item })
-                            }
+                        <TouchableWithoutFeedback
+                          onPress={() =>
+                            navigation.navigate("JobsDetails", { data: item })
+                          }
+                        >
+                          <View
+                            style={{
+                              backgroundColor: "#ffff",
+                              width: 200, // Set desired width
+                              height: 200, // Set desired height
+                              borderRadius: 20,
+                              marginHorizontal: 10,
+                              padding: 15,
+                              shadowColor: "#000",
+                              shadowOffset: {
+                                width: 0,
+                                height: 2,
+                              },
+                              shadowOpacity: 0.8,
+                              shadowRadius: 16.0,
+                              elevation: 6,
+                              marginBottom: 10,
+                              top: 2,
+                            }}
                           >
-                            <View
+                            <Image
+                              source={{ uri: item.images[0] }}
                               style={{
-                                backgroundColor: "#0F2167",
-                                paddingHorizontal: 30,
-                                paddingBottom: 100,
-                                borderRadius: 20,
-                                shadowColor: "#000",
-                                shadowOffset: {
-                                  width: 0,
-                                  height: 50,
-                                },
-                                shadowOpacity: 0.8,
-                                shadowRadius: 16.0,
-                                elevation: 8,
-                                marginBottom: 100,
-                                marginLeft: 25,
+                                width: "40%",
+                                height: 50,
+                                borderRadius: 8,
+                                marginBottom: 10,
                               }}
+                            />
+
+                            <Text
+                              style={{
+                                color: "#000",
+                                fontSize: 16,
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {item.title}
+                            </Text>
+                            <Text
+                              style={{
+                                color: "#000",
+                                fontSize: 14,
+                                marginBottom: 5,
+                              }}
+                            >
+                              {item.company}
+                            </Text>
+                            <Text style={{ color: "#000", fontSize: 12 }}>
+                              📍 {item.location}
+                            </Text>
+                            <Text style={{ color: "#000", fontSize: 12 }}>
+                              {item.salary}
+                            </Text>
+                            <View
+                              style={{ flexDirection: "row", marginTop: 5 }}
                             >
                               <View
                                 style={{
-                                  backgroundColor: "#fff",
-                                  padding: 20,
-                                  top: 10,
-                                  marginRight: 60,
-                                  borderRadius: 8,
-                                  right: 15,
-                                }}
-                              ></View>
-                              <Text
-                                style={{
-                                  color: "#fff",
-                                  top: 10,
-                                  right: 10,
-                                  position: "absolute",
-                                  fontSize: 11,
-                                  fontWeight: "600",
+                                  backgroundColor: "#f2f2f2",
+                                  paddingHorizontal: 8,
+                                  borderRadius: 20,
+                                  marginRight: 5,
                                 }}
                               >
-                                Post by
-                              </Text>
-                              <Text
-                                style={{
-                                  color: "#fff",
-                                  top: 25,
-                                  right: 10,
-                                  position: "absolute",
-                                  fontSize: 10,
-                                  fontWeight: "600",
-                                }}
-                              >
-                                1 Dec 23
-                              </Text>
-
-                              <Text
-                                style={{ color: "#fff", top: 30, right: 10 }}
-                              >
-                                {item.skills[0]},{item.skills[1]}
-                              </Text>
-                              <Text
-                                style={{ color: "#fff", top: 30, right: 10 }}
-                              >
-                                {item.company}
-                              </Text>
-                              <View
-                                style={{
-                                  backgroundColor: "#000",
-                                  borderWidth: 0.5,
-                                  paddingLeft: 145,
-                                  position: "absolute",
-                                  top: 120,
-                                  left: 10,
-                                }}
-                              ></View>
-                              <View
-                                style={{
-                                  position: "absolute",
-                                  top: 125,
-                                  left: 10,
-                                }}
-                              >
-                                <Text
-                                  style={{
-                                    fontWeight: "600",
-                                    color: "#fff",
-                                    fontSize: 12,
-                                  }}
-                                >
-                                  📍 {item.location}
+                                <Text style={{ color: "#0F2167" }}>
+                                  {item.employmentType}
                                 </Text>
                               </View>
-                              <Text
-                                style={{
-                                  position: "absolute",
-                                  top: 125,
-                                  left: 110,
-                                  fontWeight: "600",
-                                  color: "#fff",
-                                }}
-                              >
-                                {item.salary}
-                              </Text>
-
                               <View
                                 style={{
-                                  position: "absolute",
-                                  top: 150,
-                                  left: 20,
-                                  backgroundColor: "#fff",
-                                  paddingHorizontal: 5,
+                                  backgroundColor: "#f2f2f2",
+                                  paddingHorizontal: 8,
                                   borderRadius: 20,
                                 }}
                               >
-                                <Text>{item.employmentType}</Text>
-                              </View>
-                              <View
-                                style={{
-                                  position: "absolute",
-                                  top: 150,
-                                  left: 100,
-                                  backgroundColor: "#fff",
-                                  paddingHorizontal: 5,
-                                  borderRadius: 20,
-                                }}
-                              >
-                                <Text>Hybrid</Text>
+                                <Text style={{ color: "#0F2167" }}>
+                                  {item.experienceLevel}
+                                </Text>
                               </View>
                             </View>
-                          </TouchableWithoutFeedback>
-                        </>
+                          </View>
+                        </TouchableWithoutFeedback>
                       )}
                     />
 
-                    <View style={{ top: 180, position: "absolute" }}>
+                    <View style={{ top: 210, position: "absolute" }}>
                       <Text
                         style={{
                           fontSize: 19,
@@ -634,14 +777,16 @@ const HomeScreen = () => {
                               style={{
                                 backgroundColor: "#fff",
                                 paddingHorizontal: 8,
+
                                 borderRadius: 20,
+                                shadowColor: "#000",
                                 shadowOffset: {
                                   width: 0,
                                   height: 50,
                                 },
                                 shadowOpacity: 0.8,
                                 shadowRadius: 16.0,
-                                elevation: 5,
+                                elevation: 6,
                               }}
                             >
                               <TouchableWithoutFeedback
@@ -654,7 +799,7 @@ const HomeScreen = () => {
                                 <Image
                                   source={{ uri: item.images[0] }}
                                   style={{
-                                    width: 150,
+                                    width: 200,
                                     height: 170,
                                     bottom: 52,
                                     marginTop: 60,
@@ -672,7 +817,8 @@ const HomeScreen = () => {
                                   position: "absolute",
                                 }}
                               >
-                                {item.profileId.firstName}
+                                {item.profileId.firstName}{" "}
+                                {item.profileId.lastName}
                               </Text>
                               <Text
                                 style={{
@@ -714,7 +860,279 @@ const HomeScreen = () => {
                                 style={{
                                   position: "absolute",
                                   top: 150,
-                                  left: 75,
+                                  left: 120,
+                                  backgroundColor: "#fff",
+                                  paddingHorizontal: 4,
+                                  paddingVertical: 1,
+                                  borderRadius: 10,
+                                }}
+                              >
+                                <Text style={{}}>
+                                  📍{item.profileId.address.country}
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+                        </>
+                      )}
+                    />
+
+                    <View style={{ top: 500, position: "absolute" }}>
+                      <Text
+                        style={{
+                          fontSize: 19,
+                          position: "absolute",
+                          color: "black",
+                          fontWeight: "bold",
+                          top: 400,
+                          left: 30,
+                        }}
+                      >
+                        Buy & sell
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          position: "absolute",
+                          color: "black",
+                          top: 400,
+                          left: responsiveWidth(80),
+                          opacity: 0.9,
+                        }}
+                        onPress={() => navigation.navigate("BuySellSeeAll")}
+                      >
+                        See All ➤
+                      </Text>
+                    </View>
+                    <FlatList
+                      style={{ top: 80 }}
+                      pagingEnabled
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      data={buysell}
+                      renderItem={({ item }) => (
+                        <>
+                          <View
+                            style={{
+                              marginLeft: 20,
+                              paddingBottom: 30,
+                              top: 10,
+                            }}
+                          >
+                            <View
+                              style={{
+                                backgroundColor: "#fff",
+                                paddingHorizontal: 8,
+
+                                borderRadius: 20,
+                                shadowColor: "#000",
+                                shadowOffset: {
+                                  width: 0,
+                                  height: 50,
+                                },
+                                shadowOpacity: 0.8,
+                                shadowRadius: 16.0,
+                                elevation: 6,
+                              }}
+                            >
+                              <TouchableWithoutFeedback
+                                onPress={() =>
+                                  navigation.navigate("ByDetalis", {
+                                    data: item,
+                                  })
+                                }
+                              >
+                                <Image
+                                  source={{ uri: item.image }}
+                                  style={{
+                                    width: 200,
+                                    height: 170,
+                                    bottom: 52,
+                                    marginTop: 60,
+                                    borderRadius: 10,
+                                  }}
+                                />
+                              </TouchableWithoutFeedback>
+                              <Text
+                                style={{
+                                  fontSize: 13,
+                                  top: 160,
+                                  right: 20,
+                                  marginTop: 25,
+                                  fontWeight: "600",
+                                  position: "absolute",
+                                }}
+                              >
+                                {item.adTitle}
+                              </Text>
+
+                              <View
+                                style={{
+                                  position: "absolute",
+                                  top: 150,
+                                  left: 15,
+                                  backgroundColor: "#fff",
+                                  paddingHorizontal: 4,
+                                  paddingVertical: 4,
+                                  borderRadius: 10,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontWeight: "600",
+                                    color: "green",
+                                    fontSize: 10,
+                                  }}
+                                >
+                                  ₹{item.price}
+                                </Text>
+                              </View>
+
+                              <View
+                                style={{
+                                  position: "absolute",
+                                  top: 150,
+                                  left: 140,
+                                  backgroundColor: "#fff",
+                                  paddingHorizontal: 4,
+                                  paddingVertical: 1,
+                                  borderRadius: 10,
+                                }}
+                              >
+                                <Text style={{}}>
+                                  📍{item.profileId.address.country}
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+                        </>
+                      )}
+                    />
+
+                    <View
+                      style={{
+                        top: responsiveHeight(110),
+                        position: "absolute",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 19,
+                          position: "absolute",
+                          color: "black",
+                          fontWeight: "bold",
+                          top: 400,
+                          left: 30,
+                        }}
+                      >
+                        Property
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          position: "absolute",
+                          color: "black",
+                          top: 400,
+                          left: responsiveWidth(80),
+                          opacity: 0.9,
+                        }}
+                        onPress={() => navigation.navigate("PropertySeeAll")}
+                      >
+                        See All ➤
+                      </Text>
+                    </View>
+
+                    <FlatList
+                      style={{ top: 100, marginBottom: 50 }}
+                      pagingEnabled
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      data={Property}
+                      renderItem={({ item }) => (
+                        <>
+                          <View
+                            style={{
+                              marginLeft: 20,
+                              paddingBottom: 30,
+                              top: 10,
+                            }}
+                          >
+                            <View
+                              style={{
+                                backgroundColor: "#fff",
+                                paddingHorizontal: 8,
+                                borderRadius: 20,
+                                shadowColor: "#000",
+                                shadowOffset: {
+                                  width: 0,
+                                  height: 50,
+                                },
+                                shadowOpacity: 0.8,
+                                shadowRadius: 16.0,
+                                elevation: 6,
+                              }}
+                            >
+                              <TouchableWithoutFeedback
+                                onPress={() =>
+                                  navigation.navigate("Details", { data: item })
+                                }
+                              >
+                                <Image
+                                  source={{
+                                    uri:
+                                      item.image && item.image.length > 0
+                                        ? item.image[0]
+                                        : null,
+                                  }}
+                                  style={{
+                                    width: 200,
+                                    height: 170,
+                                    bottom: 52,
+                                    marginTop: 60,
+                                    borderRadius: 10,
+                                  }}
+                                />
+                              </TouchableWithoutFeedback>
+                              <Text
+                                style={{
+                                  fontSize: 13,
+                                  top: 160,
+                                  right: 15,
+                                  marginTop: 25,
+                                  fontWeight: "600",
+                                  position: "absolute",
+                                }}
+                              >
+                                {item.adTitle}
+                              </Text>
+
+                              <View
+                                style={{
+                                  position: "absolute",
+                                  top: 150,
+                                  left: 15,
+                                  backgroundColor: "#fff",
+                                  paddingHorizontal: 4,
+                                  paddingVertical: 4,
+                                  borderRadius: 10,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontWeight: "600",
+                                    color: "green",
+                                    fontSize: 10,
+                                  }}
+                                >
+                                  ₹{item.price}
+                                </Text>
+                              </View>
+
+                              <View
+                                style={{
+                                  position: "absolute",
+                                  top: 150,
+                                  left: 140,
                                   backgroundColor: "#fff",
                                   paddingHorizontal: 4,
                                   paddingVertical: 1,
@@ -734,7 +1152,7 @@ const HomeScreen = () => {
                 </View>
               </>
             ) : isEnabled == 1 ? (
-              <AnnouncementDetails />
+              <AnnouncementDetails announce={filteredAnnouncement} />
             ) : null}
           </View>
         </ScrollView>

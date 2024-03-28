@@ -19,12 +19,12 @@ const numColumns = 2;
 
 const categories = [
   { name: "", icon: "filter" },
-  { name: "Mobile", icon: "mobile" },
+  { name: "iPhone", icon: "mobile" },
   { name: "iPads", icon: "tablet-alt" },
   { name: "Electronics", icon: "tv" },
   { name: "Furniture", icon: "couch" },
   { name: "Fashion", icon: "tshirt" },
-  { name: "brand", icon: "phone" },
+
 ];
 
 const Buy = () => {
@@ -39,7 +39,7 @@ const Buy = () => {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+ const fetchData = async () => {
     try {
       // Fetch data from API endpoints
       const accessoriesData = await axios.get(`${api}/accessories`);
@@ -69,7 +69,7 @@ const Buy = () => {
   // Filter data based on selected category and search text
   const filteredData = datas.filter((item) => {
     return (
-      (selectedCategory ? item.type === selectedCategory : true) &&
+      (selectedCategory ? item.brand || item.type  === selectedCategory : true) &&
       (searchText
         ? item.adTitle.toLowerCase().includes(searchText.toLowerCase())
         : true)

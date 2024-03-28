@@ -5,7 +5,6 @@ import {
   Text,
   Image,
   FlatList,
-  TouchableOpacity,
 } from "react-native";
 import {
   responsiveHeight,
@@ -15,7 +14,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import axios from "axios";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
-import { StatusBar } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { TouchableWithoutFeedback } from "react-native";
 import Recruiter from "./Recruiter";
 import { api } from "./Api";
@@ -23,12 +22,34 @@ import { Drawer } from "react-native-drawer-layout";
 import NavigationView from "./Drawer";
 import SearchBar from "react-native-dynamic-search-bar";
 import { ScrollView } from "react-native-gesture-handler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const JobsScreen = () => {
+
   const [datas, setData] = useState([]);
   const navigation = useNavigation();
   const [filteredDatas, setFilteredDatas] = useState([]);
   const [searchText, setSearchText] = useState("");
- 
+  const [userid, setUserID] = useState(true);
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const userid = await AsyncStorage.getItem("UserID");
+        if (userid !== null) {
+          const { data } = await axios.get(
+            `${api}/notifications/count/${userid}`
+          );
+          setUserID(data.count);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getData();
+  }, []);
+
+
   const [isEnabled, setIsEnabled] = useState(0);
   const [open, setOpen] = React.useState(false);
   const GetData = async () => {
@@ -54,95 +75,26 @@ const JobsScreen = () => {
     );
     setFilteredDatas(filteredData);
   }, [searchText, datas]);
-  const images =
-    "https://communityappintegrate.s3.ap-south-1.amazonaws.com/Event/pexels-fu-zhichao-587741.jpg";
+  
 
   const renderMealItem1 = ({ item }) => (
-    <View style={{ paddingBottom: 5, padding: 15 }}>
+    <View style={styles.mealItemContainer}>
       <TouchableWithoutFeedback
-        style={styles.mealItemContainer}
         onPress={() => navigation.navigate("JobsDetails", { data: item })}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: "#fff",
-            paddingHorizontal: 5,
-            paddingVertical: 5,
-            borderRadius: 10,
-            shadowColor: "black",
-            shadowOpacity: 0.9,
-            shadowOffset: 20,
-            shadowRadius: 50,
-            elevation: 2,
-          }}
-        >
-          <Image
-            source={{ uri: images }}
-            style={{ width: 110, height: 110, borderRadius: 10 }}
-          />
-          <Text
-            style={{ position: "absolute", fontSize: 14, top: 40, left: 130 }}
-          >
-            {item.company}
-          </Text>
-
-          <Text
-            style={{ position: "absolute", fontSize: 19, top: 10, left: 130 }}
-          >
-            {item.title}
-          </Text>
-          <Text
-            style={{
-              position: "absolute",
-              fontSize: 12,
-              top: 42,
-              left: 200,
-              opacity: 0.6,
-            }}
-          >
-            {item.experienceLevel}
-          </Text>
-
-          <Text
-            style={{
-              position: "absolute",
-              fontSize: 15,
-              top: 65,
-              left: responsiveWidth(42),
-              opacity: 0.6,
-            }}
-          >
-            {item.location}
-          </Text>
-          <FontAwesome5
-            name="map-marker-alt"
-            style={{ position: "absolute", left: "42%", top: 70 }}
-          />
-
-          <Text
-            style={{
-              position: "absolute",
-              fontSize: 11,
-              top: 95,
-              left: 135,
-              opacity: 0.6,
-            }}
-          >
-            {item.employmentType}
-          </Text>
-
-          <Text
-            style={{
-              position: "absolute",
-              fontSize: 11,
-              top: 95,
-              left: 185,
-              opacity: 0.6,
-            }}
-          >
-            {item.educationLevel}
-          </Text>
+        <View style={styles.cardContainer}>
+          <Image source={{ uri: item.images[0] }} style={styles.image} />
+          <View style={styles.textContainer}>
+            <Text style={styles.companyText}>{item.company}</Text>
+            <Text style={styles.titleText}>{item.title}</Text>
+            <Text style={styles.infoText}>{item.experienceLevel}</Text>
+            <View style={styles.locationContainer}>
+              <FontAwesome5 name="map-marker-alt" style={styles.locationIcon} />
+              <Text style={styles.locationText}>{item.location}</Text>
+            </View>
+            <Text style={styles.infoText}>{item.employmentType}</Text>
+            <Text style={styles.infoText}>{item.educationLevel}</Text>
+          </View>
         </View>
       </TouchableWithoutFeedback>
     </View>
@@ -157,15 +109,14 @@ const JobsScreen = () => {
       drawerPosition="left"
     >
       <StatusBar
-        translucent
-        backgroundColor="#4383f2"
-        barStyle="dark-content"
+        style="auto"
+        barStyle="light-content"
+        backgroundColor={"#874d3b"}
       />
 
       <View
         style={{
-          backgroundColor: "#4383f2",
-
+          backgroundColor: "#874d3b",
           paddingTop: 120,
         }}
       >
@@ -179,11 +130,30 @@ const JobsScreen = () => {
               left: responsiveWidth(87),
               top: 50,
               borderRadius: 50,
-              backgroundColor: "#4383f2",
+              backgroundColor: "#874d3b",
               paddingHorizontal: 7,
               paddingVertical: 5,
             }}
           />
+          {userid !== null && userid !== 0 ? (
+            <Text
+              style={{
+                position: "absolute",
+                fontSize: 15,
+                top: 45,
+                left: responsiveWidth(91.8),
+                backgroundColor: "red",
+                padding: 0,
+                borderRadius: 50,
+                paddingHorizontal: 5,
+                color: "#fff",
+              }}
+              onPress={() => navigation.navigate("Notification")}
+            >
+              {userid}
+            </Text>
+          ) : null}
+
           <FontAwesome5
             name="comment"
             size={20}
@@ -193,7 +163,7 @@ const JobsScreen = () => {
               left: responsiveWidth(75),
               top: 50,
               borderRadius: 50,
-              backgroundColor: "#4383f2",
+              backgroundColor: "#874d3b",
               paddingHorizontal: 6,
               paddingVertical: 5,
             }}
@@ -212,7 +182,7 @@ const JobsScreen = () => {
           </Text>
 
           <View style={{ bottom: 5, opacity: isEnabled == 0 ? null : 0.6 }}>
-            <TouchableOpacity onPress={() => setIsEnabled(0)}>
+           
               <Text
                 style={{
                   fontSize: 17,
@@ -221,6 +191,8 @@ const JobsScreen = () => {
                   color: "white",
                   left: 66,
                 }}
+                onPress={() => setIsEnabled(0)}
+                
               >
                 Jobs
               </Text>
@@ -229,8 +201,9 @@ const JobsScreen = () => {
                 style={{ position: "absolute", top: 95, left: 40 }}
                 color={"#fff"}
                 size={20}
+                onPress={() => setIsEnabled(0)}
               />
-            </TouchableOpacity>
+        
           </View>
           <Text
             style={{
@@ -251,7 +224,7 @@ const JobsScreen = () => {
               opacity: isEnabled == 1 ? null : 0.6,
             }}
           >
-            <TouchableOpacity onPress={() => setIsEnabled(1)}>
+           
               <Text
                 style={{
                   fontSize: 17,
@@ -260,6 +233,7 @@ const JobsScreen = () => {
                   color: "white",
                   left: 66,
                 }}
+                onPress={() => setIsEnabled(1)}
               >
                 Recruiter
               </Text>
@@ -269,7 +243,7 @@ const JobsScreen = () => {
                 color={"#fff"}
                 size={20}
               />
-            </TouchableOpacity>
+         
           </View>
         </View>
       </View>
@@ -293,12 +267,12 @@ const JobsScreen = () => {
             />
           </View>
 
-          <ScrollView style={{}} contentContainerStyle={{paddingBottom:100}}>
+          <ScrollView style={{}} contentContainerStyle={{ paddingBottom: 100 }}>
             <FlatList
               data={filteredDatas}
               renderItem={renderMealItem1}
               showsHorizontalScrollIndicator={false}
-             scrollEnabled={false}
+              scrollEnabled={false}
             />
           </ScrollView>
         </>
@@ -334,5 +308,59 @@ const styles = StyleSheet.create({
   inputText: {
     height: 50,
     color: "black",
+  },
+
+  cardContainer: {
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowRadius: 2,
+    elevation: 2,
+    marginVertical: 5,
+    marginHorizontal: 10,
+  },
+  image: {
+    width: 110,
+    height: 110,
+    borderRadius: 10,
+    marginRight: 10,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  companyText: {
+    fontSize: 14,
+    marginBottom: 5,
+    fontWeight: "bold",
+  },
+  titleText: {
+    fontSize: 19,
+    marginBottom: 5,
+  },
+  infoText: {
+    fontSize: 12,
+    opacity: 0.6,
+    marginBottom: 2,
+  },
+  locationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 5,
+  },
+  locationIcon: {
+    marginRight: 5,
+    opacity: 0.6,
+  },
+  locationText: {
+    fontSize: 15,
+    opacity: 0.6,
   },
 });

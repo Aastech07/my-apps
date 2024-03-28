@@ -4,9 +4,9 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Image,
   StyleSheet,
   Dimensions,
+  Share,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -16,12 +16,13 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { StatusBar } from "react-native";
+import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
 
 const { width, height } = Dimensions.get("window");
 
 const ByDetails = () => {
-  
   const navigation = useNavigation();
+
   const route = useRoute();
   const { data } = route.params;
   const [isFavourite, setIsFavourite] = useState(false);
@@ -35,6 +36,32 @@ const ByDetails = () => {
       opacity: imageOpacity.value,
     };
   });
+
+  const onShare = async () => {
+    try {
+      const message = `Check out this :
+      Title: ${item.adTitle}
+      Description: ${item.description}
+      Price: $${item.price}
+      Image: ${item.image}`;
+
+      const result = await Share.share({
+        message: message,
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -58,14 +85,29 @@ const ByDetails = () => {
             size={24}
             style={styles.icon}
           />
+
+        
         </TouchableOpacity>
+
+      <View style={{alignSelf:'flex-end',right:20}}>
+      <FontAwesome5
+            name={"share-alt"}
+            style={{
+       
+             bottom:responsiveHeight(43.5)
+            }}
+            size={23}
+            color={"#874d3b"}
+            onPress={() => onShare()}
+          />
+      </View>
         <TouchableOpacity
           style={styles.favoriteButton}
           onPress={() => setIsFavourite(!isFavourite)}
         ></TouchableOpacity>
         <View style={styles.detailsContainer}>
           <Text style={styles.adTitle}>{item.adTitle}</Text>
-          <Text style={styles.price}>Price: ${item.price}</Text>
+          <Text style={styles.price}>Price: ₹{item.price}</Text>
           <View style={styles.separator}></View>
           <Text style={styles.type}>{item.type}</Text>
           <View style={styles.descriptionContainer}>

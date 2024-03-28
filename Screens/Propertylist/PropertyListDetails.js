@@ -5,6 +5,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Share,
 } from "react-native";
 import {
   responsiveFontSize,
@@ -13,9 +14,37 @@ import {
 import { useRoute } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { SliderBox } from "react-native-image-slider-box";
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 const PropertyListDetails = () => {
   const route = useRoute();
   const propertyData = route.params.data;
+
+  const onShare = async () => {
+    try {
+      const message = `Check out this property:
+      Title: ${propertyData.adTitle}
+      Description: ${propertyData.description}
+      Price: $${propertyData.price}
+      Image: ${propertyData.image[0]}`;
+
+      const result = await Share.share({
+        message: message,
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+  };
+
   return (
     <>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{}}>
@@ -23,7 +52,6 @@ const PropertyListDetails = () => {
           <View
             style={{
               backgroundColor: "#fff",
-
               shadowColor: "#000",
               shadowOpacity: 0.6,
               shadowRadius: 10,
@@ -65,6 +93,19 @@ const PropertyListDetails = () => {
               }}
               imageLoadingColor="#2196F3"
             />
+
+            <TouchableOpacity onPress={() => onShare()}>
+              <FontAwesome5Icon
+                name={"share-alt"}
+                style={{
+                  left: 320,
+                  position: "absolute",
+                  bottom: 160,
+                }}
+                size={23}
+                color={"#fff"}
+              />
+            </TouchableOpacity>
 
             <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
               <Text

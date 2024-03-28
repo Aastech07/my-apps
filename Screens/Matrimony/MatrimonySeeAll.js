@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,15 +12,12 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../Api";
 const MatrimonySeeAll = () => {
-  const Api = api;
   const navigation = useNavigation();
-  const drawer = useRef(null);
+
   const calculateAge = (dateOfBirth) => {
     const birthDate = new Date(dateOfBirth);
     const currentDate = new Date();
-
     const age = currentDate.getFullYear() - birthDate.getFullYear();
-
     if (
       currentDate.getMonth() < birthDate.getMonth() ||
       (currentDate.getMonth() === birthDate.getMonth() &&
@@ -33,11 +30,13 @@ const MatrimonySeeAll = () => {
   };
 
   const [apidata, setApiData] = useState("");
+
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get(`${Api}/matrimonial/profiles`);
+        const { data } = await axios.get(`${api}/matrimonial/profiles`);
         setApiData(data);
+        
       } catch (error) {
         console.log(error);
       }
@@ -67,13 +66,12 @@ const MatrimonySeeAll = () => {
                 >
                   <TouchableWithoutFeedback
                     onPress={() =>
-                      navigation.navigate("Mymatchdata", { data: item })
+                      navigation.navigate("MatrimonyData", { data: item })
                     }
                   >
                     <View
                       style={{
                         backgroundColor: "#fff",
-
                         borderRadius: 20,
                         shadowColor: "#000",
                         shadowOffset: {

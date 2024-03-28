@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Image,
@@ -7,6 +7,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
   Alert,
 } from "react-native";
 import {
@@ -18,14 +19,14 @@ import { useNavigation } from "@react-navigation/native";
 import { SelectList } from "react-native-dropdown-select-list";
 import axios from "axios";
 import { api } from "../Api";
-import { firebase } from "@react-native-firebase/firestore";
-import uuid from "react-native-uuid";
+
 const SignUp = () => {
   const [Member, setMember] = useState("");
   const [number, setNumber] = useState("");
   const [relationship, setRelationship] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
-  const userId = uuid.v4();
+
   const Relationship = [
     { key: "1", value: "Father" },
     { key: "2", value: "Mother" },
@@ -50,51 +51,74 @@ const SignUp = () => {
     { key: "22", value: "Godfather" },
     { key: "23", value: "Godmother" },
   ];
-
-  const StoreData = () => {
-    firebase
-      .firestore()
-      .collection("users")
-      .doc(userId)
-      .set({
-        Member: Member,
-        number: number,
-        relationship: relationship,
-        userId:userId
-      })
-      .then((res) => {
-        console.log(res, "insert data");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   const loginUser = async () => {
     try {
-      const { data } = await axios.post(`${api}/signup`, {
+      // Validation
+      if (!Member.trim()) {
+        Alert.alert("Error", "Please enter a valid Member ID.");
+        return;
+      }
+  
+      const phoneRegex = /^[0-9]{10}$/;
+      if (!number.match(phoneRegex)) {
+        Alert.alert("Error", "Please enter a valid 10-digit phone number.");
+        return;
+      }
+  
+      if (!relationship) {
+        Alert.alert("Error", "Please select a relationship.");
+        return;
+      }
+  
+      setLoading(true);
+  
+      const res = await axios.post(`${api}/signup`, {
         phone: number,
         relationship: relationship,
         membershipId: Member,
       });
-
+  
+      const {data} = await axios.post(`${api}/login`, {
+        phone: number,
+      });
+  
+      setLoading(false);
+  
       console.warn("Response:", data);
-
-      if (data._id) {
-        navigation.navigate("Signin");
-      } else {
-        Alert.alert(
-          "User Already Exists",
-          "The provided user already exists. Please try a different number or log in."
-        );
+  
+      if (res.data && res.data._id) {
+        navigation.navigate("Verification", { id: data, phone: number });
       }
     } catch (error) {
-      if (error.response && error.response.status === 404) {
-        console.log(
-          "Endpoint not found. Check the URL and server configuration."
-        );
+      setLoading(false);
+      if (error.response && error.response.status === 400) {
+        const responseData = error.response.data;
+        if (responseData && responseData.error) {
+          Alert.alert(
+            "API Error",
+            responseData.error.message || "An error occurred. Please try again."
+          );
+        } else {
+          Alert.alert(
+            "API Error",
+            "The provided user already exists. Please try a different number or log in."
+          );
+        }
       } else {
+        Alert.alert(
+          "Error",
+          "An unexpected error occurred. Please try again later."
+        );
       }
+    }
+  };
+  
+
+  const handlePhoneNumberChange = (text) => {
+    if (text.length <= 10) {
+      setNumber(text);
+    } else {
+      Alert.alert("Error", "Phone number should not exceed 10 digits.");
     }
   };
 
@@ -106,124 +130,136 @@ const SignUp = () => {
         bottom: 40,
       }}
     >
-      <View style={{ top: responsiveHeight(10), alignSelf: "center" }}>
+      <View
+        style={{
+          top: responsiveHeight(4),
+          alignSelf: "center",
+          backgroundColor: "#874d3b",
+          paddingHorizontal: 20,
+          paddingVertical: 20,
+        }}
+      >
         <Image
-          source={require("/Community/my-apps/my-apps/assets/Splashs.png")}
-          style={{ width: 59, height: 62 }}
+          source={require("/Community/my-apps/my-apps/assets/PAREKH MOTU TAD LOGO.png")}
+          style={{ width: responsiveWidth(90), height: responsiveHeight(15) }}
+          resizeMode="contain"
         />
-        <Text
-          style={{
-            top: 70,
-            fontSize: 40,
-            position: "absolute",
-            fontWeight: "500",
-            alignSelf: "center",
-            color: "#37364A",
-          }}
-        >
-          Community
-        </Text>
-      </View>
-      <View style={{ top: responsiveHeight(23), left: responsiveWidth(7) }}>
-        <Text style={{ fontSize: 23, fontWeight: "400", color: "#120D26" }}>
-          Sign Up
-        </Text>
       </View>
 
-      <View style={{ marginTop: 3 }}>
-        <View style={{ top: responsiveHeight(24.5) }}>
-          <Text
-            style={{
-              top: responsiveHeight(-1),
-              left: 23,
-              fontSize: 15,
-              fontWeight: "500",
-              opacity: 0.6,
-            }}
-          >
-            Select Relationship
+      <View style={{ bottom: 100 }}>
+        <View style={{ top: responsiveHeight(23), left: responsiveWidth(7) }}>
+          <Text style={{ fontSize: 23, fontWeight: "400", color: "#120D26" }}>
+            Sign Up
           </Text>
+        </View>
 
-          <SelectList
-            setSelected={(val) => setRelationship(val)}
-            data={Relationship}
-            save="value"
-            boxStyles={{
-              marginLeft: responsiveWidth(5),
-              marginRight: responsiveWidth(5),
-            }}
-            dropdownStyles={{
-              marginLeft: responsiveWidth(5),
-              marginRight: responsiveWidth(5),
+        <View style={styles.inputView}>
+          <TextInput
+            style={styles.inputText}
+            placeholder="Enter Member ID"
+            placeholderTextColor="black"
+            onChangeText={(txt) => setMember(txt)}
+            value={Member}
+          />
+          <FontAwsome5
+            name="users"
+            size={16}
+            style={{ opacity: 0.6, position: "absolute", left: 15 }}
+          />
+        </View>
+
+        <View style={styles.input}>
+          <TextInput
+            style={styles.inputText}
+            placeholder="Phone Number"
+            placeholderTextColor="black"
+            onChangeText={handlePhoneNumberChange}
+            value={number}
+            keyboardType="numeric"
+          />
+          <Image
+            source={require("/Community/my-apps/my-apps/assets/PhoneImg.png")}
+            style={{
+              width: 23,
+              height: 23,
+              opacity: 0.6,
+              position: "absolute",
+              left: 10,
             }}
           />
         </View>
-      </View>
 
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.inputText} //envelope
-          placeholder="Enter Member ID"
-          placeholderTextColor="black"
-          onChangeText={(txt) => setMember(txt)}
-          editable={true}
-          value={Member}
-        />
-        <FontAwsome5
-          name="users"
-          size={16}
-          style={{ opacity: 0.6, position: "absolute", left: 15 }}
-        />
-      </View>
+        <View style={{ marginTop: 3 }}>
+          <View style={{ top: responsiveHeight(27) }}>
+            <Text
+              style={{
+                top: responsiveHeight(-1),
+                left: 23,
+                fontSize: 15,
+                fontWeight: "500",
+                opacity: 0.6,
+              }}
+            >
+              Select Relationship
+            </Text>
 
-      <View style={styles.input}>
-        <TextInput
-          style={styles.inputText}
-          placeholder="Phone Number"
-          placeholderTextColor="black"
-          onChangeText={(txt) => setNumber(txt)}
-          editable={true}
-          value={number}
-          keyboardType="numeric"
-        />
-        <FontAwsome5
-          name="phone"
-          size={15}
-          style={{ opacity: 0.6, position: "absolute", left: 15 }}
-        />
-      </View>
+            <SelectList
+              setSelected={(val) => setRelationship(val)}
+              data={Relationship}
+              save="value"
+              boxStyles={{
+                marginLeft: responsiveWidth(5),
+                marginRight: responsiveWidth(5),
+                height: 50,
+              }}
+              dropdownStyles={{
+                marginLeft: responsiveWidth(5),
+                marginRight: responsiveWidth(5),
+              }}
+              search={true}
+            />
+          </View>
+        </View>
 
-      <View style={{ top: responsiveHeight(20) }}>
-        <TouchableOpacity
-          onPress={() => loginUser()}
-          style={styles.loginBtn}
-        >
-          <Text style={{ color: "white", fontSize: 18, fontWeight: "500" }}>
-            SIGN UP
-          </Text>
-          <FontAwsome5
-            name="arrow-right"
-            style={{
-              position: "absolute",
-              left: 215,
-              backgroundColor: "#3D56F0",
-              padding: 12,
-              borderRadius: 50,
-              color: "#fff",
-            }}
-          />
-        </TouchableOpacity>
-      </View>
+        <View style={{ top: responsiveHeight(20) }}>
+          <TouchableOpacity onPress={loginUser} style={styles.loginBtn}>
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <>
+                <Text
+                  style={{ color: "white", fontSize: 18, fontWeight: "500" }}
+                >
+                  SIGN UP
+                </Text>
+                <FontAwsome5
+                  name="arrow-right"
+                  style={{
+                    position: "absolute",
+                    left: 215,
+                    backgroundColor: "#874d3b",
+                    padding: 12,
+                    borderRadius: 50,
+                    color: "#fff",
+                  }}
+                />
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
 
-      <View style={{}}>
-        <View style={{ top: responsiveHeight(40), left: responsiveWidth(23) }}>
-          <Text style={{ fontSize: 16 }}> have an account?</Text>
-          <Text
-            style={{ left: 135, bottom: 19, color: "#1977F3" }}
-            onPress={() => navigation.navigate("Signin")}
+        <View style={{}}>
+          <View
+            style={{ top: responsiveHeight(35), left: responsiveWidth(23) }}
           >
-            Sign in
-          </Text>
+            <Text style={{ fontSize: 16 }}> have an account?</Text>
+            <Text
+              style={{ left: 135, bottom: 19, color: "#874d3b" }}
+              onPress={() => navigation.navigate("Signin")}
+            >
+              Sign in
+            </Text>
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -231,6 +267,7 @@ const SignUp = () => {
 };
 
 export default SignUp;
+
 const styles = StyleSheet.create({
   inputView: {
     width: "90%",
@@ -261,14 +298,13 @@ const styles = StyleSheet.create({
     marginVertical: -20,
     paddingRight: 30,
   },
-
   inputText: {
     height: 50,
     color: "black",
   },
   loginBtn: {
     width: "80%",
-    backgroundColor: "#3D50DF",
+    backgroundColor: "#874d3b",
     borderRadius: 15,
     height: 55,
     alignItems: "center",

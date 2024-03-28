@@ -11,9 +11,12 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.communityApp"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,7 +28,8 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.communityApp"
+      "package": "com.communityApp",
+      "useNextNotificationsApi": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -51,7 +55,13 @@
           "isAccessMediaLocationEnabled": true
         }
       ],
-      ["@react-native-firebase/app", "@react-native-firebase/auth"]
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
+      ]
+
     ],
     "extra": {
       "eas": {

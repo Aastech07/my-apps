@@ -21,12 +21,12 @@ const BottomNav = () => {
       <FontAwesome5
         name={iconName}
         size={25}
-        color={selected === index ? "blue" : "gray"}
+        color={selected === index ? "#874d3b" : "gray"}
       />
       <Text
         style={{
           fontSize: 12,
-          color: selected === index ? "blue" : "gray",
+          color: selected === index ? "#874d3b" : "gray",
         }}
       >
         {text}
