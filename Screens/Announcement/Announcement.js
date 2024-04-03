@@ -409,7 +409,7 @@ const Announcement = () => {
           </View>
         </Modal>
 
-        <View style={{ bottom: 95 }}>
+        <View style={{ bottom: 65 }}>
           <TouchableOpacity style={styles.loginBtn} onPress={() => {PostAnn()}}>
             <Text style={{ color: "white", fontSize: 18, fontWeight: "500" }}>
               Next

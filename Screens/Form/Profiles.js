@@ -146,8 +146,6 @@ const Profiles = ({ id }) => {
     }
   };
 
-  
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -183,6 +181,7 @@ const Profiles = ({ id }) => {
           },
         }
       );
+
       setStates(response.data);
     } catch (error) {
       console.log(error);
@@ -289,7 +288,7 @@ const Profiles = ({ id }) => {
   minDate.setDate(minDate.getDate() - 15); // Minimum date: 15 days ago
 
   const loginUser = async () => {
-    console.warn(ids)
+    console.warn(ids);
     try {
       const { data } = await axios.post(`${Api}/profiles`, {
         userId: ids,
@@ -313,7 +312,7 @@ const Profiles = ({ id }) => {
         maritalStatus: marital,
       });
       console.warn(data);
-      console.log(data._id)
+      console.log(data._id);
       await AsyncStorage.setItem("profileid", data._id);
       await AsyncStorage.setItem("UserID", ids);
       await AsyncStorage.setItem("ShowScreen", profession);
@@ -323,21 +322,28 @@ const Profiles = ({ id }) => {
   };
 
   const ImageUpload = async () => {
-    try {
-      const response = await axios.post(`${Api}/uploadImage/profiles`, {
-        ProfileID: profileid,
-        url: photo,
-      });
+    const formData = new FormData();
+    formData.append("url", photo||selectedImage);
 
+    try {
+      const response = await axios.post(
+        ` ${api}/uploadImage/profiles/${profileid}`,
+        FormData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       if (response) {
         console.log("Login successful. Token:", response.data.url);
       } else {
+        console.log("object");
       }
     } catch (error) {
-      console.error("Error during login:", error.message);
+      console.error("Error during sending Image to backend:", error.message);
     }
   };
-
   // const countryNames = countrys.map(
   //   (country) => `(${country.iso2}) ${country.name}`
   // );

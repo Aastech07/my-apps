@@ -153,6 +153,7 @@ const PropertyForm = () => {
       setDescription(data.description)
       setPrice(data.price)
       setSelectedImage(data.image)
+      setNumber(data.ContactNo)
     }
     getproperties()
   },[])

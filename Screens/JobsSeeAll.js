@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   itemContainer: {
-    backgroundColor: "#0F2167",
+    backgroundColor: "#fff",
     width: "47%", // Adjusted width to accommodate margin
     borderRadius: 20,
     padding: 15,
@@ -92,21 +92,21 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    color: "#fff",
+    color: "#000",
     fontSize: 16,
     fontWeight: "bold",
   },
   company: {
-    color: "#fff",
+    color: "#000",
     fontSize: 14,
     marginBottom: 5,
   },
   location: {
-    color: "#fff",
+    color: "#000",
     fontSize: 12,
   },
   salary: {
-    color: "#fff",
+    color: "#000",
     fontSize: 12,
     marginBottom: 5,
   },

@@ -7,13 +7,7 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import { SelectList } from "react-native-dropdown-select-list";
-import {
-  Marital,
-  Mangglik,
-  Diet,
-  Qualification,
-  EducationArea,
-} from "./Api";
+import { Marital, Mangglik, Diet, Qualification, EducationArea } from "./Api";
 import { TouchableOpacity } from "react-native";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import axios from "axios";
@@ -44,7 +38,7 @@ const Search = () => {
     const totalInches = cm * 0.393701;
     const feet = Math.floor(totalInches / 12);
     const inches = Math.round(totalInches % 12);
-    return `${feet}' ${inches}"`;
+    return `${feet}' ${inches}`;
   };
 
   const obj = {
@@ -104,7 +98,7 @@ const Search = () => {
       let filters = nonEmpty.map((e) => {
         return [keyPairObj[e[0]], e[1]];
       });
-  
+
       const applyFilter = (filters) => {
         const heightAgeFiltered = data.filter((ha) => {
           return ageArr.includes(convertAge(ha.profileId.dateOfBirth));
@@ -127,14 +121,12 @@ const Search = () => {
       filteredData.filter((elem) => {
         return HeightArr.includes(elem.height);
       });
-      setFilteredData(filteredData)
+      setFilteredData(filteredData);
       navigation.navigate("FilteredResult");
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-
   };
-
 
   useEffect(() => {
     (async () => {
@@ -174,9 +166,8 @@ const Search = () => {
   const fetchState = async () => {
     try {
       const response = await axios.get(
-        `https://api.countrystatecity.in/v1/countries/${
-          countrys[0] + countrys[1]
-        }/states`,
+        `https://api.countrystatecity.in/v1/countries/${countrys[0] +
+          countrys[1]}/states`,
         {
           headers: {
             "X-CSCAPI-KEY":
@@ -194,9 +185,8 @@ const Search = () => {
   const fetchCity = async () => {
     try {
       const response = await axios.get(
-        `https://api.countrystatecity.in/v1/countries/${
-          countrys[0] + countrys[1]
-        }/states/${states[0] + states[1]}/cities`,
+        `https://api.countrystatecity.in/v1/countries/${countrys[0] +
+          countrys[1]}/states/${states[0] + states[1]}/cities`,
         {
           headers: {
             "X-CSCAPI-KEY":
@@ -218,7 +208,7 @@ const Search = () => {
   });
 
   const cityNames = fetchCitys.map((city) => ({
-    value: `${city.name}`,
+    value:`${city.name}`,
     key: city.id,
   }));
   return (
@@ -243,15 +233,23 @@ const Search = () => {
             alignContent: "center",
             alignItems: "center",
             flex: 1,
-            top: 20,
+            top: 25,
           }}
         >
           <Text style={{ right: responsiveWidth(38), fontSize: 12 }}>Age</Text>
-          <Text style={{ right: responsiveWidth(34), fontSize: 15, top: 10 }}>
+          <Text
+            style={{
+              right: responsiveWidth(36),
+              fontSize: 15,
+              top: 45,
+              zIndex: 2,
+              color: "black",
+            }}
+          >
             {fromValue} yrs
           </Text>
 
-          <View>
+          <View style={{ marginTop: -40 }}>
             <RangeSlider
               min={18}
               max={70}
@@ -259,13 +257,20 @@ const Search = () => {
               toValueOnChange={(value) => setToValue(value)}
               initialFromValue={18}
               styleSize={"small"}
+              showRangeLabels={"false"}
               barHeight={4}
+              rangeLabelsTextColor="white"
               knobSize={24}
-              inRangeBarColor={"tomato"}
+              inRangeBarColor={"black"}
             />
           </View>
           <Text
-            style={{ left: responsiveWidth(34), fontSize: 15, bottom: 160 }}
+            style={{
+              left: responsiveWidth(37),
+              fontSize: 15,
+              bottom: 95,
+              backgroundColor: "white",
+            }}
           >
             {toValue} yrs
           </Text>
@@ -281,12 +286,19 @@ const Search = () => {
           <Text style={{ right: responsiveWidth(37), fontSize: 12 }}>
             Height
           </Text>
-          <Text style={{ right: responsiveWidth(34), fontSize: 15, top: 10 }}>
+          <Text
+            style={{
+              right: responsiveWidth(37),
+              fontSize: 15,
+              top: 45,
+              zIndex: 1,
+            }}
+          >
             {/* {convertToFeetInches(centimeters)},ft */}
             {fromHValue},ft
           </Text>
 
-          <View>
+          <View style={{ marginTop: -40 }}>
             <RangeSlider
               min={3}
               max={7}
@@ -296,12 +308,19 @@ const Search = () => {
               step={0.1}
               styleSize={"small"}
               barHeight={4}
+              showRangeLabels={"false"}
+              rangeLabelsTextColor="white"
               knobSize={24}
-              inRangeBarColor={"tomato"}
+              inRangeBarColor={"black"}
             />
           </View>
           <Text
-            style={{ left: responsiveWidth(34), fontSize: 15, bottom: 160 }}
+            style={{
+              left: responsiveWidth(37),
+              fontSize: 15,
+              bottom: 95,
+              backgroundColor: "white",
+            }}
           >
             {toHValue},ft
           </Text>
@@ -438,98 +457,98 @@ const Search = () => {
             }}
           />
         </View>
+        <Text
+          style={{
+            fontSize: responsiveFontSize(2.5),
+            left: responsiveWidth(6),
+            top: responsiveHeight(17),
+            fontWeight: "500",
+          }}
+        >
+          Education & Profession Details.
+        </Text>
+        <View style={{ top: responsiveHeight(19) }}>
           <Text
             style={{
-              fontSize: responsiveFontSize(2.5),
+              fontSize: responsiveFontSize(2),
               left: responsiveWidth(6),
-              top: responsiveHeight(17),
-              fontWeight: "500",
+              marginBottom: 2,
             }}
           >
-            Education & Profession Details.
+            Qualification
           </Text>
-          <View style={{ top: responsiveHeight(19) }}>
-            <Text
-              style={{
-                fontSize: responsiveFontSize(2),
-                left: responsiveWidth(6),
-                marginBottom: 2,
-              }}
-            >
-              Qualification
-            </Text>
-            <SelectList
-              setSelected={(val) => setQualification(val)}
-              data={Qualification}
-              save="value"
-              boxStyles={{
-                marginLeft: responsiveWidth(5),
-                marginRight: responsiveWidth(5),
-              }}
-              dropdownStyles={{
-                marginLeft: responsiveWidth(5),
-                marginRight: responsiveWidth(5),
-              }}
-            />
-          </View>
-          <View style={{ top: responsiveHeight(21) }}>
-            <Text
-              style={{
-                fontSize: responsiveFontSize(2),
-                left: responsiveWidth(6),
-                marginBottom: 2,
-              }}
-            >
-              Education Area
-            </Text>
-            <SelectList
-              setSelected={(val) => setEducationArea(val)}
-              data={EducationArea}
-              save="value"
-              boxStyles={{
-                marginLeft: responsiveWidth(5),
-                marginRight: responsiveWidth(5),
-              }}
-              dropdownStyles={{
-                marginLeft: responsiveWidth(5),
-                marginRight: responsiveWidth(5),
-              }}
-            />
-          </View>
+          <SelectList
+            setSelected={(val) => setQualification(val)}
+            data={Qualification}
+            save="value"
+            boxStyles={{
+              marginLeft: responsiveWidth(5),
+              marginRight: responsiveWidth(5),
+            }}
+            dropdownStyles={{
+              marginLeft: responsiveWidth(5),
+              marginRight: responsiveWidth(5),
+            }}
+          />
+        </View>
+        <View style={{ top: responsiveHeight(21) }}>
           <Text
             style={{
-              fontSize: responsiveFontSize(2.5),
+              fontSize: responsiveFontSize(2),
               left: responsiveWidth(6),
-              top: responsiveHeight(24),
-              fontWeight: "500",
+              marginBottom: 2,
             }}
           >
-            Lifestyle & Apperance.
+            Education Area
           </Text>
-          <View style={{ top: responsiveHeight(26) }}>
-            <Text
-              style={{
-                fontSize: responsiveFontSize(2),
-                left: responsiveWidth(6),
-                marginBottom: 2,
-              }}
-            >
-              Diet
-            </Text>
-            <SelectList
-              setSelected={(val) => setDite(val)}
-              data={Diet}
-              save="value"
-              boxStyles={{
-                marginLeft: responsiveWidth(5),
-                marginRight: responsiveWidth(5),
-              }}
-              dropdownStyles={{
-                marginLeft: responsiveWidth(5),
-                marginRight: responsiveWidth(5),
-              }}
-            />
-          </View>
+          <SelectList
+            setSelected={(val) => setEducationArea(val)}
+            data={EducationArea}
+            save="value"
+            boxStyles={{
+              marginLeft: responsiveWidth(5),
+              marginRight: responsiveWidth(5),
+            }}
+            dropdownStyles={{
+              marginLeft: responsiveWidth(5),
+              marginRight: responsiveWidth(5),
+            }}
+          />
+        </View>
+        <Text
+          style={{
+            fontSize: responsiveFontSize(2.5),
+            left: responsiveWidth(6),
+            top: responsiveHeight(24),
+            fontWeight: "500",
+          }}
+        >
+          Lifestyle & Apperance.
+        </Text>
+        <View style={{ top: responsiveHeight(26) }}>
+          <Text
+            style={{
+              fontSize: responsiveFontSize(2),
+              left: responsiveWidth(6),
+              marginBottom: 2,
+            }}
+          >
+            Diet
+          </Text>
+          <SelectList
+            setSelected={(val) => setDite(val)}
+            data={Diet}
+            save="value"
+            boxStyles={{
+              marginLeft: responsiveWidth(5),
+              marginRight: responsiveWidth(5),
+            }}
+            dropdownStyles={{
+              marginLeft: responsiveWidth(5),
+              marginRight: responsiveWidth(5),
+            }}
+          />
+        </View>
       </ScrollView>
       <View style={{ paddingBottom: 30 }}>
         <TouchableOpacity style={styles.loginBtn} onPress={handleSubmit}>

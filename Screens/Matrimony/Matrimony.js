@@ -1,14 +1,105 @@
-import React, { useState ,useEffect} from "react";
-import { View, Text, TouchableOpacity, StyleSheet ,BackHandler,Alert} from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  StatusBar,
+} from "react-native";
 import MyMatches from "./MyMatches";
 import New from "./New";
-
 import Search from "./Search";
 import RecentlyView from "./RecentlyView";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { StatusBar } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { api } from "../Api";
+import MatrimonyFriends from "./MatrimonyFriends";
+
 const Matrimony = () => {
   const [activeTab, setActiveTab] = useState("Search");
+  const [hide, setHide] = useState(null); // Changed initial state to null
+  const [data, setData] = useState(null); // Changed initial state to null
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const profileId = await AsyncStorage.getItem("profileid");
+        if (profileId !== null) {
+          const [matrimonial] = await Promise.all([
+            axios.get(`${api}/matrimonial/profiles`),
+          ]);
+
+          const allData = [...matrimonial.data];
+          const filteredProperties = allData.filter(
+            (property) => property.profileId._id === profileId
+          );
+
+          if (filteredProperties.length > 0) {
+            const id = filteredProperties[0]._id; // Access the _id from the first element
+            const res = await axios.get(`${api}/matrimonial/profiles/${id}`);
+
+            // Fetch friends' profiles
+            let arr = [];
+            for (let i = 0; i < res?.data.friends.length; i++) {
+              const friendId = res.data.friends[i];
+              const response = await axios.get(
+                `${api}/matrimonial/profiles/${friendId}`
+              );
+              arr.push(response.data);
+            }
+
+            // Set the data
+            setHide(arr);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    setActiveTab("MyMatch");
+    fetchData();
+  }, [api]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const profileId = await AsyncStorage.getItem("profileid");
+        if (profileId !== null) {
+          const [matrimonial] = await Promise.all([
+            axios.get(`${api}/matrimonial/profiles`),
+          ]);
+
+          const allData = [...matrimonial.data];
+          const filteredProperties = allData.filter(
+            (property) => property.profileId._id === profileId
+          );
+
+          if (filteredProperties.length > 0) {
+            const id = filteredProperties[0]._id; // Access the _id from the first element
+            const res = await axios.get(`${api}/matrimonial/profiles/${id}`);
+
+            // Fetch friends' profiles
+            let arr = [];
+            for (let i = 0; i < res?.data.receivedRequests.length; i++) {
+              const friendId = res.data.receivedRequests[i];
+              const response = await axios.get(
+                `${api}/matrimonial/profiles/${friendId}`
+              );
+              arr.push(response.data);
+            }
+
+            // Set the data
+            setData(arr);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [api]);
 
   const renderScreen = () => {
     switch (activeTab) {
@@ -18,16 +109,28 @@ const Matrimony = () => {
         return <MyMatches />;
       case "New":
         return <New />;
-      case "View":
+      case "Request":
         return <RecentlyView />;
+      case "Friends":
+        return <MatrimonyFriends />;
       default:
-        
         return <Search />;
     }
   };
 
   const renderTab = (tabName, iconName) => {
     const isActive = activeTab === tabName;
+  
+    // Check if the tab is 'View' and data is null or empty, then don't show the tab
+    const showTab = !(tabName === "Request" && (!data || data.length === 0));
+    const showTab1 = !(tabName === "Friends" && (!hide || hide.length === 0));
+
+    if (!showTab) {
+      return null; // Don't render the tab
+    }
+    if (!showTab1) {
+      return null; // Don't render the tab
+    }
     return (
       <TouchableOpacity
         key={tabName}
@@ -43,54 +146,22 @@ const Matrimony = () => {
       </TouchableOpacity>
     );
   };
-
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert(
-        "Hold on!",
-        "Are you sure you want to go back?",
-        [
-          {
-            text: "Cancel",
-            onPress: () => null,
-            style: "destructive"
-          },
-          {
-            text: "YES",
-            onPress: () => BackHandler.exitApp(),
-            style:"destructive"
-          }
-        ],
-        { cancelable: false }
-      );
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, []);
-
-
+  
 
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" barStyle="light-content" backgroundColor={"#874d3b"} />
-      {/* Header */}
+      <StatusBar barStyle="light-content" backgroundColor="#874d3b" />
+
       <View style={styles.header}></View>
 
-      {/* Tab Bar */}
       <View style={styles.tabBar}>
         {renderTab("Search", "search")}
         {renderTab("MyMatch", "heart")}
         {renderTab("New", "plus-circle")}
-        {renderTab("View", "eye")}
+        {renderTab("Request", "user-check")}
+        {renderTab("Friends", "users")}
       </View>
 
-      {/* Content */}
       <View style={styles.content}>{renderScreen()}</View>
     </View>
   );
@@ -109,7 +180,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
   },
   tabBar: {
@@ -125,8 +196,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     paddingVertical: 10,
-    height:90,
-    top:25
+    height: 70,
   },
   activeTab: {
     borderBottomWidth: 2,

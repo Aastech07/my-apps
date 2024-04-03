@@ -114,19 +114,15 @@ const New = () => {
 
                       <Animated.View
                         entering={FadeInLeft.duration(500).damping()}
-                        style={{ left: responsiveWidth(13), bottom: 200 }}
+                        style={{ left: responsiveWidth(13), bottom: 180 }}
                       >
-                        <FontAwesome5
-                          name="check-circle"
-                          color={"green"}
-                          size={18}
-                          style={{ position: "absolute", left: -25, top: 3 }}
-                        />
+                     
                         <Text
                           style={{
                             fontWeight: "600",
                             fontSize: 16,
                             color: "#fff",
+                            right:20
                           }}
                         >
                           {item.profileId.firstName} {item.profileId.lastName}
@@ -170,25 +166,7 @@ const New = () => {
 
                         </Text>
                       </Animated.View>
-                      <Animated.View
-                        entering={FadeInRight.duration(500).damping()}
-                        style={{
-                          position: "absolute",
-                          left: responsiveWidth(75),
-                        }}
-                      >
-                        <TouchableOpacity style={{}}>
-                          <Text
-                            style={{
-                              color: "#fff",
-                              fontSize: 35,
-                              bottom: 60,
-                            }}
-                          >
-                            ...
-                          </Text>
-                        </TouchableOpacity>
-                      </Animated.View>
+                     
                       <View
                         style={{
                           borderWidth: 0.5,

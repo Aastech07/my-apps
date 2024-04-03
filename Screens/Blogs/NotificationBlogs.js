@@ -16,7 +16,7 @@ const NotificationBlogs = () => {
   const value = data.params?.data;
   const id = value?.Id;
   const [notification, setNotifications] = useState("");
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -29,7 +29,6 @@ const NotificationBlogs = () => {
         console.log(error);
       }
     };
-
     fetchData();
   }, []);
 

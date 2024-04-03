@@ -11,7 +11,6 @@ import {
   Alert,
   Button,
   FlatList,
-  
 } from "react-native";
 import Animated, {
   FadeInUp,
@@ -21,15 +20,13 @@ import Animated, {
 import {
   responsiveHeight,
   responsiveWidth,
-  responsiveFontSize,
+  
 } from "react-native-responsive-dimensions";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import {
-  MultipleSelectList,
   SelectList,
 } from "react-native-dropdown-select-list";
-import DateTimePicker from "react-native-ui-datepicker";
-import dayjs from "dayjs";
+
 import { api } from "../Api";
 import axios from "axios";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -39,8 +36,10 @@ const JobsScreens = () => {
   const navigation = useNavigation();
   const data = useRoute();
   const item = data.params?.data;
-  const jobid = item._id;
-  //console.warn(item)
+  const jobid = item?._id;
+
+  console.warn({jobid});
+  
   const [currentCompany, setCurrentCompany] = useState("");
   const [experience, setExperience] = useState("");
   const [yearsOfExperienced, setYearsOfExperienced] = useState("");
@@ -60,8 +59,7 @@ const JobsScreens = () => {
   const [profileid, setProfileID] = useState("");
   const [file, setFile] = useState(null);
   const [uri, setURI] = useState("");
-  const [showModal, setShowModal] = useState(false) ;// State to control modal visibility
-  const [modalInput, setModalInput] = useState(""); // State to handle text input in the modal
+  const [showModal, setShowModal] = useState(false); // State to control modal visibility
 
 
   const EmploymentType = [
@@ -158,19 +156,17 @@ const JobsScreens = () => {
   };
 
   const handleModalSubmit = () => {
-    // Handle modal submit
-    console.warn("Modal input:", modalInput);
-    // Here you can continue with the application process
-    setShowModal(true); // Close the modal after submission
+   // console.warn("Modal input:", modalInput);
+    setShowModal(true);
   };
 
-    
   React.useEffect(() => {
     const storeData = async () => {
       try {
         const value = await AsyncStorage.getItem("profileid");
-        console.warn(value)
+
         const ID = await AsyncStorage.getItem("UserID");
+         console.warn(value);
         setID(ID);
         setProfileID(value);
       } catch (e) {
@@ -181,6 +177,7 @@ const JobsScreens = () => {
   }, []);
 
   const PostJob = async () => {
+
     try {
       const { data } = await axios.post(`${api}/applications`, {
         userId: id,
@@ -203,16 +200,14 @@ const JobsScreens = () => {
         expectedCTC: expectedCtc,
         image: uri,
       });
- handleModalSubmit()
-      console.warn(data);
+      handleModalSubmit();
+      await AsyncStorage.setItem("appl",data._id)
     } catch (error) {
-     // console.error("Error during login:", error.message);
-      Alert.alert("plz fill this forms")
+      // console.error("Error during login:", error.message);
+      Alert.alert("plz fill this forms");
     }
   };
 
-  
- 
   const pickDocument = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -432,8 +427,6 @@ const JobsScreens = () => {
           </View>
         </View>
 
-       
-
         <View style={{}}>
           <Text
             style={{
@@ -652,7 +645,6 @@ const JobsScreens = () => {
           </View>
         </View>
 
-
         <View style={{}}>
           <Text
             style={{
@@ -693,30 +685,39 @@ const JobsScreens = () => {
         </View>
 
         <Modal
-  visible={showModal}
-  animationType="slide"
-  transparent
-  onRequestClose={() => setShowModal(false)}
->
-  <View style={styles.modalContainer}>
-    <View style={styles.modalContent}>
-      <FontAwesome5Icon name="paper-plane" size={20} color="blue" style={styles.icon} />
-      <Text style={styles.modalTitle}>Submit Application</Text>
-      <Text style={{ fontWeight: '400' }}>Apply to more opportunities to increase</Text>
-      <Text style={{ alignSelf: 'center', fontWeight: '400' }}>your chances of getting hired</Text>
-      <View style={styles.modalButtons}>
-        <TouchableOpacity
-          style={[styles.modalButton, styles.submitButton]}
-          onPress={()=>navigation.goBack()}
+          visible={showModal}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setShowModal(false)}
         >
-          <Text style={{ color: '#fff', fontWeight: '500' }}>Continue applying</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </View>
-</Modal>
-
-
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <FontAwesome5Icon
+                name="paper-plane"
+                size={20}
+                color="blue"
+                style={styles.icon}
+              />
+              <Text style={styles.modalTitle}>Submit Application</Text>
+              <Text style={{ fontWeight: "400" }}>
+                Apply to more opportunities to increase
+              </Text>
+              <Text style={{ alignSelf: "center", fontWeight: "400" }}>
+                your chances of getting hired
+              </Text>
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.submitButton]}
+                  onPress={() => navigation.goBack()}
+                >
+                  <Text style={{ color: "#fff", fontWeight: "500" }}>
+                    Continue applying
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
 
       <View style={{ bottom: 150, marginBottom: -60 }}>
@@ -931,14 +932,14 @@ const styles = StyleSheet.create({
   },
   modalButtons: {
     flexDirection: "row",
-    justifyContent:"center",
+    justifyContent: "center",
   },
   modalButton: {
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,
     marginLeft: 10,
-    top:10
+    top: 10,
   },
   cancelButton: {
     backgroundColor: "#ccc",

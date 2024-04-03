@@ -167,6 +167,8 @@ const ByDetails = () => {
           <Text style={[styles.buttonText, { color: "tomato" }]}>Chats</Text>
         </TouchableOpacity>
       </View>
+
+      
     </View>
   );
 };

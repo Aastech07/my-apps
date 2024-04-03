@@ -17,7 +17,7 @@ import { ScrollView } from "react-native-virtualized-view";
 import axios from "axios";
 import SearchBar from "react-native-dynamic-search-bar";
 import { api } from "../Api";
-
+import { useNavigation } from "@react-navigation/native";
 import FilterDataContext from "./context/FilteredDataContext";
 
 const FilteredResult = () => {
@@ -25,7 +25,8 @@ const FilteredResult = () => {
   const [apidata, setApiData] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [filteredData, setFilteredData] = useState([]);
-
+ const navigation = useNavigation();
+ 
   useEffect(() => {
     (async () => {
       try {
@@ -127,7 +128,11 @@ const FilteredResult = () => {
                       alignSelf: "center",
                     }}
                   >
-                    <TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback 
+                     onPress={() =>
+                      navigation.navigate("MatrimonyData", { data: item })
+                    }
+                    >
                       <View
                         style={{
                           shadowColor: "black",

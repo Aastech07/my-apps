@@ -15,7 +15,7 @@ import {
 import FontAwesome5 from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios, { all } from "axios";
+import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "./Api";
 import AnnouncementDetails from "./Announcement/AnnouncementDetails";
@@ -28,11 +28,13 @@ import image1 from "../assets/Demoimage.jpeg";
 import image2 from "../assets/Demoimage1.jpeg";
 import image3 from "../assets/Demoimage2.jpeg";
 import { responsiveHeight } from "react-native-responsive-dimensions";
+import { GeoLocation } from "./GeoLocation/GeoLocation";
+
 const HomeScreen = () => {
   const Api = api;
   const navigation = useNavigation();
-  const { width: screenWidth } = Dimensions.get("window");
 
+  const { width: screenWidth } = Dimensions.get("window");
   const [open, setOpen] = React.useState(false);
   const [data, setData] = React.useState();
   const [loading, setLoading] = useState(true);
@@ -40,6 +42,13 @@ const HomeScreen = () => {
   const [buysell, setBuysell] = useState("");
   const [Property, setProperty] = useState("");
   const [filteredAnnouncement, setFilteredAnnouncement] = useState([]);
+  const [images, setImages] = useState([image1, image2, image3]);
+  const [isEnabled, setIsEnabled] = useState(0);
+  const [apidata, setApiData] = useState("");
+  const [details, setDetails] = useState("");
+  const [matrimonial, setMatrimonial] = useState("");
+  const [announcement, setAnnouncement] = useState("");
+  const [allAnnounce, setAllAnnounce] = useState([]);
 
   const responsiveWidth = (percentage) => {
     const width = (percentage * screenWidth) / 100;
@@ -48,7 +57,6 @@ const HomeScreen = () => {
 
   const fetchData = async () => {
     try {
-      // Fetch data from API endpoints
       const accessoriesData = await axios.get(`${api}/accessories`);
       const tabletsData = await axios.get(`${api}/tablets`);
       const electronicsData = await axios.get(`${api}/electronics`);
@@ -56,7 +64,6 @@ const HomeScreen = () => {
       const fashionData = await axios.get(`${api}/fashion`);
       const phonesData = await axios.get(`${api}/phones`);
 
-      // Combine all fetched data into one array
       const allData = [
         ...accessoriesData.data,
         ...tabletsData.data,
@@ -95,9 +102,18 @@ const HomeScreen = () => {
     }
   };
 
+  const func = async () => {
+    try {
+      const geoLoc = await GeoLocation();
+      await AsyncStorage.setItem("location", geoLoc);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     fetchData();
     fetchDatas();
+    func();
     const backAction = () => {
       Alert.alert(
         "Hold on!",
@@ -127,94 +143,108 @@ const HomeScreen = () => {
     return () => backHandler.remove();
   }, []);
 
+  const renderItemIcon = (categoryName) => {
+    switch (categoryName) {
+      case "Birthdays":
+        return (
+          <View
+            style={{
+              backgroundColor: "#FCECDD",
+              borderRadius: 20,
+              padding: 6,
+              top: 12,
+            }}
+          >
+            <FontAwesome name="birthday-cake" size={11} color="#FF6B6B" />
+          </View>
+        );
+      case "Weddings":
+        return (
+          <View
+            style={{
+              backgroundColor: "#E7F5FF",
+              borderRadius: 20,
+              padding: 5,
+              top: 12,
+            }}
+          >
+            <FontAwesome5 name="ring" size={12} color="#3498DB" />
+          </View>
+        );
+      case "Death":
+        return (
+          <View
+            style={{
+              backgroundColor: "#F0F0F0",
+              padding: 5,
+              borderRadius: 20,
+              top: 12,
+            }}
+          >
+            <FontAwesome5 name="cross" size={12} color="#333" />
+          </View>
+        );
+      case "Anniversary":
+        return (
+          <View
+            style={{
+              backgroundColor: "#F9E4B7",
+              padding: 5,
+              borderRadius: 20,
+              top: 12,
+            }}
+          >
+            <FontAwesome5 name="heart" size={12} color="#F39C12" />
+          </View>
+        );
+      default:
+        return null;
+    }
+  };
+
   useEffect(() => {
-    const getData = async () => {
+    (async () => {
       try {
-        const profileId = await AsyncStorage.getItem("profileid");
-       console.warn(profileId)
-        if (profileId !== null) {
-          const { data } = await axios.get(`${Api}/profiles/${profileId}`);
-          setData(data.firstName);
+        const ads = await axios.get(`${api}/advertisements`);
+
+        let apiImage = [];
+        const topAds = ads?.data?.map((element) => {
+          if (element.bannerPosition === "topbanner") {
+            apiImage.push(element.image);
+          }
+        });
+        if (topAds) {
+          setImages(apiImage);
+        } else {
+          setImages([image1, image2, image3]);
         }
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    getData();
-  }, []);
+        const { data } = await axios.get(`${Api}/matrimonial/profiles`);
+        setMatrimonial(data);
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
+        const job = await axios.get(`${Api}/jobs`);
+        setDetails(job.data);
+        const categories = await axios.get(`${Api}/announcement-categories`);
+        setAnnouncement(categories.data);
+
+        const announce = await axios.get(`${api}/announcements`, {});
+        setAllAnnounce(announce.data);
+
+        const apiData = await axios.get(`${Api}/events`);
+        setApiData(apiData.data);
+
+        const profileId = await AsyncStorage.getItem("profileid");
+        if (profileId !== null) {
+          const profileData = await axios.get(`${Api}/profiles/${profileId}`);
+          setData(profileData.data.firstName);
+        }
         const userid = await AsyncStorage.getItem("UserID");
-
         if (userid !== null) {
-          const { data } = await axios.get(
+          const notification = await axios.get(
             `${Api}/notifications/count/${userid}`
           );
 
-          setUserID(data.count);
+          setUserID(notification.data.count);
         }
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    getData();
-  }, []);
-
-  const [isEnabled, setIsEnabled] = useState(0);
-  const [apidata, setApiData] = useState("");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data } = await axios.get(`${Api}/events`);
-        setApiData(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const [details, setDetails] = useState("");
-  const [matrimonial, setMatrimonial] = useState("");
-  const [announcement, setAnnouncement] = useState("");
-  const [allAnnounce, setAllAnnounce] = useState([]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await axios.get(`${Api}/jobs`);
-        setDetails(data);
-        setLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await axios.get(`${Api}/matrimonial/profiles`);
-        setMatrimonial(data);
-        setLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await axios.get(`${Api}/announcement-categories`);
-        const announce = await axios.get(`${api}/announcements`, {});
-        //       setAnnouncement(data);
-        setAllAnnounce(announce.data);
-        setAnnouncement(data);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -260,8 +290,6 @@ const HomeScreen = () => {
     setFilteredAnnouncement(filteredDate);
   };
 
-  const images = [image1, image2, image3];
-
   return (
     <Drawer
       open={open}
@@ -269,6 +297,9 @@ const HomeScreen = () => {
       onClose={() => setOpen(false)}
       renderDrawerContent={NavigationView}
       drawerPosition="left"
+      swipeEdgeWidth={32}
+      swipeMinDistance={60}
+      swipeMinVelocity={100}
     >
       {loading ? (
         <SkeletonLoader />
@@ -376,13 +407,19 @@ const HomeScreen = () => {
                     >
                       <View
                         style={{
-                          padding: 10,
+                          padding: 14,
                           backgroundColor: "#FFFF",
                           elevation: 1,
                           top: 1.5,
+                          paddingHorizontal: 20,
                         }}
                       >
-                        <Text style={{ fontWeight: "400", fontSize: 18 }}>
+                        <View style={{ position: "absolute", left: 5 }}>
+                          {renderItemIcon(item.announcementCategoryName)}
+                        </View>
+                        <Text
+                          style={{ fontWeight: "400", fontSize: 15, left: 11 }}
+                        >
                           {item.announcementCategoryName}
                         </Text>
                       </View>
@@ -394,7 +431,7 @@ const HomeScreen = () => {
                 <TouchableOpacity
                   style={{
                     backgroundColor: "#FFFF",
-                    elevation: 1,
+                    elevation: 2,
                     top: 2,
                     padding: 10,
                     paddingHorizontal: 11,

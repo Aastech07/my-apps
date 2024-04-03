@@ -5,6 +5,7 @@ import {
   Text,
   Image,
   FlatList,
+  TouchableOpacity,
 } from "react-native";
 import {
   responsiveHeight,
@@ -23,19 +24,21 @@ import NavigationView from "./Drawer";
 import SearchBar from "react-native-dynamic-search-bar";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { collapseTopMarginForChild } from "react-native-render-html";
 
 const JobsScreen = () => {
-
   const [datas, setData] = useState([]);
   const navigation = useNavigation();
-  const [filteredDatas, setFilteredDatas] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [userid, setUserID] = useState(true);
-
+  const [location, setLocation] = useState("");
   useEffect(() => {
     const getData = async () => {
       try {
         const userid = await AsyncStorage.getItem("UserID");
+        const loc = await AsyncStorage.getItem("location");
+        setLocation(loc);
         if (userid !== null) {
           const { data } = await axios.get(
             `${api}/notifications/count/${userid}`
@@ -49,16 +52,15 @@ const JobsScreen = () => {
     getData();
   }, []);
 
-
   const [isEnabled, setIsEnabled] = useState(0);
   const [open, setOpen] = React.useState(false);
+
   const GetData = async () => {
     try {
       const response = await axios.get(`${api}/jobs`);
-
       if (response && response.data) {
         setData(response.data);
-        setFilteredDatas(response.data);
+        setFilteredData(response.data);
       }
     } catch (err) {
       console.log("error: ", err.message);
@@ -73,9 +75,52 @@ const JobsScreen = () => {
     const filteredData = datas.filter((item) =>
       item.title.toLowerCase().includes(searchText.toLowerCase())
     );
-    setFilteredDatas(filteredData);
-  }, [searchText, datas]);
-  
+    setFilteredData(filteredData);
+  }, []);
+
+  // Function to handle search input and filter data
+  const searchObject = (obj, searchData) => {
+    return Object.values(obj).some((value) => {
+      if (value === null || value === undefined) {
+        return false;
+      }
+      if (typeof value === "string") {
+        return value.toLowerCase().includes(searchData);
+      }
+      if (Array.isArray(value)) {
+        return value.some((item) => item.toLowerCase().includes(searchData));
+      }
+      if (typeof value === "object") {
+        return searchObject(value, searchData);
+      }
+      return false;
+    });
+  };
+  // Function to filter elements based on search values
+  const handleSearch = (searchValue) => {
+    setSearchText(searchValue);
+    const filtered = datas.filter((element) => {
+      // Convert all values to lower case for case-insensitive search
+      const searchData = searchValue.toLowerCase();
+      // Check if any property of the element contains the search value
+      return Object.values(element).some((value) => {
+        if (typeof value === "string") {
+          return value.toLowerCase().includes(searchData);
+        }
+        // If value is an array, check if any item in the array matches the search value
+        if (Array.isArray(value)) {
+          return value.some((item) => item.toLowerCase().includes(searchData));
+        }
+        // If value is an object, recursively check its properties
+        if (typeof value === "object") {
+          return searchObject(value, searchData);
+        }
+        // Otherwise, return false
+        return false;
+      });
+    });
+    setFilteredData(filtered);
+  };
 
   const renderMealItem1 = ({ item }) => (
     <View style={styles.mealItemContainer}>
@@ -182,28 +227,25 @@ const JobsScreen = () => {
           </Text>
 
           <View style={{ bottom: 5, opacity: isEnabled == 0 ? null : 0.6 }}>
-           
-              <Text
-                style={{
-                  fontSize: 17,
-                  position: "absolute",
-                  marginTop: 95,
-                  color: "white",
-                  left: 66,
-                }}
-                onPress={() => setIsEnabled(0)}
-                
-              >
-                Jobs
-              </Text>
-              <FontAwesome5
-                name="briefcase"
-                style={{ position: "absolute", top: 95, left: 40 }}
-                color={"#fff"}
-                size={20}
-                onPress={() => setIsEnabled(0)}
-              />
-        
+            <Text
+              style={{
+                fontSize: 17,
+                position: "absolute",
+                marginTop: 95,
+                color: "white",
+                left: 66,
+              }}
+              onPress={() => setIsEnabled(0)}
+            >
+              Jobs
+            </Text>
+            <FontAwesome5
+              name="briefcase"
+              style={{ position: "absolute", top: 95, left: 40 }}
+              color={"#fff"}
+              size={20}
+              onPress={() => setIsEnabled(0)}
+            />
           </View>
           <Text
             style={{
@@ -224,26 +266,24 @@ const JobsScreen = () => {
               opacity: isEnabled == 1 ? null : 0.6,
             }}
           >
-           
-              <Text
-                style={{
-                  fontSize: 17,
-                  position: "absolute",
-                  marginTop: 95,
-                  color: "white",
-                  left: 66,
-                }}
-                onPress={() => setIsEnabled(1)}
-              >
-                Recruiter
-              </Text>
-              <FontAwesome5
-                name="user-tie"
-                style={{ position: "absolute", top: 95, left: 45 }}
-                color={"#fff"}
-                size={20}
-              />
-         
+            <Text
+              style={{
+                fontSize: 17,
+                position: "absolute",
+                marginTop: 95,
+                color: "white",
+                left: 66,
+              }}
+              onPress={() => setIsEnabled(1)}
+            >
+              Recruiter
+            </Text>
+            <FontAwesome5
+              name="user-tie"
+              style={{ position: "absolute", top: 95, left: 45 }}
+              color={"#fff"}
+              size={20}
+            />
           </View>
         </View>
       </View>
@@ -253,23 +293,42 @@ const JobsScreen = () => {
         <>
           <View
             style={{
-              backgroundColor: "#fff",
+              backgroundColor: "#ffff",
               shadowColor: "#000",
-              shadowOffset: 0.5,
-              shadowOpacity: 0.5,
-              elevation: 3,
+              shadowOffset: { width: 0, height: 0.5 }, // Correct shadowOffset format
+              shadowOpacity: 0.6,
+              shadowRadius: 10,
+              elevation: 2,
               padding: 10,
+              display: "flex",
+              flexDirection: "row", // Set flexDirection to row
+              alignItems: "center", // Align items vertically
             }}
           >
             <SearchBar
+              style={{ flex: 1 }} // Let the SearchBar take up remaining space
               placeholder="Search here"
-              onChangeText={(text) => setSearchText(text)}
+              onChangeText={handleSearch}
+              onClearPress={() => setFilteredData(datas)}
+              value={searchText}
             />
+            <TouchableOpacity
+              onPress={() => handleSearch(location)}
+              style={{
+                backgroundColor: "white",
+                padding: 10,
+                borderRadius: 10,
+                paddingHorizontal: 23,
+                elevation: 5,
+              }}
+            >
+              <FontAwesome5 name="map-pin" size={20} style={{}} color="black" />
+            </TouchableOpacity>
           </View>
 
           <ScrollView style={{}} contentContainerStyle={{ paddingBottom: 100 }}>
             <FlatList
-              data={filteredDatas}
+              data={filteredData}
               renderItem={renderMealItem1}
               showsHorizontalScrollIndicator={false}
               scrollEnabled={false}
