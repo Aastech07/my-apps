@@ -77,6 +77,12 @@ import FilteredResult from "./Screens/Matrimony/FilteredResult";
 import { FilterDataProvider } from "./Screens/Matrimony/context/FilteredDataContext";
 import Vehicle from "./Screens/By&Sell/Vehicle";
 import Electronics from "./Screens/By&Sell/Electronics";
+import JobsScreen from "./Screens/JobsScreen";
+import ContactUsScreen from "./Screens/ContactUs";
+import Settings from "./Screens/Settings";
+import CV from "./Screens/Form/ProfileEdit/CV";
+import MatrimonyFriends from "./Screens/Matrimony/MatrimonyFriends";
+import MatrimonyProfileChats from "./Screens/Matrimony/MatrimonyProfileChats";
 function App() {
   const [data, setData] = React.useState();
   useEffect(() => {
@@ -255,7 +261,7 @@ function App() {
               />
               <Stack.Screen
                 name="Viewdata"
-                options={{ headerShown: false }}
+                options={{ headerShown: true, title: "Details" }}
                 component={Viewdata}
               />
 
@@ -313,7 +319,7 @@ function App() {
 
               <Stack.Screen
                 name="CarDetails"
-                options={{ headerShown: true,title:'Car' }}
+                options={{ headerShown: true, title: "Car" }}
                 component={CarDetails}
               />
 
@@ -534,6 +540,55 @@ function App() {
                 }}
                 component={Electronics}
               />
+
+              <Stack.Screen
+                name="JobsScreen"
+                options={{
+                  headerShown: false,
+                }}
+                component={JobsScreen}
+              />
+
+              <Stack.Screen
+                name="ContactUsScreen"
+                options={{
+                  title: "ContactUs",
+                }}
+                component={ContactUsScreen}
+              />
+
+              <Stack.Screen
+                name="Settings"
+                options={{
+                  title: "Settings",
+                }}
+                component={Settings}
+              />
+
+              <Stack.Screen
+                name="CV"
+                options={{
+                  title: "CV",
+                }}
+                component={CV}
+              />
+
+              <Stack.Screen
+                name="MatrimonyFriends"
+                options={{
+                  title: "Friends",
+                }}
+                component={MatrimonyFriends}
+              />
+
+              <Stack.Screen
+                name="MatrimonyProfileChats"
+                options={{
+                  headerShown: false,
+                }}
+                component={MatrimonyProfileChats}
+              />
+
               <Stack.Screen name="directroy" component={Directroydata} />
 
               <Stack.Screen name="Verification" component={OtpScreen} />

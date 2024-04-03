@@ -147,7 +147,7 @@ const NavigationView = () => {
         <View style={{ borderBottomWidth: 1, bottom: 5, opacity: 0.4 }}></View>
         <TouchableOpacity
           style={styles.item}
-          onPress={() => navigation.navigate("ContactUs")}
+          onPress={() => navigation.navigate("ContactUsScreen")}
         >
           <FontAwesome name="envelope" size={17} style={{ opacity: 0.6 }} />
           <Text style={styles.itemText}>Contact Us</Text>

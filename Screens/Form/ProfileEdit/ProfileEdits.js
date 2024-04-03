@@ -18,6 +18,7 @@ const ProfileEdits = () => {
 
   const profileItems = [
     { icon: "user", text: "Profile", screen: "ProfileScreen" },
+    { icon: "file", text: "Update CV", screen: "CV" },
     { icon: "user-graduate", text: "Education", screen: "EducationScreen" },
     { icon: "compass", text: "Directory", screen: "DirectoriesScreen" },
     { icon: "users", text: "Family Tree", screen: "FamilyTreeScreen" },
@@ -37,16 +38,25 @@ const ProfileEdits = () => {
   const [images, setImages] = useState(null);
 
   const ImageUpload = async () => {
+    const formData = new FormData();
+    formData.append("url", img);
     try {
-      const response = await axios.post(`${api}/uploadImage/profiles/${id}`, {
-        url: img,
-      });
+      const response = await axios.post(
+        `${api}/uploadImage/profiles/${id}`,
+        FormData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       if (response) {
         console.log("Login successful. Token:", response.data.url);
       } else {
+        console.log("object");
       }
     } catch (error) {
-      console.error("Error during login:", error.message);
+      console.error("Error during sending Image to backend:", error.message);
     }
   };
 
@@ -157,6 +167,9 @@ const ProfileEdits = () => {
       case "matrimony":
         navigation.navigate("MatrimonyDetails");
         break;
+        case "CV":
+          navigation.navigate("CV");
+          break;
       default:
         break;
     }

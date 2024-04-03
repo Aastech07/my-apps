@@ -7,7 +7,9 @@ import {
   ScrollView,
   FlatList,
   TouchableWithoutFeedback,
-  BackHandler,Alert
+  BackHandler,
+  Alert,
+  TouchableOpacity,
 } from "react-native";
 import {
   responsiveFontSize,
@@ -23,17 +25,21 @@ import { Drawer } from "react-native-drawer-layout";
 import { api } from "../Api";
 import NavigationView from "../Drawer";
 import SearchBar from "react-native-dynamic-search-bar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Directory = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const navigation = useNavigation();
   const [open, setOpen] = React.useState(false);
-
+  const [location, setLocation] = useState("");
+  const [searchText, setSearchText] = useState("");
 
   const getData = async () => {
     try {
       const response = await axios.get(`${api}/directories`);
+      const loc = await AsyncStorage.getItem("location");
+      setLocation(loc);
       if (response && response.data) {
         setData(response.data);
         setFilteredData(response.data);
@@ -48,10 +54,10 @@ const Directory = () => {
   }, []);
 
   const renderMealItem1 = ({ item }) => {
-    if (!item || !item.images ) {
+    if (!item || !item.images) {
       return null;
     }
-  
+
     return (
       <View style={{ paddingBottom: 5, padding: 15 }}>
         <TouchableWithoutFeedback
@@ -76,22 +82,50 @@ const Directory = () => {
               source={{ uri: item.images[0] }}
               style={{ width: 100, height: 100, borderRadius: 10 }}
             />
-            <Text style={{ position: "absolute", fontSize: 16, top: 13, left: 130 }}>
+            <Text
+              style={{ position: "absolute", fontSize: 16, top: 13, left: 130 }}
+            >
               {item.companyName}.
             </Text>
-            <Text style={{ position: "absolute", fontSize: 12, top: 40, left: 130 }}>
+            <Text
+              style={{ position: "absolute", fontSize: 12, top: 40, left: 130 }}
+            >
               location: {item.locality}.
             </Text>
             <Text style={{ fontSize: 12, top: 50, opacity: 0.6, left: 25 }}>
               {item.companyEmail}
             </Text>
-            <Text style={{ position: "absolute", fontSize: responsiveFontSize(1.4), top: 79, left: 130, opacity: 0.6 }}>
+            <Text
+              style={{
+                position: "absolute",
+                fontSize: responsiveFontSize(1.4),
+                top: 79,
+                left: 130,
+                opacity: 0.6,
+              }}
+            >
               {item.website}
             </Text>
-            <Text style={{ position: "absolute", fontSize: 11, top: 95, left: 135, opacity: 0.6 }}>
+            <Text
+              style={{
+                position: "absolute",
+                fontSize: 11,
+                top: 95,
+                left: 135,
+                opacity: 0.6,
+              }}
+            >
               {item.employmentType}
             </Text>
-            <Text style={{ position: "absolute", fontSize: 11, top: 95, left: 185, opacity: 0.6 }}>
+            <Text
+              style={{
+                position: "absolute",
+                fontSize: 11,
+                top: 95,
+                left: 185,
+                opacity: 0.6,
+              }}
+            >
               {item.educationLevel}
             </Text>
           </View>
@@ -99,21 +133,55 @@ const Directory = () => {
       </View>
     );
   };
-  
 
-
-  const handleSearch = (text) => {
-    const filtered = data.filter((item) =>
-      item.companyName.toLowerCase().includes(text.toLowerCase())
-    );
+  // Function to handle search input and filter data
+  const searchObject = (obj, searchData) => {
+    return Object.values(obj).some((value) => {
+      if (value === null || value === undefined) {
+        return false;
+      }
+      if (typeof value === "string") {
+        return value.toLowerCase().includes(searchData);
+      }
+      if (Array.isArray(value)) {
+        return value.some((item) => item.toLowerCase().includes(searchData));
+      }
+      if (typeof value === "object") {
+        return searchObject(value, searchData);
+      }
+      return false;
+    });
+  };
+  // Function to filter elements based on search values
+  const handleSearch = (searchValue) => {
+    setSearchText(searchValue);
+    const filtered = data.filter((element) => {
+      // Convert all values to lower case for case-insensitive search
+      const searchData = searchValue.toLowerCase();
+      // Check if any property of the element contains the search value
+      return Object.values(element).some((value) => {
+        if (typeof value === "string") {
+          return value.toLowerCase().includes(searchData);
+        }
+        // If value is an array, check if any item in the array matches the search value
+        if (Array.isArray(value)) {
+          return value.some((item) => item.toLowerCase().includes(searchData));
+        }
+        // If value is an object, recursively check its properties
+        if (typeof value === "object") {
+          return searchObject(value, searchData);
+        }
+        // Otherwise, return false
+        return false;
+      });
+    });
     setFilteredData(filtered);
   };
 
   return (
-    <><StatusBar
-
-      backgroundColor="#874d3b"
-      barStyle="light-content" /><Drawer
+    <>
+      <StatusBar backgroundColor="#874d3b" barStyle="light-content" />
+      <Drawer
         open={open}
         onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}
@@ -121,7 +189,6 @@ const Directory = () => {
         drawerPosition="left"
       >
         <View style={{ flex: 1 }}>
-
           <View
             style={{
               backgroundColor: "#874d3b",
@@ -140,7 +207,8 @@ const Directory = () => {
                 backgroundColor: "#874d3b",
                 paddingHorizontal: 7,
                 paddingVertical: 5,
-              }} />
+              }}
+            />
             <FontAwesome5
               name="comment"
               size={20}
@@ -153,7 +221,8 @@ const Directory = () => {
                 backgroundColor: "#874d3b",
                 paddingHorizontal: 6,
                 paddingVertical: 5,
-              }} />
+              }}
+            />
 
             <Text
               style={{
@@ -203,17 +272,42 @@ const Directory = () => {
 
           <View
             style={{
-              backgroundColor: "#fff",
+              backgroundColor: "#ffff",
               shadowColor: "#000",
-              shadowOffset: 0.5,
-              shadowOpacity: 0.5,
-              elevation: 3,
+              shadowOffset: { width: 0, height: 0.5 }, // Correct shadowOffset format
+              shadowOpacity: 0.6,
+              shadowRadius: 10,
+              elevation: 2,
               padding: 10,
+              display: "flex",
+              flexDirection: "row", // Set flexDirection to row
+              alignItems: "center", // Align items vertically
             }}
           >
-            <SearchBar placeholder="Search here" onChangeText={handleSearch} />
+            <SearchBar
+              style={{ flex: 1 }} // Let the SearchBar take up remaining space
+              placeholder="Search here"
+              onChangeText={handleSearch}
+              onClearPress={() => setFilteredData(data)}
+              value={searchText}
+            />
+            <TouchableOpacity
+              onPress={() => handleSearch(location)}
+              style={{
+                backgroundColor: "white",
+                padding: 10,
+                borderRadius: 10,
+                paddingHorizontal: 23,
+                elevation: 5,
+              }}
+            >
+              <FontAwesome5 name="map-pin" size={20} style={{}} color="black" />
+            </TouchableOpacity>
           </View>
-          <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
+
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
+          >
             <View style={{}}>
               {filteredData.length > 0 ? (
                 <FlatList
@@ -221,12 +315,14 @@ const Directory = () => {
                   scrollEnabled={false}
                   renderItem={renderMealItem1}
                   showsHorizontalScrollIndicator={false}
-                  style={{}} />
+                  style={{}}
+                />
               ) : null}
             </View>
           </ScrollView>
         </View>
-      </Drawer></>
+      </Drawer>
+    </>
   );
 };
 

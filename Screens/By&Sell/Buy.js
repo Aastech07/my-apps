@@ -14,6 +14,8 @@ import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../Api";
 import SearchBar from "react-native-dynamic-search-bar";
+import { allowFontScaling } from "deprecated-react-native-prop-types/DeprecatedTextPropTypes";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const numColumns = 2;
 
@@ -24,7 +26,6 @@ const categories = [
   { name: "Electronics", icon: "tv" },
   { name: "Furniture", icon: "couch" },
   { name: "Fashion", icon: "tshirt" },
-
 ];
 
 const Buy = () => {
@@ -34,12 +35,13 @@ const Buy = () => {
   const skeletonOpacity = useRef(new Animated.Value(1)).current;
   const navigation = useNavigation();
   const [searchText, setSearchText] = useState("");
-
+  const [filteredData, setFilteredData] = useState([]);
+  const [location, setLocation] = useState("");
   useEffect(() => {
     fetchData();
   }, []);
 
- const fetchData = async () => {
+  const fetchData = async () => {
     try {
       // Fetch data from API endpoints
       const accessoriesData = await axios.get(`${api}/accessories`);
@@ -48,6 +50,7 @@ const Buy = () => {
       const furnitureData = await axios.get(`${api}/furniture`);
       const fashionData = await axios.get(`${api}/fashion`);
       const phonesData = await axios.get(`${api}/phones`);
+      const loc = await AsyncStorage.getItem("location");
 
       // Combine all fetched data into one array
       const allData = [
@@ -58,8 +61,9 @@ const Buy = () => {
         ...fashionData.data,
         ...phonesData.data,
       ];
-
+      setLocation(loc);
       setData(allData);
+      setFilteredData(allData);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -67,15 +71,59 @@ const Buy = () => {
   };
 
   // Filter data based on selected category and search text
-  const filteredData = datas.filter((item) => {
+  const categoryFilter = filteredData.filter((item) => {
     return (
-      (selectedCategory ? item.brand || item.type  === selectedCategory : true) &&
+      (selectedCategory
+        ? item.brand || item.type === selectedCategory
+        : true) &&
       (searchText
         ? item.adTitle.toLowerCase().includes(searchText.toLowerCase())
         : true)
     );
   });
-
+  // Function to handle search input and filter data
+  const searchObject = (obj, searchData) => {
+    return Object.values(obj).some((value) => {
+      if (value === null || value === undefined) {
+        return false;
+      }
+      if (typeof value === "string") {
+        return value.toLowerCase().includes(searchData);
+      }
+      if (Array.isArray(value)) {
+        return value.some((item) => item.toLowerCase().includes(searchData));
+      }
+      if (typeof value === "object") {
+        return searchObject(value, searchData);
+      }
+      return false;
+    });
+  };
+  // Function to filter elements based on search values
+  const handleSearch = (searchValue) => {
+    setSearchText(searchValue);
+    const filtered = datas.filter((element) => {
+      // Convert all values to lower case for case-insensitive search
+      const searchData = searchValue.toLowerCase();
+      // Check if any property of the element contains the search value
+      return Object.values(element).some((value) => {
+        if (typeof value === "string") {
+          return value.toLowerCase().includes(searchData);
+        }
+        // If value is an array, check if any item in the array matches the search value
+        if (Array.isArray(value)) {
+          return value.some((item) => item.toLowerCase().includes(searchData));
+        }
+        // If value is an object, recursively check its properties
+        if (typeof value === "object") {
+          return searchObject(value, searchData);
+        }
+        // Otherwise, return false
+        return false;
+      });
+    });
+    setFilteredData(filtered);
+  };
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.itemContainer}
@@ -103,20 +151,38 @@ const Buy = () => {
       {/* Search bar */}
       <View
         style={{
-          backgroundColor: "#fff",
+          backgroundColor: "#ffff",
           shadowColor: "#000",
-          shadowOffset: 0.5,
-          shadowOpacity: 0.5,
-          elevation: 3,
-          padding: 5,
-          bottom: 5,
-          borderRadius: 4,
+          shadowOffset: { width: 0, height: 0.5 }, // Correct shadowOffset format
+          shadowOpacity: 0.6,
+          shadowRadius: 10,
+          elevation: 2,
+          padding: 10,
+          display: "flex",
+          flexDirection: "row", // Set flexDirection to row
+          alignItems: "center", // Align items vertically
         }}
       >
         <SearchBar
+          style={{ flex: 1 }} // Let the SearchBar take up remaining space
           placeholder="Search here"
-          onChangeText={(text) => setSearchText(text)}
+          onChangeText={handleSearch}
+          onClearPress={() => setFilteredData(datas)}
+          value={searchText}
         />
+        <TouchableOpacity
+          onPress={() => handleSearch(location)}
+          style={{
+            backgroundColor: "white",
+            padding: 10,
+            borderRadius: 10,
+            paddingHorizontal: 23,
+            elevation: 5,
+          }}
+        >
+          <FontAwesome name="map-pin" size={20} style={{}} color="black" />
+          {/* <Text>🌍</Text> */}
+        </TouchableOpacity>
       </View>
 
       <ScrollView
@@ -172,7 +238,7 @@ const Buy = () => {
           </Animated.View>
         ) : (
           <FlatList
-            data={selectedCategory ? filteredData : datas}
+            data={selectedCategory ? categoryFilter : filteredData}
             renderItem={renderItem}
             scrollEnabled={false}
             numColumns={numColumns}

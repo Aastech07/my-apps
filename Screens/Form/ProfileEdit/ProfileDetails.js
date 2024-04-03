@@ -10,6 +10,7 @@ import {
   TextInput,
   Modal,
   Pressable,
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "../../Api";
@@ -64,75 +65,11 @@ const ProfileDetails = () => {
   ];
 
   const MotherTongue = [
-    { key: "1", value: "Doesn't Matter" },
-    { key: "2", value: "Assamese" },
-    { key: "3", value: "Bengali" },
-    { key: "4", value: "English" },
-    { key: "5", value: "Gujarati" },
-    { key: "6", value: "Hindi" },
-    { key: "7", value: "Kannada" },
-    { key: "8", value: "Konkani" },
-    { key: "9", value: "Malayalam" },
-    { key: "10", value: "Marathi" },
-    { key: "11", value: "Marwari" },
-    { key: "11", value: "Odia" },
-    { key: "12", value: "Punjabi" },
-    { key: "13", value: "Sindhi" },
-    { key: "14", value: "Tamil" },
-    { key: "15", value: "Telugu" },
-    { key: "16", value: "Urdu" },
-    { key: "17", value: "Aka" },
-    { key: "18", value: "Arabic" },
-    { key: "19", value: "Arunachali" },
-    { key: "20", value: "Awadhi" },
-    { key: "21", value: "Baluchi" },
-    { key: "22", value: "Bhojpuri" },
-    { key: "23", value: "Bhutia" },
-    { key: "24", value: "Brahui" },
-    { key: "25", value: "Brij" },
-    { key: "26", value: "Burmese" },
-    { key: "27", value: "Chattisgarhi" },
-    { key: "28", value: "Chinese" },
-    { key: "29", value: "Coorgi" },
-    { key: "30", value: "Dogi" },
-    { key: "31", value: "French" },
-    { key: "32", value: "Garhwali" },
-    { key: "33", value: "Garo" },
-    { key: "34", value: "Haryanavi" },
-    { key: "35", value: "Himachali/Pahari" },
-    { key: "36", value: "Hindko" },
-    { key: "37", value: "Kakbarak" },
-    { key: "38", value: "Kanauji" },
-    { key: "39", value: "Kashmiri" },
-    { key: "40", value: "Khandesi" },
-    { key: "41", value: "Khasi" },
-    { key: "42", value: "Koshali" },
-    { key: "43", value: "Kumaoni" },
-    { key: "44", value: "Kutchi" },
-    { key: "45", value: "Ladakhi" },
-    { key: "46", value: "Lepcha" },
-    { key: "47", value: "Magahi" },
-    { key: "48", value: "Maithili" },
-    { key: "49", value: "Malay" },
-    { key: "50", value: "Manipuri" },
-    { key: "51", value: "Miji" },
-    { key: "52", value: "Mizo" },
-    { key: "53", value: "Monpa" },
-    { key: "54", value: "Nepali" },
-    { key: "55", value: "Pashto" },
-    { key: "56", value: "Persian" },
-    { key: "57", value: "Rajasthani" },
-    { key: "58", value: "Russian" },
-    { key: "59", value: "Santhali" },
-    { key: "60", value: "Seraiki" },
-    { key: "61", value: "Sinhala" },
-    { key: "62", value: "Sourashtra" },
-    { key: "63", value: "Spanish" },
-    { key: "64", value: "Swedish" },
-    { key: "65", value: "Tagalog" },
-    { key: "66", value: "Tulu" },
-    { key: "67", value: "Other" },
+    { key: "1", value: "Gujarati" },
+    { key: "2", value: "English" },
+    { key: "3", value: "Hindi" },
   ];
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -172,6 +109,15 @@ const ProfileDetails = () => {
 
     fetchData();
   }, []);
+
+  const onChange = (date, selectedDate) => {
+    const formattedDate = dayjs(date).format("YYYY-MM-DD");
+    setModalVisible1(Platform.OS === "ios");
+    setAge(formattedDate);
+  };
+
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() - 15); // Minimum date: 15 days ago
 
   const limets = (dateOfBirth) => {
     const birthDate = new Date(dateOfBirth);
@@ -448,15 +394,11 @@ const ProfileDetails = () => {
             <View style={styles.modalView1}>
               <DateTimePicker
                 value={age}
-                onValueChange={(date) => setAge(date)}
+                onValueChange={onChange}
+                mode="date"
+                display="spinner"
+                maximumDate={minDate}
               />
-
-              <Pressable
-                style={[styles.button1, styles.buttonClose1]}
-                onPress={() => setModalVisible1(!modalVisible1)}
-              >
-                <Text style={styles.textStyle1}>Close</Text>
-              </Pressable>
             </View>
           </View>
         </Modal>

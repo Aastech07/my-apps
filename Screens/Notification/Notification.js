@@ -18,6 +18,7 @@ const Notification = ({ navigation }) => {
   useEffect(() => {
     const fetchData = async () => {
       const userId = await AsyncStorage.getItem("UserID");
+      console.warn(userId);
       try {
         const { data } = await axios.get(`${api}/notifications/${userId}`, {});
         setNotifications(data);
@@ -29,15 +30,23 @@ const Notification = ({ navigation }) => {
   }, []);
 
   const handleNotificationPress = async (item) => {
+    console.warn(item);
     await markNotificationAsRead(item);
-    navigation.navigate("NotificationBlogs", { data: item });
+    function removeNewAndPost(inputString) {
+      return inputString.replace(/New|Post/g, "").replace(/\s+/g, "");
+    }
+    const changedString = removeNewAndPost(item.title);
+    console.warn(changedString);
+    if (changedString === "Blog") {
+      navigation.navigate("NotificationBlogs", { data: item });
+    } else if (changedString === "LandPlot") {
+      navigation.navigate("Details", { data: item });
+    }
   };
 
   const markNotificationAsRead = async (item) => {
     try {
       const { data } = await axios.put(`${api}/notifications/${item._id}`, {});
-      // Assuming the response contains updated notification data,
-      // we can update the state to reflect the changes
       const updatedNotifications = notifications.map((notif) =>
         notif._id === item._id ? { ...notif, isRead: true } : notif
       );
@@ -50,7 +59,7 @@ const Notification = ({ navigation }) => {
   const renderItem = ({ item }) => {
     const isSeen = item.isRead || false;
 
-    return !isSeen ? (
+    return (
       <TouchableOpacity
         onPress={() => handleNotificationPress(item)}
         style={[
@@ -76,26 +85,25 @@ const Notification = ({ navigation }) => {
             {item.message}
           </Text>
         </View>
-        {!isSeen && <View style={styles.unseenIndicator} />}
       </TouchableOpacity>
-    ) : null;
-  };
-
-  const renderEmptyComponent = () => {
-    return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>No notifications to display</Text>
-      </View>
     );
   };
+
+  // const renderEmptyComponent = () => {
+  //   return (
+  //     <View style={styles.emptyContainer}>
+  //       <Text style={styles.emptyText}>No notifications to display</Text>
+  //     </View>
+  //   );
+  // };
 
   return (
     <View style={styles.outerContainer}>
       <FlatList
         data={notifications}
         renderItem={renderItem}
-        ListEmptyComponent={renderEmptyComponent}
         keyExtractor={(item, index) => index.toString()}
+        inverted // This will render the FlatList in reverse order
       />
     </View>
   );

@@ -7,7 +7,6 @@ import {
   FlatList,
   TouchableWithoutFeedback,
   TouchableOpacity,
-  TextInput,
 } from "react-native";
 import {
   responsiveWidth,
@@ -20,24 +19,29 @@ import { useNavigation } from "@react-navigation/native";
 import { api } from "../Api";
 import Animated, { FadeInLeft, FadeInRight } from "react-native-reanimated";
 import SearchBar from "react-native-dynamic-search-bar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const MyMatches = () => {
   const Api = api;
   const navigation = useNavigation();
-  const [apidata, setApiData] = useState("");
+  const [apidata, setApiData] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [filteredData, setFilteredData] = useState([]);
+  const [location, setLocation] = useState("");
 
   useEffect(() => {
-    (async () => {
+    const fetchData = async () => {
       try {
         const { data } = await axios.get(`${Api}/matrimonial/profiles`);
+        const loc = await AsyncStorage.getItem("location");
+        setLocation(loc);
         setApiData(data);
-        setFilteredData(data); // Initialize filtered data with all data
+        setFilteredData(data);
       } catch (error) {
         console.log(error);
       }
-    })();
+    };
+    fetchData();
   }, []);
 
   const calculateAge = (dateOfBirth) => {
@@ -55,224 +59,95 @@ const MyMatches = () => {
     }
   };
 
-  // Function to handle search input and filter data
-  const handleSearch = (text) => {
-    setSearchInput(text);
-    const filtered = apidata.filter(
-      (item) =>
-        item.profileId.address.street
-          .toLowerCase()
-          .includes(text.toLowerCase()) ||
-        item.profileId.address.city
-          .toLowerCase()
-          .includes(text.toLowerCase()) ||
-        item.profileId.address.state
-          .toLowerCase()
-          .includes(text.toLowerCase()) ||
-        item.profileId.address.country
-          .toLowerCase()
-          .includes(text.toLowerCase()) ||
-        item.profileId.address.postalCode
-          .toLowerCase()
-          .includes(text.toLowerCase()) ||
-        (
-          item.profileId.firstName.toLowerCase() +
-          " " +
-          item.profileId.lastName.toLowerCase()
-        ).includes(text.toLowerCase())
-    );
+  const searchObject = (obj, searchData) => {
+    return Object.values(obj).some((value) => {
+      if (value === null || value === undefined) {
+        return false;
+      }
+      if (typeof value === "string") {
+        return value.toLowerCase().includes(searchData);
+      }
+      if (Array.isArray(value)) {
+        return value.some((item) => item.toLowerCase().includes(searchData));
+      }
+      if (typeof value === "object") {
+        return searchObject(value, searchData);
+      }
+      return false;
+    });
+  };
+
+  const handleSearch = (searchValue) => {
+    setSearchInput(searchValue);
+    const filtered = apidata.filter((element) => {
+      const searchData = searchValue.toLowerCase();
+      return Object.values(element).some((value) => {
+        if (typeof value === "string") {
+          return value.toLowerCase().includes(searchData);
+        }
+        if (Array.isArray(value)) {
+          return value.some((item) => item.toLowerCase().includes(searchData));
+        }
+        if (typeof value === "object") {
+          return searchObject(value, searchData);
+        }
+        return false;
+      });
+    });
     setFilteredData(filtered);
   };
 
   return (
-    <View
-      style={{ flex: 1, backgroundColor: "#fff" }}
-      contentContainerStyle={{ paddingBottom: 130 }}
-    >
-      <View
-        style={{
-          backgroundColor: "#ffff",
-          shadowColor: "#000",
-          shadowOffset: 0.5,
-          shadowOpacity: 0.6,
-          shadowRadius: 10,
-          elevation: 2,
-          padding: 10,
-        }}
-      >
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <View style={styles.header}>
         <SearchBar
+          style={styles.searchBar}
           placeholder="Search here"
           onChangeText={handleSearch}
+          onClearPress={() => setFilteredData(apidata)}
           value={searchInput}
         />
+        <TouchableOpacity
+          onPress={() => handleSearch(location)}
+          style={styles.mapButton}
+        >
+          <FontAwesome5 name="map-pin" size={20} color="black" />
+        </TouchableOpacity>
       </View>
 
-      <ScrollView style={{ top: 10 }} contentContainerStyle={{}}>
-        <View style={{ flex: 1, marginTop: responsiveHeight(9) }}>
+      <ScrollView style={{}}>
+        <View style={{ flex: 1, marginBottom: 100 }}>
           <FlatList
-            style={{}}
-            data={filteredData} // Render filtered data
+            data={filteredData}
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
-              <>
-                <View
-                  style={{
-                    alignSelf: "center",
-                  }}
-                >
-                  <TouchableWithoutFeedback
-                    onPress={() =>
-                      navigation.navigate("MatrimonyData", { data: item })
-                    }
+              <TouchableWithoutFeedback
+                onPress={() =>
+                  navigation.navigate("MatrimonyData", { data: item })
+                }
+              >
+                <View style={styles.profileCard}>
+                  <Image
+                    source={{ uri: item.images[0] }}
+                    style={styles.profileImage}
+                  />
+                  <Animated.View
+                    entering={FadeInLeft.duration(500).damping()}
+                    style={styles.profileDetails}
                   >
-                    <View
-                      style={{
-                        shadowColor: "black",
-                        shadowOpacity: 0.9,
-                        shadowRadius: 50,
-                        elevation: 20,
-                        marginTop: 18,
-                      }}
-                    >
-                      <Image
-                        source={{ uri: item.images[0] }}
-                        style={{
-                          width: responsiveWidth(90),
-                          height: responsiveHeight(60),
-                          bottom: 52,
-                          marginTop: -20,
-                          borderRadius: 10,
-                          alignSelf: "center",
-                        }}
-                      />
-
-                      <Animated.View
-                        entering={FadeInLeft.duration(500).damping()}
-                        style={{ left: responsiveWidth(13), bottom: 200 }}
-                      >
-                        <FontAwesome5
-                          name="check-circle"
-                          color={"green"}
-                          size={18}
-                          style={{ position: "absolute", left: -25, top: 3 }}
-                        />
-                        <Text
-                          style={{
-                            fontWeight: "600",
-                            fontSize: 16,
-                            color: "#fff",
-                          }}
-                        >
-                          {item.profileId.firstName} {item.profileId.lastName}
-                        </Text>
-                        <Text
-                          style={{
-                            fontWeight: "600",
-                            fontSize: 14,
-                            color: "#fff",
-                            top: 29,
-                            position: "absolute",
-                            left: -20,
-                          }}
-                        >
-                          {calculateAge(item.profileId.dateOfBirth)} yrs, 5'2" .
-                        </Text>
-                        <Text
-                          style={{
-                            fontWeight: "600",
-                            fontSize: 14,
-                            color: "#fff",
-                            top: 28,
-                            position: "absolute",
-                            left: 60,
-                          }}
-                        >
-                          {/*item.educationAndCareer.workingWith*/}
-                        </Text>
-                        <Text
-                          style={{
-                            fontWeight: "600",
-                            fontSize: 14,
-                            color: "#fff",
-                            top: 55,
-                            position: "absolute",
-                            left: -20,
-                          }}
-                        ></Text>
-                      </Animated.View>
-                      <Animated.View
-                        entering={FadeInRight.duration(500).damping()}
-                        style={{
-                          position: "absolute",
-                          left: responsiveWidth(75),
-                        }}
-                      >
-                        <TouchableOpacity style={{}}>
-                          <Text
-                            style={{
-                              color: "#fff",
-                              fontSize: 35,
-                              bottom: 60,
-                            }}
-                          >
-                            ...
-                          </Text>
-                        </TouchableOpacity>
-                      </Animated.View>
-                      <View
-                        style={{
-                          borderWidth: 0.5,
-                          paddingHorizontal: responsiveWidth(44),
-                          alignSelf: "center",
-                          top: responsiveHeight(-17),
-                          borderColor: "#fff",
-                          opacity: 0.8,
-                        }}
-                      ></View>
-                      <View style={{ bottom: responsiveHeight(15), left: 30 }}>
-                        <Text style={{ color: "#fff", fontWeight: 500 }}>
-                          Like this Profile?
-                        </Text>
-                        <Text
-                          style={{
-                            color: "lightblue",
-                            fontWeight: 500,
-                            position: "absolute",
-                            left: 120,
-                            fontSize: 17,
-                            bottom: 1,
-                          }}
-                        >
-                          Connect Now
-                        </Text>
-                        <TouchableOpacity
-                          style={{
-                            backgroundColor: "pink",
-                            position: "absolute",
-                            shadowColor: "#000",
-                            shadowOpacity: 0.6,
-                            shadowRadius: 10,
-                            elevation: 20,
-                            padding: 10,
-                            left: responsiveWidth(64),
-                            bottom: 10,
-                            borderRadius: 50,
-                          }}
-                        >
-                          <FontAwesome5
-                            name="check"
-                            size={30}
-                            style={{}}
-                            color={"#fff"}
-                          />
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  </TouchableWithoutFeedback>
+                    <Text style={styles.profileName}>
+                      {item.profileId.firstName} {item.profileId.lastName}
+                    </Text>
+                    <Text style={styles.profileAge}>
+                      {calculateAge(item.profileId.dateOfBirth)} yrs,{" "}
+                      {item.height}
+                    </Text>
+                 
+                  </Animated.View>
                 </View>
-              </>
+              </TouchableWithoutFeedback>
             )}
-            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
           />
         </View>
       </ScrollView>
@@ -283,29 +158,55 @@ const MyMatches = () => {
 export default MyMatches;
 
 const styles = StyleSheet.create({
-  inputView: {
-    width: "90%",
-    backgroundColor: "#fff",
-    borderRadius: 50,
-    height: 50,
-    marginBottom: 20,
-    justifyContent: "center",
-    padding: 20,
-    top: responsiveHeight(6),
-    alignSelf: "center",
-    shadowColor: "#984065",
-    shadowOffset: {
-      width: 0,
-      height: 50,
-    },
-    shadowOpacity: 0.8,
-    shadowRadius: 16.0,
-    elevation: 5,
-    paddingLeft: 30,
-    paddingRight: 50,
+  header: {
+    backgroundColor: "#ffff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0.5 },
+    shadowOpacity: 0.6,
+    shadowRadius: 10,
+    elevation: 2,
+    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
   },
-  inputText: {
-    height: 50,
-    color: "black",
+  searchBar: {
+    flex: 1,
+  },
+  mapButton: {
+    backgroundColor: "white",
+    padding: 10,
+    borderRadius: 10,
+    paddingHorizontal: 23,
+    elevation: 5,
+  },
+  profileCard: {
+    alignSelf: "center",
+    shadowColor: "black",
+    shadowOpacity: 0.9,
+    shadowRadius: 50,
+    elevation: 20,
+    marginTop: 18,
+  },
+  profileImage: {
+    width: responsiveWidth(90),
+    height: responsiveHeight(60),
+    borderRadius: 10,
+    alignSelf: "center",
+  },
+  profileDetails: {
+    position: "absolute",
+    left: responsiveWidth(13),
+    bottom: responsiveHeight(15),
+  },
+  profileName: {
+    fontWeight: "600",
+    fontSize: 16,
+    color: "#f2f2f2",
+    marginBottom: 5,
+  },
+  profileAge: {
+    fontWeight: "600",
+    fontSize: 14,
+    color: "#f2f2f2",
   },
 });

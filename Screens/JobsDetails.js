@@ -17,6 +17,7 @@ import {
 import axios from "axios";
 import { api } from "./Api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const JobsDetails = () => {
   const [currentCompany, setCurrentCompany] = useState("");
   const [experience, setExperience] = useState("");
@@ -44,8 +45,10 @@ const JobsDetails = () => {
   const Data = useRoute();
   const Value = Data.params?.data;
   const jobid = Value?._id;
-  console.warn({ jobid });
+  const count = Data.params?.datas;
+  console.warn(count);
   const { width } = Dimensions.get("window");
+
   const dates = (originalDate) => {
     const date = new Date(originalDate);
     const options = { year: "numeric", month: "short", day: "numeric" };
@@ -58,13 +61,11 @@ const JobsDetails = () => {
         const { data } = await axios.get(`${api}/applications`);
 
         const userId = await AsyncStorage.getItem("UserID");
-
         const filtered = data.filter((item) => item.jobId._id === jobid);
-
         const userFilter = filtered.filter(
           (item) => item.userId._id === userId
         );
-
+      //  console.warn(userFilter);
         setFilteredData(userFilter); // Set state with the filtered data
       } catch (error) {
         console.warn(error);
@@ -168,9 +169,9 @@ const JobsDetails = () => {
   return (
     <>
       <ScrollView style={styles.container}>
-        <Text style={styles.title}>{Value.title}</Text>
+        <Text style={styles.title}>{Value?.title}</Text>
         <View style={styles.skillContainer}>
-          {Value.skills.slice(0, 3).map((skill, index) => (
+          {Value?.skills.slice(0, 3).map((skill, index) => (
             <Text key={index} style={styles.skillTag}>
               {skill}
             </Text>
@@ -180,16 +181,16 @@ const JobsDetails = () => {
         <View style={styles.separator}></View>
         <View style={styles.infoContainer}>
           <Text style={styles.infoHeading}>Company:</Text>
-          <Text style={styles.infoText}>{Value.company}</Text>
+          <Text style={styles.infoText}>{Value?.company}</Text>
           <View style={styles.separator}></View>
           <Text style={styles.infoHeading}>Contact Email:</Text>
-          <Text style={styles.infoText}>{Value.contactEmail}</Text>
+          <Text style={styles.infoText}>{Value?.contactEmail}</Text>
           <View style={styles.separator}></View>
           <Text style={styles.infoHeading}>Description:</Text>
-          <Text style={styles.infoText}>{Value.description}</Text>
+          <Text style={styles.infoText}>{Value?.description}</Text>
           <View style={styles.separator}></View>
           <Text style={styles.infoHeading}>Responsibilities:</Text>
-          {Value.responsibilities.map((resp, index) => (
+          {Value?.responsibilities.map((resp, index) => (
             <Text key={index} style={styles.infoText}>
               {resp}
             </Text>
@@ -197,7 +198,7 @@ const JobsDetails = () => {
           <View style={styles.separator}></View>
 
           <Text style={styles.infoHeading}>Qualifications:</Text>
-          {Value.qualifications.map((qual, index) => (
+          {Value?.qualifications.map((qual, index) => (
             <Text key={index} style={styles.infoText}>
               {qual}
             </Text>
@@ -205,24 +206,24 @@ const JobsDetails = () => {
           <View style={styles.separator}></View>
 
           <Text style={styles.infoHeading}>Education Level:</Text>
-          <Text style={styles.infoText}>{Value.educationLevel}</Text>
+          <Text style={styles.infoText}>{Value?.educationLevel}</Text>
           <View style={styles.separator}></View>
 
           <Text style={styles.infoHeading}>Experience Level:</Text>
-          <Text style={styles.infoText}>{Value.experienceLevel}</Text>
+          <Text style={styles.infoText}>{Value?.experienceLevel}</Text>
           <View style={styles.separator}></View>
 
           <Text style={styles.infoHeading}>Employment Type:</Text>
-          <Text style={styles.infoText}>{Value.employmentType}</Text>
+          <Text style={styles.infoText}>{Value?.employmentType}</Text>
           <View style={styles.separator}></View>
 
           <Text style={styles.infoHeading}>Location:</Text>
-          <Text style={styles.infoText}>{Value.location}</Text>
+          <Text style={styles.infoText}>{Value?.location}</Text>
           <View style={styles.separator}></View>
 
           <Text style={styles.infoHeading}>Application Deadline:</Text>
           <Text style={styles.infoText}>
-            {dates(Value.applicationDeadline)}
+            {dates(Value?.applicationDeadline)}
           </Text>
           <View style={styles.separator}></View>
         </View>
@@ -279,18 +280,26 @@ const JobsDetails = () => {
           </Text>
         </View>
 
-        <TouchableOpacity
-          style={[styles.button, { paddingHorizontal: 25 }]}
-          onPress={() => handleApplying()}
-        >
-          <FontAwesome5Icon
-            name="handshake"
-            size={20}
-            color="tomato"
-            style={{}}
-          />
-          <Text style={[styles.buttonText, { color: "tomato" }]}>Applying</Text>
-        </TouchableOpacity>
+        {filteredData.length === 0 ? (
+          <TouchableOpacity
+            style={[styles.button, { paddingHorizontal: 25 }]}
+            onPress={() => handleApplying()}
+          >
+            <FontAwesome5Icon
+              name="handshake"
+              size={20}
+              color="tomato"
+              style={{}}
+            />
+            <Text style={[styles.buttonText, { color: "tomato" }]}>
+              Applying
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.button1}>
+            <Text style={styles.text1}>Already Applied</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </>
   );
@@ -422,6 +431,22 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: "tomato",
+  },
+  button1: {
+    backgroundColor: "#f2f2f2", // Green color similar to Internshala's UI
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    right: 10,
+    elevation: 1,
+  },
+  text1: {
+    color: "#000", // White color for text
+    fontSize: 15,
+    fontWeight: "500",
   },
 });
 

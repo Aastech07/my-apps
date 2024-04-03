@@ -116,6 +116,7 @@ const MatrimonyDetails = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showSkeleton, setShowSkeleton] = useState(false);
   const [form, setForm] = useState(false);
+  const [ids, setIDs] = useState(false);
 
   const handlesave = (selectedAssets) => {
     setAssets(selectedAssets);
@@ -156,86 +157,117 @@ const MatrimonyDetails = () => {
   };
 
   useEffect(() => {
-    const getProfileData = async () => {
-      setShowSkeleton(true)
+    const fetchData = async () => {
       try {
         const profileId = await AsyncStorage.getItem("profileid");
-        setShowSkeleton(true)
         if (profileId !== null) {
-          const { data } = await axios.get(`${api}/matrimonial/profiles/${profileId}`);
-          if (data) {
-            setProfileData(data);
-            setForm(false);
-            setID(data._id);
-            setProfileCreatedBy(data.profileCreatedBy);
-            setHeight(data.height);
-            setBloodGroup(data.bloodGroup);
-            setHealthInformation(data.healthInformation);
-            setLifestyle(data.lifestyle);
-            setNativePlace(data.nativePlace);
+          const [matrimonial] = await Promise.all([
+            axios.get(`${api}/matrimonial/profiles`),
+          ]);
 
-            // Set religious background
-            setReligion(data.religiousBackground.religion);
-            setMotherTongue(data.religiousBackground.motherTongue);
-            setCommunity(data.religiousBackground.community);
-            setSubCommunity(data.religiousBackground.subCommunity);
-            setGothraGothram(data.religiousBackground.gothraGothram);
+          const allData = [...matrimonial.data];
+          const filteredProperties = allData.filter(
+            (property) => property.profileId._id === profileId
+          );
 
-            // Set family details
-            setNumberOfSiblings(data.family.numberOfSiblings);
-            setFatherStatus(data.family.fatherStatus);
-            setMotherStatus(data.family.motherStatus);
-            setFamilyLocation(data.family.familyLocation);
-            setFamilyType(data.family.familyType);
-            setFamilyAffluence(data.family.familyAffluence);
-
-            // Set astro details
-            setManglikChevvaidosham(
-              data.astroDetails.manglikChevvaidosham
+          if (filteredProperties.length > 0) {
+            const id = filteredProperties[0]._id; // Access the _id from the first element
+            setIDs(id);
+            await AsyncStorage.setItem(
+              filteredProperties[0]._id,
+              "Matrymonyid"
             );
-            setNakshatra(data.astroDetails.nakshatra);
-
-            // Set partner preferences
-            setAgeRange(data.partnerPreferences.ageRange.min);
-            setGender(data.partnerPreferences.gender);
-            setEducation(data.partnerPreferences.education);
-            setProfession(data.partnerPreferences.profession);
-            setMinHeight(data.partnerPreferences.minHeight);
-            setMaxIncome(data.partnerPreferences.maxIncome);
-
-            // Set education and career
-            setHighestQualification(
-              data.educationAndCareer.highestQualification
-            );
-            setCollegeAttended(
-              data.educationAndCareer.collegeAttended
-            );
-            setWorkingWith(data.educationAndCareer.workingWith);
-
-            // Set location of groom
-            setCountryLivingIn(data.locationOfGroom.countryLivingIn);
-            setStateLivingIn(data.locationOfGroom.stateLivingIn);
-            setCityLivingIn(data.locationOfGroom.cityLivingIn);
-            setGrewUpIn(data.locationOfGroom.grewUpIn);
-            setEthnicOrigin(data.locationOfGroom.ethnicOrigin);
-            setZipPinCode(data.locationOfGroom.zipPinCode);
-            setSelectedImage(data.images);
-            // Set more about yourself, partner, and family
-
-            setMoreAboutYourselfPartnerAndFamily(
-              data.moreAboutYourselfPartnerAndFamily
-            );
-            setHobbies(data.hobbies);
-          } else {
-            console.log("No profile found for the matching profileId.");
-            setForm(true);
-            setProfileData(false);
           }
         }
       } catch (error) {
         console.log(error);
       }
-      setShowSkeleton(false)
+    };
+
+    fetchData();
+  }, [api]);
+
+  useEffect(() => {
+    const getProfileData = async () => {
+      setShowSkeleton(true);
+      try {
+        const profileId = ids;
+        console.warn(profileId);
+        //setShowSkeleton(true);
+        if (profileId !== null) {
+          const { data } = await axios.get(
+            `${api}/matrimonial/profiles/${profileId}`
+          );
+          console.log(data);
+          if (data) {
+            setProfileData(data);
+            setForm(false);
+            setID(data?._id);
+            setProfileCreatedBy(data?.profileCreatedBy);
+            setHeight(data?.height);
+            setBloodGroup(data?.bloodGroup);
+            setHealthInformation(data?.healthInformation);
+            setLifestyle(data?.lifestyle);
+            setNativePlace(data?.nativePlace);
+
+            // Set religious background
+            setReligion(data?.religiousBackground.religion);
+            setMotherTongue(data?.religiousBackground.motherTongue);
+            setCommunity(data?.religiousBackground.community);
+            setSubCommunity(data?.religiousBackground.subCommunity);
+            setGothraGothram(data?.religiousBackground.gothraGothram);
+
+            // Set family details
+            setNumberOfSiblings(data?.family.numberOfSiblings);
+            setFatherStatus(data?.family.fatherStatus);
+            setMotherStatus(data?.family.motherStatus);
+            setFamilyLocation(data?.family.familyLocation);
+            setFamilyType(data?.family.familyType);
+            setFamilyAffluence(data?.family.familyAffluence);
+
+            // Set astro details
+            // setManglikChevvaidosham(
+            //   data?.astroDetails.manglikChevvaidosham
+            // );
+            setNakshatra(data?.astroDetails?.nakshatra);
+
+            // Set partner preferences
+            setAgeRange(data?.partnerPreferences?.ageRange.min);
+            setGender(data?.partnerPreferences.gender);
+            setEducation(data?.partnerPreferences.education);
+            setProfession(data?.partnerPreferences.profession);
+            setMinHeight(data?.partnerPreferences.minHeight);
+            setMaxIncome(data?.partnerPreferences.maxIncome);
+
+            // Set education and career
+            setHighestQualification(
+              data?.educationAndCareer.highestQualification
+            );
+            setCollegeAttended(data?.educationAndCareer.collegeAttended);
+            setWorkingWith(data?.educationAndCareer.workingWith);
+
+            // Set location of groom
+            setCountryLivingIn(data?.locationOfGroom.countryLivingIn);
+            setStateLivingIn(data?.locationOfGroom.stateLivingIn);
+            setCityLivingIn(data?.locationOfGroom.cityLivingIn);
+            setGrewUpIn(data?.locationOfGroom.grewUpIn);
+            setEthnicOrigin(data?.locationOfGroom.ethnicOrigin);
+            setZipPinCode(data?.locationOfGroom.zipPinCode);
+            setSelectedImage(data?.images);
+            // Set more about yourself, partner, and family
+
+            setMoreAboutYourselfPartnerAndFamily(
+              data?.moreAboutYourselfPartnerAndFamily
+            );
+            setHobbies(data?.hobbies);
+          }
+          setForm(true);
+          setProfileData(false);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      setShowSkeleton(false);
     };
     getProfileData();
   }, []);
@@ -706,39 +738,39 @@ const MatrimonyDetails = () => {
           familyValue: familyValue,
           familyAffluence: familyAffluence,
         },
-        astroDetails: {
-          manglikChevvaidosham: manglikChevvaidosham,
-          nakshatra: nakshatra,
-        },
-        partnerPreferences: {
-          gender: gender,
-          education: education,
-          profession: profession,
-          ageRange: {
-            min: ageRange,
-          },
-          minHeight: minHeight,
-          maxIncome: maxIncome,
-        },
-        educationAndCareer: {
-          highestQualification: highestQualification,
-          collegeAttended: collegeAttended,
-          workingWith: workingWith,
-          WorkingAs: workingAs,
-        },
-        lifestyle: lifestyle,
-        locationOfGroom: {
-          countryLivingIn: countryLivingIn,
-          stateLivingIn: stateLivingIn,
-          cityLivingIn: cityLivingIn,
-          grewUpIn: grewUpIn,
-          ethnicOrigin: ethnicOrigin,
-          zipPinCode: zipPinCode,
-        },
-        moreAboutYourselfPartnerAndFamily: moreAboutYourselfPartnerAndFamily,
-        height: height,
-        images: selectedImage,
-        hobbies: hobbies,
+        //   astroDetails: {
+        //     manglikChevvaidosham: manglikChevvaidosham,
+        //     nakshatra: nakshatra,
+        //   },
+        //   partnerPreferences: {
+        //     gender: gender,
+        //     education: education,
+        //     profession: profession,
+        //     ageRange: {
+        //       min: ageRange,
+        //     },
+        //     minHeight: minHeight,
+        //     maxIncome: maxIncome,
+        //   },
+        //   educationAndCareer: {
+        //     highestQualification: highestQualification,
+        //     collegeAttended: collegeAttended,
+        //     workingWith: workingWith,
+        //     WorkingAs: workingAs,
+        //   },
+        //   lifestyle: lifestyle,
+        //   locationOfGroom: {
+        //     countryLivingIn: countryLivingIn,
+        //     stateLivingIn: stateLivingIn,
+        //     cityLivingIn: cityLivingIn,
+        //     grewUpIn: grewUpIn,
+        //     ethnicOrigin: ethnicOrigin,
+        //     zipPinCode: zipPinCode,
+        //   },
+        //   moreAboutYourselfPartnerAndFamily: moreAboutYourselfPartnerAndFamily,
+        //   height: height,
+        //   images: selectedImage,
+        //   hobbies: hobbies,
       };
 
       updatedData.age = new Date(age);
@@ -899,7 +931,7 @@ const MatrimonyDetails = () => {
     }
   };
 
-  if (showSkeleton==true) {
+  if (showSkeleton == true) {
     return (
       <View style={[styles.container, { bottom: 50 }]}>
         <SkeletonLoader />
@@ -915,7 +947,7 @@ const MatrimonyDetails = () => {
         ) : (
           <>
             <View style={styles.profileHeader}>
-              <Image style={styles.profileImage} source={{ uri: img }} />
+              <Image style={styles.profileImage} source={{ uri: img || [] }} />
               <View style={styles.profileInfo}>
                 <Text style={styles.name}>
                   {profileData?.profileId?.firstName}{" "}
@@ -940,17 +972,17 @@ const MatrimonyDetails = () => {
 
                 {renderDetailItem(
                   "Blood Group",
-                  profileData.bloodGroup,
+                  profileData?.bloodGroup,
                   "BLoodGroup"
                 )}
                 {renderDetailItem(
                   "Health Information",
-                  profileData.healthInformation,
+                  profileData?.healthInformation,
                   "healthInformation"
                 )}
                 {renderDetailItem(
                   "Lifestyle",
-                  profileData.lifestyle,
+                  profileData?.lifestyle,
                   "lifestyle"
                 )}
                 {renderDetailItem("NativePlace", nativePlace, "nativePlace")}
@@ -960,27 +992,27 @@ const MatrimonyDetails = () => {
                 <Text style={styles.sectionTitle}>Religious Background</Text>
                 {renderDetailItem(
                   "Religion",
-                  profileData.religiousBackground.religion,
+                  profileData?.religiousBackground.religion,
                   "religion"
                 )}
                 {renderDetailItem(
                   "Mother Tongue",
-                  profileData.religiousBackground.motherTongue,
+                  profileData?.religiousBackground.motherTongue,
                   "motherTongue"
                 )}
                 {renderDetailItem(
                   "Community",
-                  profileData.religiousBackground.community,
+                  profileData?.religiousBackground.community,
                   "community"
                 )}
                 {renderDetailItem(
                   "Sub Community",
-                  profileData.religiousBackground.subCommunity,
+                  profileData?.religiousBackground.subCommunity,
                   "subCommunity"
                 )}
                 {renderDetailItem(
                   "Gothra/Gothram",
-                  profileData.religiousBackground.gothraGothram,
+                  profileData?.religiousBackground.gothraGothram,
                   "gothraGothram"
                 )}
               </View>
@@ -988,78 +1020,78 @@ const MatrimonyDetails = () => {
               <Text style={styles.sectionTitle}>Family Details</Text>
               {renderDetailItem(
                 "Number of Siblings",
-                profileData.family.numberOfSiblings,
+                profileData?.family.numberOfSiblings,
                 "numberOfSiblings"
               )}
               {renderDetailItem(
                 "Father's Status",
-                profileData.family.fatherStatus,
+                profileData?.family.fatherStatus,
                 "fatherStatus"
               )}
               {renderDetailItem(
                 "Mother's Status",
-                profileData.family.motherStatus,
+                profileData?.family.motherStatus,
                 "motherStatus"
               )}
               {renderDetailItem(
                 "Family Location",
-                profileData.family.familyLocation,
+                profileData?.family.familyLocation,
                 "familyLocation"
               )}
               {renderDetailItem(
                 "Family Type",
-                profileData.family.familyType,
+                profileData?.family.familyType,
                 "familyType"
               )}
               {renderDetailItem(
                 "Family Affluence",
-                profileData.family.familyAffluence,
+                profileData?.family.familyAffluence,
                 "familyAffluence"
               )}
 
               {/* Astro Details Section */}
               <Text style={styles.sectionTitle}>Astro Details</Text>
-              {renderDetailItem(
+              {/* {renderDetailItem(
                 "Manglik/Chevva Dosham",
-                profileData.astroDetails.manglikChevvaidosham,
+                profileData?.astroDetails.manglikChevvaidosham,
                 "manglikChevvaidosham"
-              )}
-              {renderDetailItem(
+              )} */}
+              {/* {renderDetailItem(
                 "Nakshatra",
-                profileData.astroDetails.nakshatra,
+                profileData?.astroDetails.nakshatra,
                 "nakshatra"
-              )}
+              )} */}
 
               {/* Partner Preferences Section */}
               <Text style={styles.sectionTitle}>Partner Preferences</Text>
               {renderDetailItem(
                 "Age Range",
-                profileData.partnerPreferences.ageRange.min,
+                profileData?.partnerPreferences?.ageRange.min,
                 "ageRange"
               )}
               {renderDetailItem(
                 "Gender",
-                profileData.partnerPreferences.gender,
+                profileData?.partnerPreferences?.gender,
                 "gender"
               )}
               {renderDetailItem(
                 "Education",
-                profileData.partnerPreferences.education,
+                profileData?.partnerPreferences?.education,
                 "education"
               )}
               {renderDetailItem(
                 "Profession",
-                profileData.partnerPreferences.profession,
+                profileData?.partnerPreferences?.profession,
                 "profession"
               )}
               {renderDetailItem(
                 "Minimum Height",
-                profileData.partnerPreferences.minHeight,
+                profileData?.partnerPreferences?.minHeight,
                 "minHeight"
               )}
               {renderDetailItem(
                 "Maximum Income",
-                profileData.partnerPreferences.maxIncome,
+                profileData?.partnerPreferences?.maxIncome,
                 "maxIncome"
               )}
 
@@ -1067,17 +1099,17 @@ const MatrimonyDetails = () => {
               <Text style={styles.sectionTitle}>Education and Career</Text>
               {renderDetailItem(
                 "Highest Qualification",
-                profileData.educationAndCareer.highestQualification,
+                profileData?.educationAndCareer?.highestQualification,
                 "highestQualification"
               )}
               {renderDetailItem(
                 "College Attended",
-                profileData.educationAndCareer.collegeAttended,
+                profileData?.educationAndCareer?.collegeAttended,
                 "collegeAttended"
               )}
               {renderDetailItem(
                 "Working With",
-                profileData.educationAndCareer.workingWith,
+                profileData?.educationAndCareer?.workingWith,
                 "workingWith"
               )}
 
@@ -1085,27 +1117,27 @@ const MatrimonyDetails = () => {
               <Text style={styles.sectionTitle}>Location of Groom</Text>
               {renderDetailItem(
                 "Country Living In",
-                profileData.locationOfGroom.countryLivingIn,
+                profileData?.locationOfGroom?.countryLivingIn,
                 "countryLivingIn"
               )}
               {renderDetailItem(
                 "State Living In",
-                profileData.locationOfGroom.stateLivingIn,
+                profileData?.locationOfGroom?.stateLivingIn,
                 "stateLivingIn"
               )}
               {renderDetailItem(
                 "City Living In",
-                profileData.locationOfGroom.cityLivingIn,
+                profileData?.locationOfGroom?.cityLivingIn,
                 "cityLivingIn"
               )}
               {renderDetailItem(
                 "Grew Up In",
-                profileData.locationOfGroom.grewUpIn,
+                profileData?.locationOfGroom?.grewUpIn,
                 "grewUpIn"
               )}
               {renderDetailItem(
                 "Ethnic Origin",
-                profileData.locationOfGroom.ethnicOrigin,
+                profileData?.locationOfGroom?.ethnicOrigin,
                 "ethnicOrigin"
               )}
               {renderDetailItem("Zip/Pin Code", zipPinCode, "zipPinCode")}
@@ -1125,9 +1157,9 @@ const MatrimonyDetails = () => {
 
               {renderDetailItem("Add Hobbies", hobbies, "hobbies")}
 
-              {profileData.hobbies && profileData.hobbies.length > 0 ? (
+              {profileData?.hobbies && profileData?.hobbies.length > 0 ? (
                 <FlatList
-                  data={profileData.hobbies}
+                  data={profileData?.hobbies}
                   renderItem={({ item }) => (
                     <View style={styles.languageItem}>
                       <Text>{item}</Text>

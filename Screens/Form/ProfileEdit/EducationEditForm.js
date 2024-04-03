@@ -10,12 +10,7 @@ import {
   Modal,
   Platform,
 } from "react-native";
-import {
-  responsiveHeight,
-  responsiveWidth,
-  responsiveFontSize,
-} from "react-native-responsive-dimensions";
-import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import { responsiveHeight } from "react-native-responsive-dimensions";
 import { useNavigation } from "@react-navigation/native";
 import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
@@ -73,8 +68,7 @@ const EducationEditForm = () => {
 
     // No errors, proceed with navigation and API call
 
-      PostEducation();
-
+    PostEducation();
   };
 
   const Skip = () => {
@@ -114,11 +108,11 @@ const EducationEditForm = () => {
 
   const PostEducation = async () => {
     try {
-        console.log({
-            degree,
-            institution,
-            completionYear,
-          })
+      console.log({
+        degree,
+        institution,
+        completionYear,
+      });
       const response = await axios.put(`${api}/profiles/${data}`, {
         education: {
           degree,
@@ -126,7 +120,7 @@ const EducationEditForm = () => {
           completionYear,
         },
       });
-      console.log(response.data)
+      console.log(response.data);
     } catch (error) {
       console.log("Error during login:", error.message);
     }
@@ -138,9 +132,7 @@ const EducationEditForm = () => {
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 240 }}
       >
-
         <View style={{ top: -170 }}>
-
           <View style={{ bottom: 40 }}>
             <Text
               style={{

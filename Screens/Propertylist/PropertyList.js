@@ -7,17 +7,22 @@ import {
   Image,
   FlatList,
   TouchableWithoutFeedback,
+  TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../Api";
 import axios from "axios";
 import SearchBar from "react-native-dynamic-search-bar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 
 const PropertyList = () => {
   const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
+  const [filteredData,setFilteredData]=useState()
+  const [location,setLocation]=useState()
 
   const fetchDatas = async () => {
     try {
@@ -26,15 +31,19 @@ const PropertyList = () => {
       const pgGuestHouses = await axios.get(`${api}/pgGuestHouses`);
       const landPlots = await axios.get(`${api}/landPlots`);
       const shopOffices = await axios.get(`${api}/shopOffices`);
-
+      const loc = await AsyncStorage.getItem("location")
+      
       const allData = [
         ...properties.data,
         ...pgGuestHouses.data,
         ...landPlots.data,
         ...shopOffices.data,
       ];
-    
-       setLoading(false)
+      
+      console.log(loc)
+      setLocation(loc)
+      setFilteredData(allData)
+      setLoading(false)
       setData(allData);
     } catch (error) {
       console.log(error);
@@ -44,6 +53,50 @@ const PropertyList = () => {
   useEffect(()=>{
     fetchDatas();
   },[])
+
+    // Function to handle search input and filter data
+    const searchObject = (obj, searchData) => {
+      return Object.values(obj).some((value) => {
+        if (value === null || value === undefined) {
+          return false;
+        }
+        if (typeof value === "string") {
+          return value.toLowerCase().includes(searchData);
+        }
+        if (Array.isArray(value)) {
+          return value.some((item) => item.toLowerCase().includes(searchData));
+        }
+        if (typeof value === "object") {
+          return searchObject(value, searchData);
+        }
+        return false;
+      });
+    };
+    // Function to filter elements based on search values
+    const handleSearch = (searchValue) => {
+      setSearchText(searchValue);
+      const filtered = data.filter((element) => {
+        // Convert all values to lower case for case-insensitive search
+        const searchData = searchValue.toLowerCase();
+        // Check if any property of the element contains the search value
+        return Object.values(element).some((value) => {
+          if (typeof value === "string") {
+            return value.toLowerCase().includes(searchData);
+          }
+          // If value is an array, check if any item in the array matches the search value
+          if (Array.isArray(value)) {
+            return value.some((item) => item.toLowerCase().includes(searchData));
+          }
+          // If value is an object, recursively check its properties
+          if (typeof value === "object") {
+            return searchObject(value, searchData);
+          }
+          // Otherwise, return false
+          return false;
+        });
+      });
+      setFilteredData(filtered);
+    };
   const renderAnnouncementItem = ({ item }) => (
     <TouchableWithoutFeedback
       onPress={() => navigation.navigate("Details", { data: item })}
@@ -64,26 +117,42 @@ const PropertyList = () => {
     </TouchableWithoutFeedback>
   );
 
-  const filteredAnnouncements = data.filter((item) =>
-    item.adTitle?.toLowerCase().includes(searchText.toLowerCase())
-  );
-
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <View
         style={{
-          backgroundColor: "#fff",
+          backgroundColor: "#ffff",
           shadowColor: "#000",
-          shadowOffset: 0.5,
-          shadowOpacity: 0.5,
-          elevation: 3,
+          shadowOffset: { width: 0, height: 0.5 }, // Correct shadowOffset format
+          shadowOpacity: 0.6,
+          shadowRadius: 10,
+          elevation: 2,
           padding: 10,
+          display: "flex",
+          flexDirection: "row", // Set flexDirection to row
+          alignItems: "center", // Align items vertically
         }}
       >
         <SearchBar
+          style={{ flex: 1 }} // Let the SearchBar take up remaining space
           placeholder="Search here"
-          onChangeText={(text) => setSearchText(text)}
+          onChangeText={handleSearch}
+          onClearPress={() => setFilteredData(data)}
+          value={searchText}
         />
+        <TouchableOpacity
+          onPress={() => handleSearch(location)}
+          style={{
+            backgroundColor: "white",
+            padding: 10,
+            borderRadius: 10,
+            paddingHorizontal: 23,
+            elevation: 5,
+          }}
+        >
+          <FontAwesome5Icon name="map-pin" size={20} style={{}} color="black" />
+          {/* <Text>🌍</Text> */}
+        </TouchableOpacity>
       </View>
       <ScrollView
         style={{ flex: 1 }}
@@ -103,7 +172,7 @@ const PropertyList = () => {
             ))
           ) : (
             <FlatList
-              data={filteredAnnouncements}
+              data={filteredData}
               keyExtractor={(item) => item._id}
               renderItem={renderAnnouncementItem}
               scrollEnabled={false}

@@ -248,41 +248,41 @@ const Matrimony = () => {
           familyType: familyType,
           familyValue: familyValue,
         },
-        astroDetails: {
-          manglikChevvaidosham: manglikChevvaidosham,
-        },
-        partnerPreferences: {
-          gender: gender,
-          education: education,
-          profession: profession,
-          ageRange: {
-            min: fromValue,
-            max: toValue,
-          },
+      //  astroDetails: {
+        //  manglikChevvaidosham: manglikChevvaidosham,
+      //  },
+     //   partnerPreferences: {
+       //   gender: gender,
+       //   education: education,
+       //   profession: profession,
+       //   ageRange: {
+       //     min: fromValue,
+       //     max: toValue,
+       //   },
           // minHeight: minHeight,
           // maxIncome: maxIncome,
-        },
-        educationAndCareer: {
-          highestQualification: highestQualification,
-          collegeAttended: collegeAttended,
-          workingWith: workingWith,
-          WorkingAs: workingAs,
-        },
-        lifestyle: lifestyle,
-        locationOfGroom: {
-          countryLivingIn: countryLivingIn,
-          stateLivingIn: stateLivingIn,
-          cityLivingIn: cityLivingIn,
-          grewUpIn: grewUpIn,
-          ethnicOrigin: ethnicOrigin,
-          zipPinCode: zipPinCode,
-        },
+      //  },
+        // educationAndCareer: {
+     //     highestQualification: highestQualification,
+     //     collegeAttended: collegeAttended,
+     //     workingWith: workingWith,
+     //     WorkingAs: workingAs,
+        // },
+   //     lifestyle: lifestyle,
+   //     locationOfGroom: {
+  //        countryLivingIn: countryLivingIn,
+   //       stateLivingIn: stateLivingIn,
+   //       cityLivingIn: cityLivingIn,
+   //       grewUpIn: grewUpIn,
+   //       ethnicOrigin: ethnicOrigin,
+   //       zipPinCode: zipPinCode,
+    //    },
         moreAboutYourselfPartnerAndFamily: moreAboutYourselfPartnerAndFamily,
-        height: height,
+      //  height: height,
         // images: selectedImage,
       });
       console.warn(data);
-      await AsyncStorage.getItem("Matrymonyid", data._id);
+      await AsyncStorage.setItem("Matrymonyid", data._id);
     } catch (error) {
       console.log("Error during login:", error.message);
     }

@@ -42,11 +42,8 @@ import { HealthInformation } from "./MatrimonyApi";
 import { WorkingWithOptions } from "./MatrimonyApi";
 import { ProfileCreatedBy } from "./MatrimonyApi";
 import RangeSlider from "react-native-range-slider-expo";
-import { MaxIncome } from "./MatrimonyApi";
 
 const MatrimonyEdit = () => {
-  const navigation = useNavigation();
-
   const [userid, setUserID] = useState();
   const [profileid, setProfileid] = useState();
 
@@ -147,6 +144,7 @@ const MatrimonyEdit = () => {
     getData();
   }, []);
 
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -173,9 +171,8 @@ const MatrimonyEdit = () => {
   const fetchState = async () => {
     try {
       const response = await axios.get(
-        `https://api.countrystatecity.in/v1/countries/${
-          countryLivingIn[0] + countryLivingIn[1]
-        }/states`,
+        `https://api.countrystatecity.in/v1/countries/${countryLivingIn[0] +
+          countryLivingIn[1]}/states`,
         {
           headers: {
             "X-CSCAPI-KEY":
@@ -192,9 +189,9 @@ const MatrimonyEdit = () => {
   const fetchCity = async () => {
     try {
       const response = await axios.get(
-        `https://api.countrystatecity.in/v1/countries/${
-          countryLivingIn[0] + countryLivingIn[1]
-        }/states/${stateLivingIn[0] + stateLivingIn[1]}/cities`,
+        `https://api.countrystatecity.in/v1/countries/${countryLivingIn[0] +
+          countryLivingIn[1]}/states/${stateLivingIn[0] +
+          stateLivingIn[1]}/cities`,
         {
           headers: {
             "X-CSCAPI-KEY":
@@ -218,62 +215,64 @@ const MatrimonyEdit = () => {
   }));
 
   const PostMatri = async () => {
+     console.warn({userid})
+     console.warn({profileid})
     try {
-        const { data } = await axios.post(`${api}/matrimonial/profiles`, {
-          userId:userid,
-          profileId: profileid,
-          Profilecreatedby: profilecreatedby,
-          nativePlace: nativePlace,
-          healthInformation: healthInformation,
-          anyDisabiliy: anyDisability,
-          bloodGroup: bloodgroup,
-          religiousBackground: {
-            gothraGothram: gothraGothram,
-          },
-          family: {
-            fatherStatus: fatherS,
-            motherStatus: motherStatus,
-            familyLocation: familyLocation,
-            numberOfSiblings: numberOfSiblings,
-            familyType: familyType,
-            familyValue: familyValue,
-          },
-          astroDetails: {
-            manglikChevvaidosham: manglikChevvaidosham,
-          },
-          partnerPreferences: {
-            gender: gender,
-            education: education,
-            profession: profession,
-            ageRange: {
-              min: fromValue,
-              max: toValue,
-            },
-            // minHeight: minHeight,
-            // maxIncome: maxIncome,
-          },
-          educationAndCareer: {
-            highestQualification: highestQualification,
-            collegeAttended: collegeAttended,
-            workingWith: workingWith,
-            WorkingAs: workingAs,
-          },
-          lifestyle: lifestyle,
-          locationOfGroom: {
-            countryLivingIn: countryLivingIn,
-            stateLivingIn: stateLivingIn,
-            cityLivingIn: cityLivingIn,
-            grewUpIn: grewUpIn,
-            ethnicOrigin: ethnicOrigin,
-            zipPinCode: zipPinCode,
-          },
-          moreAboutYourselfPartnerAndFamily: moreAboutYourselfPartnerAndFamily,
-          height: height,
-          // images: selectedImage,
-        });
-        console.warn(data);
-        console.log({data})
-        await AsyncStorage.getItem("Matrymonyid", data._id);
+      const { data } = await axios.post(`${api}/matrimonial/profiles`, {
+        userId: userid,
+        profileId: profileid,
+        Profilecreatedby: profilecreatedby,
+        nativePlace: nativePlace,
+        healthInformation: healthInformation,
+        anyDisabiliy: anyDisability,
+        bloodGroup: bloodgroup,
+        religiousBackground: {
+          gothraGothram: gothraGothram,
+        },
+        family: {
+          fatherStatus: fatherS,
+          motherStatus: motherStatus,
+          familyLocation: familyLocation,
+          numberOfSiblings: numberOfSiblings,
+          familyType: familyType,
+          familyValue: familyValue,
+        },
+    //    astroDetails: {
+    //      manglikChevvaidosham: manglikChevvaidosham,
+    //    },
+    //    partnerPreferences: {
+    //      gender: gender,
+    //      education: education,
+    //      profession: profession,
+    //      ageRange: {
+    //        min: fromValue,
+    //        max: toValue,
+    //      },
+    //      // minHeight: minHeight,
+    //      // maxIncome: maxIncome,
+    //    },
+    //    educationAndCareer: {
+    //      highestQualification: highestQualification,
+    //      collegeAttended: collegeAttended,
+    //      workingWith: workingWith,
+    //      WorkingAs: workingAs,
+    //    },
+    //    lifestyle: lifestyle,
+    //    locationOfGroom: {
+    //      countryLivingIn: countryLivingIn,
+    //      stateLivingIn: stateLivingIn,
+    //      cityLivingIn: cityLivingIn,
+    //      grewUpIn: grewUpIn,
+    //      ethnicOrigin: ethnicOrigin,
+    //      zipPinCode: zipPinCode,
+    //    },
+    //    moreAboutYourselfPartnerAndFamily: moreAboutYourselfPartnerAndFamily,
+    //    height: height,
+        // images: selectedImage,
+      });
+      console.warn(data);
+      console.log({ data });
+      await AsyncStorage.setItem("Matrymonyid", data._id);
     } catch (error) {
       console.log("Error during login:", error.message);
     }
@@ -343,7 +342,7 @@ const MatrimonyEdit = () => {
                   paddingVertical: 5,
                   elevation: 1,
                   borderRadius: 5,
-                  right: 50,
+                  right: 30,
                   marginBottom: 30,
                   backgroundColor: "#fff",
                 }}
@@ -1016,7 +1015,7 @@ const MatrimonyEdit = () => {
                     >
                       More About Yourself,{" "}
                       <Text style={{ color: "#000", fontWeight: "400" }}>
-                        Partner and Family...
+                        Partner and F...
                       </Text>
                     </Text>
                   </View>
@@ -1060,7 +1059,7 @@ const MatrimonyEdit = () => {
                 </View>
 
                 <View style={{ top: 310 }}>
-                  <View style={{ left: 22, top: responsiveHeight(37) }}>
+                  <View style={{ left: 22, top: responsiveHeight(40) }}>
                     <Text
                       style={{
                         fontSize: 20,
@@ -1175,7 +1174,7 @@ const MatrimonyEdit = () => {
                     </View>
                   </View>
 
-                  <View style={{ top: responsiveHeight(15) }}>
+                  <View style={{ top: responsiveHeight(18) }}>
                     <View style={{ bottom: responsiveHeight(1) }}>
                       <Text
                         style={{
@@ -1206,7 +1205,7 @@ const MatrimonyEdit = () => {
                     </View>
                   </View>
 
-                  <View style={{ top: responsiveHeight(18) }}>
+                  <View style={{ top: responsiveHeight(20) }}>
                     <View style={{ bottom: responsiveHeight(1) }}>
                       <Text
                         style={{
@@ -1237,7 +1236,7 @@ const MatrimonyEdit = () => {
                     </View>
                   </View>
 
-                  <View style={{ top: responsiveHeight(21) }}>
+                  <View style={{ top: responsiveHeight(23) }}>
                     <View style={{ bottom: responsiveHeight(1) }}>
                       <Text
                         style={{
@@ -1308,13 +1307,13 @@ const MatrimonyEdit = () => {
                     <Text
                       style={{
                         top: responsiveHeight(23),
-                        left: responsiveWidth(72),
+                        left: responsiveWidth(62),
                         fontSize: 15,
                         fontWeight: "500",
                         opacity: 0.6,
                       }}
                     >
-                      Max Age {toValue}
+                      {toValue} Max Age
                     </Text>
                     <View style={{ top: responsiveHeight(21) }}>
                       <RangeSlider
