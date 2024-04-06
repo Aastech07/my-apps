@@ -8,6 +8,7 @@ import {
   Modal,
   TouchableOpacity,
   ToastAndroid,
+  
 } from "react-native";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 
@@ -21,6 +22,7 @@ import { api } from "../Api";
 import axios from "axios";
 import { ImagePicker } from "expo-image-multiple-picker";
 import { useRoute } from "@react-navigation/native";
+import Alerts from "../Alertmodal/Alerts";
 const LandPlot = () => {
   const data = useRoute();
 
@@ -42,6 +44,7 @@ const LandPlot = () => {
   const [open, setOpen] = useState(false);
   const [album, setAlbum] = useState(undefined);
   const [assets, setAssets] = useState([]);
+  const [visible,setVisible]=useState(false)
   const [facilities, setFacilities] = useState({
     electricity: false,
     waterSupply: false,
@@ -122,14 +125,14 @@ const LandPlot = () => {
         setSelectedImage(data.images);
       } catch (error) {
         // Handle error here, you can log it or set some state to show an error message
-        console.error("Error fetching data:", error.message);
+        console.log("Error fetching data:", error.message);
       }
     };
   
     getproperties();
   }, []);
   
-
+const onClose =()=>{setVisible(false)}
 
 
   const UpdateForm = async () => {
@@ -155,21 +158,22 @@ const LandPlot = () => {
 
   const POSTPRO = async () => {
     try {
-      const { data } = await axios.post(`${api}/landPlots`, {
-        profileId: profileid,
-        address: address,
-        landmark: landmark,
-        type: propertyType,
-        superBuiltupArea: superBuiltupArea,
-        carpetArea: carpetArea,
-        adTitle: adTitle,
-        description: description,
-        price: price,
-        facilities: facilities,
-        images: (selectedImage && selectedImage) || img,
-      });
-      console.warn(data);
+     const { data } = await axios.post(`${api}/landPlots`, {
+       profileId: profileid,
+       address: address,
+       landmark: landmark,
+       type: propertyType,
+       superBuiltupArea: superBuiltupArea,
+       carpetArea: carpetArea,
+       adTitle: adTitle,
+       description: description,
+       price: price,
+       facilities: facilities,
+       images: (selectedImage && selectedImage) || img,
+     });
+  
       ToastAndroid.show("Your Property Add !", ToastAndroid.SHORT);
+      setVisible(true)
     } catch (error) {
       console.log("Error during login:", error.message);
     }
@@ -700,6 +704,7 @@ const LandPlot = () => {
           </TouchableOpacity>
         )}
       </View>
+      <Alerts visible={visible} onClose={onClose} icon={"building"} title={'Application Submitted'} desc={"The Request For The Property Has Been Sent Successfully!"}/>
     </>
   );
 };

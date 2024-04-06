@@ -160,10 +160,9 @@ const MatrimonyDetails = () => {
     const fetchData = async () => {
       try {
         const profileId = await AsyncStorage.getItem("profileid");
+        console.log(profileId);
         if (profileId !== null) {
-          const [matrimonial] = await Promise.all([
-            axios.get(`${api}/matrimonial/profiles`),
-          ]);
+          const matrimonial = await axios.get(`${api}/matrimonial/profiles`);
 
           const allData = [...matrimonial.data];
           const filteredProperties = allData.filter(
@@ -174,8 +173,8 @@ const MatrimonyDetails = () => {
             const id = filteredProperties[0]._id; // Access the _id from the first element
             setIDs(id);
             await AsyncStorage.setItem(
-              filteredProperties[0]._id,
-              "Matrymonyid"
+              "Matrymonyid",
+              filteredProperties[0]._id
             );
           }
         }

@@ -24,11 +24,11 @@ import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
 import axios from "axios";
 import { MyContext } from "../../App";
-import {api} from '../Api' 
+import { api } from "../Api";
 
 const Announcement = () => {
   const id = useContext(MyContext);
-  const naviation= useNavigation()
+  const naviation = useNavigation();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
@@ -103,47 +103,48 @@ const Announcement = () => {
   };
 
   const Category = [
-    { key: "1", value: "Birthday party" },
-    { key: "2", value: "wedding party" },
+    { key: "1", value: "Birthdays" },
+    { key: "2", value: "weddings" },
     { key: "3", value: "death" },
     { key: "4", value: "anniversary" },
   ];
 
   function extractDate(dateString) {
     const dateObject = new Date(dateString);
-    
+
     // Extract the date components
     const year = dateObject.getFullYear();
-    const month = String(dateObject.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const day = String(dateObject.getDate()).padStart(2, '0');
-  
+    const month = String(dateObject.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const day = String(dateObject.getDate()).padStart(2, "0");
+
     // Form the date string in YYYY-MM-DD format
     const formattedDate = `${year}-${month}-${day}`;
-  
+
     return formattedDate;
-  }`  `
+  }
+  `  `;
   const handleDateChange = (event) => {
     if (event !== undefined) {
-      setModalVisible1(!modalVisible1)
+      setModalVisible1(!modalVisible1);
       setCompletionYear(extractDate(event));
     }
   };
 
   const PostAnn = async () => {
-    if(category==""||value==""|| completionYear==""){
-      return alert('Please enter all the Details')
+    if (category == "" || value == "" || completionYear == "") {
+      return alert("Please enter all the Details");
     }
     try {
       const res = await axios.post(`${api}/announcements`, {
         profileId: id,
-        announcementType:category,
-        description:value,
-        date:completionYear
+        announcementType: category,
+        description: value,
+        date: completionYear,
       });
       // setProfileID(res.data._id);
-      naviation.navigate('HomeScreen')
+      naviation.pop(1);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       console.error("Error during login:", error);
     }
   };
@@ -298,7 +299,7 @@ const Announcement = () => {
             </TouchableOpacity>
           </View>
 
-          <View >
+          <View>
             <View style={styles.centeredView1}>
               <Modal
                 animationType="slide"
@@ -410,7 +411,12 @@ const Announcement = () => {
         </Modal>
 
         <View style={{ bottom: 65 }}>
-          <TouchableOpacity style={styles.loginBtn} onPress={() => {PostAnn()}}>
+          <TouchableOpacity
+            style={styles.loginBtn}
+            onPress={() => {
+              PostAnn();
+            }}
+          >
             <Text style={{ color: "white", fontSize: 18, fontWeight: "500" }}>
               Next
             </Text>

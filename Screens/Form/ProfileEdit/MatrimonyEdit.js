@@ -237,38 +237,38 @@ const MatrimonyEdit = () => {
           familyType: familyType,
           familyValue: familyValue,
         },
-    //    astroDetails: {
-    //      manglikChevvaidosham: manglikChevvaidosham,
-    //    },
-    //    partnerPreferences: {
-    //      gender: gender,
-    //      education: education,
-    //      profession: profession,
-    //      ageRange: {
-    //        min: fromValue,
-    //        max: toValue,
-    //      },
-    //      // minHeight: minHeight,
-    //      // maxIncome: maxIncome,
-    //    },
-    //    educationAndCareer: {
-    //      highestQualification: highestQualification,
-    //      collegeAttended: collegeAttended,
-    //      workingWith: workingWith,
-    //      WorkingAs: workingAs,
-    //    },
-    //    lifestyle: lifestyle,
-    //    locationOfGroom: {
-    //      countryLivingIn: countryLivingIn,
-    //      stateLivingIn: stateLivingIn,
-    //      cityLivingIn: cityLivingIn,
-    //      grewUpIn: grewUpIn,
-    //      ethnicOrigin: ethnicOrigin,
-    //      zipPinCode: zipPinCode,
-    //    },
-    //    moreAboutYourselfPartnerAndFamily: moreAboutYourselfPartnerAndFamily,
-    //    height: height,
-        // images: selectedImage,
+       astroDetails: {
+         manglikChevvaidosham: manglikChevvaidosham,
+       },
+    //   partnerPreferences: {
+    //     gender: gender,
+    //     education: education,
+    //     profession: profession,
+    //     ageRange: {
+    //       min: fromValue,
+    //       max: toValue,
+    //     },
+    //     // minHeight: minHeight,
+    //     // maxIncome: maxIncome,
+    //   },
+    //   educationAndCareer: {
+    //     highestQualification: highestQualification,
+    //     collegeAttended: collegeAttended,
+    //     workingWith: workingWith,
+    //     WorkingAs: workingAs,
+    //   },
+    //   lifestyle: lifestyle,
+    //   locationOfGroom: {
+    //     countryLivingIn: countryLivingIn,
+    //     stateLivingIn: stateLivingIn,
+    //     cityLivingIn: cityLivingIn,
+    //     grewUpIn: grewUpIn,
+    //     ethnicOrigin: ethnicOrigin,
+    //     zipPinCode: zipPinCode,
+    //   },
+    //   moreAboutYourselfPartnerAndFamily: moreAboutYourselfPartnerAndFamily,
+    //   height: height,
+    //    images: selectedImage,
       });
       console.warn(data);
       console.log({ data });

@@ -181,7 +181,7 @@ const HomeScreen = () => {
               top: 12,
             }}
           >
-            <FontAwesome5 name="cross" size={12} color="#333" />
+            <FontAwesome5 name="skull-crossbones" size={12} color="#333" />
           </View>
         );
       case "Anniversary":

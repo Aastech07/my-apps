@@ -10,10 +10,13 @@ import {
 import { api } from "../Api";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { firestore } from "../../firebase";
+import uuid from "react-native-uuid";
+
 const RecentlyView = () => {
   const [data, setData] = useState([]);
   const [ids, setID] = useState("");
-
+  const userId = uuid.v4();
   const img =
     "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.632798143.1705622400&semt=ais";
 
@@ -22,9 +25,7 @@ const RecentlyView = () => {
       try {
         const profileId = await AsyncStorage.getItem("profileid");
         if (profileId !== null) {
-          const [matrimonial] = await Promise.all([
-            axios.get(`${api}/matrimonial/profiles`),
-          ]);
+          const matrimonial = await axios.get(`${api}/matrimonial/profiles`);
 
           const allData = [...matrimonial.data];
           const filteredProperties = allData.filter(
@@ -33,6 +34,7 @@ const RecentlyView = () => {
 
           if (filteredProperties.length > 0) {
             const id = filteredProperties[0]._id;
+
             setID(id); // Access the _id from the first element
             const res = await axios.get(`${api}/matrimonial/profiles/${id}`);
 
@@ -56,20 +58,33 @@ const RecentlyView = () => {
     fetchData();
   }, [api]);
 
-  const handleAccept = async (id) => {
-    console.warn(id._id);
-    console.warn({ids})
-    const { data } = await axios.put(`${api}/acceptRequest/${id._id}/${ids}`);
-
-    console.warn(data);
-
-    // setData(updatedData);
+  const handleAccept = async (item) => {
+    try {
+      const res = await axios.put(`${api}/acceptRequest/${ids}/${item._id}`);
+      console.log(res.data);
+      await firestore.collection("MatrimonyId").add({
+        receivedRequest: item._id,
+        sendRequest: ids,
+      });
+      setData((prevData) =>
+        prevData.filter((prevItem) => prevItem._id !== item._id)
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleReject = (id) => {
-    // Remove the user from the list
-    setData(data.filter((item) => item.id !== id));
+  const handleReject = async (item) => {
+    console.warn(item._id);
+    const { data: updatedData } = await axios.put(
+      `${api}/rejectRequest/${item._id}/${ids}`
+    );
+    setData((prevData) =>
+      prevData.filter((prevItem) => prevItem._id !== item._id)
+    );
   };
+
+  
 
   const renderItem = ({ item }) => (
     <View style={styles.item}>
@@ -94,7 +109,7 @@ const RecentlyView = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, styles.rejectButton]}
-          //   onPress={() => handleReject(item.id)}
+          onPress={() => handleReject(item)}
         >
           <Text style={styles.buttonText}>Reject</Text>
         </TouchableOpacity>
@@ -107,7 +122,7 @@ const RecentlyView = () => {
       <FlatList
         data={data}
         renderItem={renderItem}
-        // keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
       />
     </View>
   );

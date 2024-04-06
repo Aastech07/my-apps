@@ -24,7 +24,6 @@ import NavigationView from "./Drawer";
 import SearchBar from "react-native-dynamic-search-bar";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { collapseTopMarginForChild } from "react-native-render-html";
 
 const JobsScreen = () => {
   const [datas, setData] = useState([]);
@@ -33,6 +32,7 @@ const JobsScreen = () => {
   const [searchText, setSearchText] = useState("");
   const [userid, setUserID] = useState(true);
   const [location, setLocation] = useState("");
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -71,6 +71,7 @@ const JobsScreen = () => {
     GetData();
   }, []);
 
+
   useEffect(() => {
     const filteredData = datas.filter((item) =>
       item.title.toLowerCase().includes(searchText.toLowerCase())
@@ -78,7 +79,7 @@ const JobsScreen = () => {
     setFilteredData(filteredData);
   }, []);
 
-  // Function to handle search input and filter data
+
   const searchObject = (obj, searchData) => {
     return Object.values(obj).some((value) => {
       if (value === null || value === undefined) {
@@ -96,7 +97,6 @@ const JobsScreen = () => {
       return false;
     });
   };
-  // Function to filter elements based on search values
   const handleSearch = (searchValue) => {
     setSearchText(searchValue);
     const filtered = datas.filter((element) => {
@@ -121,6 +121,7 @@ const JobsScreen = () => {
     });
     setFilteredData(filtered);
   };
+
 
   const renderMealItem1 = ({ item }) => (
     <View style={styles.mealItemContainer}>

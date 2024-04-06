@@ -27,23 +27,24 @@ const MatrimonyFriends = () => {
   const [apidata, setApiData] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [filteredData, setFilteredData] = useState([]);
+  const [id, setID] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const profileId = await AsyncStorage.getItem("profileid");
         if (profileId !== null) {
-          const [matrimonial] = await Promise.all([
-            axios.get(`${api}/matrimonial/profiles`),
-          ]);
+          const matrimonial = await axios.get(`${api}/matrimonial/profiles`);
 
           const allData = [...matrimonial.data];
           const filteredProperties = allData.filter(
-            (property)  => property.profileId._id === profileId
+            (property) => property.profileId._id === profileId
           );
 
           if (filteredProperties.length > 0) {
             const id = filteredProperties[0]._id; // Access the _id from the first element
+            setID(id);
+            console.warn({id})
             const res = await axios.get(`${api}/matrimonial/profiles/${id}`);
 
             // Fetch friends' profiles
@@ -168,7 +169,9 @@ const MatrimonyFriends = () => {
                 >
                   <TouchableWithoutFeedback
                     onPress={() =>
-                      navigation.navigate("MatrimonyProfileChats", { data: item })
+                      navigation.navigate("MatrimonyProfileChats", {
+                        data: item,id:id
+                      })
                     }
                   >
                     <View

@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.communityApp"
@@ -24,8 +22,11 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "blockedPermissions": ["android.permission.RECORD_AUDIO"],
+
       "permissions": [
         "android.permission.CAMERA",
+
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.communityApp",
@@ -67,7 +68,6 @@
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
       ]
-
     ],
     "extra": {
       "eas": {

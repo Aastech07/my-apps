@@ -20,7 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { Tablet } from "./Api";
 import { useRoute } from "@react-navigation/native";
-
+import Alerts from "../../Alertmodal/Alerts";
 const Tablets = () => {
   const [adtitle, setAdTitle] = useState("");
   const [price, setPrice] = useState("");
@@ -34,6 +34,7 @@ const Tablets = () => {
   const [profileid, setProfileid] = useState("");
   const [brand, setBrand] = useState("");
   const [modalVisible1, setModalVisible1] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   const Data = useRoute();
   const Value = Data.params?.data;
@@ -87,6 +88,7 @@ const Tablets = () => {
       });
       console.warn(data);
       // ToastAndroid.show("Your Property Add !", ToastAndroid.SHORT);
+      setVisible(true);
     } catch (error) {
       console.log("Error during login:", error.message);
     }
@@ -123,292 +125,309 @@ const Tablets = () => {
     getproperties();
   }, []);
 
+  const onClose = () => {
+    setVisible(false);
+  };
 
   //65fd81ab335e2bd795d09b35
   return (
-    <View style={{ flex: 1, backgroundColor: "#ffff" }}>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 90 }}
-      >
-        <View style={{ bottom: 120 }}>
-          <View style={{ top: 10 }}>
-            <Text
-              style={{
-                position: "absolute",
-                top: 135,
-                left: 28,
-                fontSize: 15,
-                fontWeight: "500",
-                opacity: 0.6,
-              }}
-            >
-              ADD Image :
-            </Text>
+    <>
+      <View style={{ flex: 1, backgroundColor: "#ffff" }}>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 90 }}
+        >
+          <View style={{ bottom: 120 }}>
+            <View style={{ top: 10 }}>
+              <Text
+                style={{
+                  position: "absolute",
+                  top: 135,
+                  left: 28,
+                  fontSize: 15,
+                  fontWeight: "500",
+                  opacity: 0.6,
+                }}
+              >
+                ADD Image :
+              </Text>
 
-            <View
-              style={{
-                top: 140,
-                alignSelf: "center",
-                backgroundColor: "#fff",
-                paddingHorizontal: 5,
-                paddingVertical: 5,
-                elevation: 1,
-                right: 30,
-                borderRadius: 5,
-                position: "absolute",
-              }}
-            >
-              <TouchableOpacity onPress={() => removeImage()}>
-                <FontAwesome5Icon
-                  name="trash-alt"
-                  size={15}
-                  style={{}}
-                  color={"tomato"}
-                />
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity>
               <View
                 style={{
-                  top: 135,
+                  top: 140,
                   alignSelf: "center",
+                  backgroundColor: "#fff",
                   paddingHorizontal: 5,
                   paddingVertical: 5,
                   elevation: 1,
+                  right: 30,
                   borderRadius: 5,
-                  right: 50,
-                  marginBottom: 30,
-                  backgroundColor: "#fff",
+                  position: "absolute",
                 }}
               >
-                <FontAwesome5Icon
-                  name="folder-open"
-                  size={15}
-                  style={{}}
-                  color={"orange"}
-                  onPress={() =>
-                    setModalVisible1(!modalVisible1) + setOpen(true)
-                  }
+                <TouchableOpacity onPress={() => removeImage()}>
+                  <FontAwesome5Icon
+                    name="trash-alt"
+                    size={15}
+                    style={{}}
+                    color={"tomato"}
+                  />
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity>
+                <View
+                  style={{
+                    top: 135,
+                    alignSelf: "center",
+                    paddingHorizontal: 5,
+                    paddingVertical: 5,
+                    elevation: 1,
+                    borderRadius: 5,
+                    right: 50,
+                    marginBottom: 30,
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  <FontAwesome5Icon
+                    name="folder-open"
+                    size={15}
+                    style={{}}
+                    color={"orange"}
+                    onPress={() =>
+                      setModalVisible1(!modalVisible1) + setOpen(true)
+                    }
+                  />
+                </View>
+              </TouchableOpacity>
+
+              <View style={{ top: 85, alignItems: "center", left: 10 }}>
+                {assets.length === 0 ? (
+                  <Text style={{ opacity: 0.6, left: 20 }}>{"No images "}</Text>
+                ) : (
+                  <Text
+                    style={{ opacity: 0.6, left: 20 }}
+                  >{`${assets.length} images `}</Text>
+                )}
+              </View>
+            </View>
+          </View>
+
+          <View style={{ bottom: 50 }}>
+            <View style={{ bottom: 130 }}>
+              <Text
+                style={{
+                  top: responsiveHeight(24),
+                  left: 23,
+                  fontSize: 15,
+                  fontWeight: "500",
+                  opacity: 0.6,
+                }}
+              >
+                Type *
+              </Text>
+              <View style={{ top: responsiveHeight(25), marginBottom: 13 }}>
+                <SelectList
+                  setSelected={(val) => setBrand(val)}
+                  data={Tablet}
+                  save="value"
+                  boxStyles={{
+                    marginLeft: responsiveWidth(5),
+                    marginRight: responsiveWidth(5),
+                  }}
+                  dropdownStyles={{
+                    marginLeft: responsiveWidth(5),
+                    marginRight: responsiveWidth(5),
+                  }}
+                  search={false}
                 />
               </View>
-            </TouchableOpacity>
+            </View>
 
-            <View style={{ top: 85, alignItems: "center", left: 10 }}>
-              {assets.length === 0 ? (
-                <Text style={{ opacity: 0.6, left: 20 }}>{"No images "}</Text>
+            <View style={{ bottom: 120 }}>
+              <Text
+                style={{
+                  top: responsiveHeight(24),
+                  left: 23,
+                  fontSize: 15,
+                  fontWeight: "500",
+                  opacity: 0.6,
+                }}
+              >
+                AdTitle
+              </Text>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholder="AdTitle"
+                  placeholderTextColor="black"
+                  onChangeText={(txt) => setAdTitle(txt)}
+                  value={adtitle}
+                />
+              </View>
+            </View>
+
+            <View style={{ bottom: 120 }}>
+              <Text
+                style={{
+                  top: responsiveHeight(24),
+                  left: 23,
+                  fontSize: 15,
+                  fontWeight: "500",
+                  opacity: 0.6,
+                }}
+              >
+                Price
+              </Text>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholder="Price"
+                  placeholderTextColor="black"
+                  onChangeText={(txt) => setPrice(txt)}
+                  value={price}
+                  keyboardType="numeric"
+                />
+              </View>
+            </View>
+
+            <View style={{ bottom: 120 }}>
+              <Text
+                style={{
+                  top: responsiveHeight(24),
+                  left: 23,
+                  fontSize: 15,
+                  fontWeight: "500",
+                  opacity: 0.6,
+                }}
+              >
+                Address
+              </Text>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholder="Address"
+                  placeholderTextColor="black"
+                  onChangeText={(txt) => setAddress(txt)}
+                  value={address}
+                />
+              </View>
+            </View>
+
+            <View style={{ bottom: 120 }}>
+              <Text
+                style={{
+                  top: responsiveHeight(24),
+                  left: 23,
+                  fontSize: 15,
+                  fontWeight: "500",
+                  opacity: 0.6,
+                }}
+              >
+                landmark
+              </Text>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholder="landmark"
+                  placeholderTextColor="black"
+                  onChangeText={(txt) => setLandmark(txt)}
+                  value={landmark}
+                />
+              </View>
+            </View>
+
+            <View style={{ bottom: 110 }}>
+              <Text
+                style={{
+                  top: responsiveHeight(24),
+                  left: 23,
+                  fontSize: 15,
+                  fontWeight: "500",
+                  opacity: 0.6,
+                }}
+              >
+                Description
+              </Text>
+              <View style={styles.inputView1}>
+                <TextInput
+                  style={{ height: 100, color: "black" }}
+                  placeholder="description"
+                  placeholderTextColor="black"
+                  onChangeText={(txt) => setDescription(txt)}
+                  value={description}
+                  numberOfLines={4}
+                  multiline={true}
+                />
+              </View>
+            </View>
+          </View>
+
+          <Modal
+            style={{}}
+            animationType="slide"
+            visible={modalVisible1}
+            onRequestClose={() => setModalVisible1(!modalVisible1)}
+          >
+            <View style={styles.container}>
+              {open ? (
+                <ImagePicker
+                  onSave={handleSave}
+                  onCancel={handleCancel}
+                  onSelectAlbum={handleSelectAlbum}
+                  selected={assets}
+                  selectedAlbum={album}
+                  multiple
+                  limit={5}
+                />
               ) : (
-                <Text
-                  style={{ opacity: 0.6, left: 20 }}
-                >{`${assets.length} images `}</Text>
+                <TouchableOpacity onPress={() => setOpen(true)}>
+                  <Text style={styles.button}>Open Image Picker</Text>
+                </TouchableOpacity>
               )}
             </View>
-          </View>
-        </View>
+          </Modal>
+        </ScrollView>
 
-        <View style={{ bottom: 50 }}>
-          <View style={{ bottom: 130 }}>
-            <Text
-              style={{
-                top: responsiveHeight(24),
-                left: 23,
-                fontSize: 15,
-                fontWeight: "500",
-                opacity: 0.6,
-              }}
+        <View style={{ paddingBottom: 20 }}>
+          {Num == 1 ? (
+            <TouchableOpacity
+              style={styles.loginBtn1}
+              onPress={() => POSTPROS()}
             >
-              Type *
-            </Text>
-            <View style={{ top: responsiveHeight(25), marginBottom: 13 }}>
-              <SelectList
-                setSelected={(val) => setBrand(val)}
-                data={Tablet}
-                save="value"
-                boxStyles={{
-                  marginLeft: responsiveWidth(5),
-                  marginRight: responsiveWidth(5),
+              <Text
+                style={{ color: "tomato", fontSize: 18, fontWeight: "500" }}
+              >
+                Update
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.loginBtn} onPress={() => POSTPRO()}>
+              <Text style={{ color: "white", fontSize: 18, fontWeight: "500" }}>
+                Post
+              </Text>
+              <FontAwesome5Icon
+                name="arrow-right"
+                style={{
+                  position: "absolute",
+                  left: 215,
+                  backgroundColor: "#3D56F0",
+                  padding: 12,
+                  borderRadius: 50,
+                  color: "#fff",
                 }}
-                dropdownStyles={{
-                  marginLeft: responsiveWidth(5),
-                  marginRight: responsiveWidth(5),
-                }}
-                search={false}
               />
-            </View>
-          </View>
-
-          <View style={{ bottom: 120 }}>
-            <Text
-              style={{
-                top: responsiveHeight(24),
-                left: 23,
-                fontSize: 15,
-                fontWeight: "500",
-                opacity: 0.6,
-              }}
-            >
-              AdTitle
-            </Text>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                placeholder="AdTitle"
-                placeholderTextColor="black"
-                onChangeText={(txt) => setAdTitle(txt)}
-                value={adtitle}
-              />
-            </View>
-          </View>
-
-          <View style={{ bottom: 120 }}>
-            <Text
-              style={{
-                top: responsiveHeight(24),
-                left: 23,
-                fontSize: 15,
-                fontWeight: "500",
-                opacity: 0.6,
-              }}
-            >
-              Price
-            </Text>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                placeholder="Price"
-                placeholderTextColor="black"
-                onChangeText={(txt) => setPrice(txt)}
-                value={price}
-                keyboardType="numeric"
-              />
-            </View>
-          </View>
-
-          <View style={{ bottom: 120 }}>
-            <Text
-              style={{
-                top: responsiveHeight(24),
-                left: 23,
-                fontSize: 15,
-                fontWeight: "500",
-                opacity: 0.6,
-              }}
-            >
-              Address
-            </Text>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                placeholder="Address"
-                placeholderTextColor="black"
-                onChangeText={(txt) => setAddress(txt)}
-                value={address}
-              />
-            </View>
-          </View>
-
-          <View style={{ bottom: 120 }}>
-            <Text
-              style={{
-                top: responsiveHeight(24),
-                left: 23,
-                fontSize: 15,
-                fontWeight: "500",
-                opacity: 0.6,
-              }}
-            >
-              landmark
-            </Text>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                placeholder="landmark"
-                placeholderTextColor="black"
-                onChangeText={(txt) => setLandmark(txt)}
-                value={landmark}
-              />
-            </View>
-          </View>
-
-          <View style={{ bottom: 110 }}>
-            <Text
-              style={{
-                top: responsiveHeight(24),
-                left: 23,
-                fontSize: 15,
-                fontWeight: "500",
-                opacity: 0.6,
-              }}
-            >
-              Description
-            </Text>
-            <View style={styles.inputView1}>
-              <TextInput
-                style={{ height: 100, color: "black" }}
-                placeholder="description"
-                placeholderTextColor="black"
-                onChangeText={(txt) => setDescription(txt)}
-                value={description}
-                numberOfLines={4}
-                multiline={true}
-              />
-            </View>
-          </View>
+            </TouchableOpacity>
+          )}
         </View>
-
-        <Modal
-          style={{}}
-          animationType="slide"
-          visible={modalVisible1}
-          onRequestClose={() => setModalVisible1(!modalVisible1)}
-        >
-          <View style={styles.container}>
-            {open ? (
-              <ImagePicker
-                onSave={handleSave}
-                onCancel={handleCancel}
-                onSelectAlbum={handleSelectAlbum}
-                selected={assets}
-                selectedAlbum={album}
-                multiple
-                limit={5}
-              />
-            ) : (
-              <TouchableOpacity onPress={() => setOpen(true)}>
-                <Text style={styles.button}>Open Image Picker</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </Modal>
-      </ScrollView>
-
-      <View style={{ paddingBottom: 20 }}>
-        {Num == 1 ? (
-          <TouchableOpacity style={styles.loginBtn1} onPress={() => POSTPROS()}>
-            <Text style={{ color: "tomato", fontSize: 18, fontWeight: "500" }}>
-              Update
-            </Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.loginBtn} onPress={() => POSTPRO()}>
-            <Text style={{ color: "white", fontSize: 18, fontWeight: "500" }}>
-              Post
-            </Text>
-            <FontAwesome5Icon
-              name="arrow-right"
-              style={{
-                position: "absolute",
-                left: 215,
-                backgroundColor: "#3D56F0",
-                padding: 12,
-                borderRadius: 50,
-                color: "#fff",
-              }}
-            />
-          </TouchableOpacity>
-        )}
       </View>
-    </View>
+      <Alerts
+        visible={visible}
+        onClose={onClose}
+        icon={"tablet"}
+        title={"Application Submitted"}
+        desc={"The Request For The Tablet Has Been Sent Successfully!"}
+      />
+    </>
   );
 };
 

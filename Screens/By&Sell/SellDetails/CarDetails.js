@@ -23,6 +23,8 @@ import { api } from "../../Api";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRoute } from "@react-navigation/native";
+import Alerts from "../../Alertmodal/Alerts";
+
 const CarDetails = () => {
   const [brand, setBrand] = useState("");
   const [year, setYears] = useState("");
@@ -42,6 +44,7 @@ const CarDetails = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalVisible1, setModalVisible1] = useState(false);
   const [profileid, setProfileid] = useState("");
+  const [visible,setVisible]=useState(false)
 
   const Data = useRoute();
   const Value = Data.params?.data;
@@ -121,11 +124,13 @@ const CarDetails = () => {
         landmark: landmark,
         images: selectedImage,
       });
-      console.warn(data);
+     
+      setVisible(true)
     } catch (error) {
       console.log("Error during login:", error.message);
     }
   };
+  const onClose =()=>{setVisible(false)}
 
   const POSTPROS = async () => {
     try {
@@ -144,14 +149,15 @@ const CarDetails = () => {
         landmark: landmark,
         images: selectedImage,
       });
-      console.warn(data);
+      //console.warn(data);
+      setVisible(true)
     } catch (error) {
       console.log("Error during login:", error.message);
     }
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#ffff" }}>
+    <><View style={{ flex: 1, backgroundColor: "#ffff" }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 100 }}
@@ -189,8 +195,7 @@ const CarDetails = () => {
                   name="trash-alt"
                   size={15}
                   style={{}}
-                  color={"tomato"}
-                />
+                  color={"tomato"} />
               </TouchableOpacity>
             </View>
             <TouchableOpacity>
@@ -212,10 +217,7 @@ const CarDetails = () => {
                   size={15}
                   style={{}}
                   color={"orange"}
-                  onPress={() =>
-                    setModalVisible1(!modalVisible1) + setOpen(true)
-                  }
-                />
+                  onPress={() => setModalVisible1(!modalVisible1) + setOpen(true)} />
               </View>
             </TouchableOpacity>
 
@@ -256,8 +258,7 @@ const CarDetails = () => {
                 dropdownStyles={{
                   marginLeft: responsiveWidth(5),
                   marginRight: responsiveWidth(5),
-                }}
-              />
+                }} />
             </View>
           </View>
 
@@ -280,8 +281,7 @@ const CarDetails = () => {
                 placeholderTextColor="black"
                 onChangeText={(txt) => setYears(txt)}
                 value={year}
-                keyboardType="numeric"
-              />
+                keyboardType="numeric" />
             </View>
           </View>
 
@@ -303,8 +303,7 @@ const CarDetails = () => {
                 placeholder="Number"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setNumber(txt)}
-                value={number}
-              />
+                value={number} />
             </View>
           </View>
 
@@ -333,8 +332,7 @@ const CarDetails = () => {
                   marginLeft: responsiveWidth(5),
                   marginRight: responsiveWidth(5),
                 }}
-                search={false}
-              />
+                search={false} />
             </View>
           </View>
 
@@ -363,8 +361,7 @@ const CarDetails = () => {
                   marginLeft: responsiveWidth(5),
                   marginRight: responsiveWidth(5),
                 }}
-                search={false}
-              />
+                search={false} />
             </View>
           </View>
 
@@ -387,8 +384,7 @@ const CarDetails = () => {
                 placeholderTextColor="black"
                 onChangeText={(txt) => setDriven(txt)}
                 value={driven}
-                keyboardType="numeric"
-              />
+                keyboardType="numeric" />
             </View>
           </View>
 
@@ -417,8 +413,7 @@ const CarDetails = () => {
                   marginLeft: responsiveWidth(5),
                   marginRight: responsiveWidth(5),
                 }}
-                search={false}
-              />
+                search={false} />
             </View>
           </View>
 
@@ -440,8 +435,7 @@ const CarDetails = () => {
                 placeholder="AdTitle"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setAdTitle(txt)}
-                value={adtitle}
-              />
+                value={adtitle} />
             </View>
           </View>
 
@@ -464,8 +458,7 @@ const CarDetails = () => {
                 placeholderTextColor="black"
                 onChangeText={(txt) => setPrice(txt)}
                 value={price}
-                keyboardType="numeric"
-              />
+                keyboardType="numeric" />
             </View>
           </View>
 
@@ -487,8 +480,7 @@ const CarDetails = () => {
                 placeholder="Address"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setAddress(txt)}
-                value={address}
-              />
+                value={address} />
             </View>
           </View>
 
@@ -510,8 +502,7 @@ const CarDetails = () => {
                 placeholder="landmark"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setLandmark(txt)}
-                value={landmark}
-              />
+                value={landmark} />
             </View>
           </View>
 
@@ -535,8 +526,7 @@ const CarDetails = () => {
                 onChangeText={(txt) => setDescription(txt)}
                 value={description}
                 numberOfLines={4}
-                multiline={true}
-              />
+                multiline={true} />
             </View>
           </View>
         </View>
@@ -556,8 +546,7 @@ const CarDetails = () => {
                 selected={assets}
                 selectedAlbum={album}
                 multiple
-                limit={5}
-              />
+                limit={5} />
             ) : (
               <TouchableOpacity onPress={() => setOpen(true)}>
                 <Text style={styles.button}>Open Image Picker</Text>
@@ -588,12 +577,13 @@ const CarDetails = () => {
                 padding: 12,
                 borderRadius: 50,
                 color: "#fff",
-              }}
-            />
+              }} />
           </TouchableOpacity>
         )}
       </View>
     </View>
+    <Alerts visible={visible} onClose={onClose} icon={"car"} title={'Application Submitted'} desc={"The Request For The Car Has Been Sent Successfully!"} /></>
+
   );
 };
 

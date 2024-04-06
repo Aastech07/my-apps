@@ -21,12 +21,12 @@ import { api } from "../Api";
 import axios from "axios";
 import { ImagePicker } from "expo-image-multiple-picker";
 import { useRoute } from "@react-navigation/native";
+import Alerts from "../Alertmodal/Alerts";
 const PgGuestHouse = () => {
-
   const data = useRoute();
-  const values = data.params?.data
+  const values = data.params?.data;
   const Num = data.params?.num;
-  const id = values?._id
+  const id = values?._id;
   const [address, setAddress] = useState("");
   const [landmark, setLandmark] = useState("");
   const [mealsIncluded, setMealsIncluded] = useState("");
@@ -44,6 +44,7 @@ const PgGuestHouse = () => {
   const [open, setOpen] = useState(false);
   const [album, setAlbum] = useState(undefined);
   const [assets, setAssets] = useState([]);
+  const [visible, setVisible] = useState(false);
   const [facilities, setFacilities] = useState({
     wifi: false,
     ac: false,
@@ -111,8 +112,6 @@ const PgGuestHouse = () => {
     }));
   };
 
-
-
   useEffect(() => {
     const getproperties = async () => {
       try {
@@ -120,28 +119,26 @@ const PgGuestHouse = () => {
         setAddress(data.address);
         setLandmark(data.landmark);
         setPropertyFor(data.subtype);
-        setFurnishing(data.furnishing)
+        setFurnishing(data.furnishing);
         setBedrooms(data.bedrooms);
         setBathrooms(data.bathrooms);
-        setCarParking(data.carParking)
+        setCarParking(data.carParking);
         setFacilities(data.facilities);
         setAdTitle(data.adTitle);
         setDescription(data.description);
         setPrice(data.price);
-        setMealsIncluded(data.mealsIncluded)
+        setMealsIncluded(data.mealsIncluded);
         setSelectedImage(data.images);
       } catch (error) {
-        console.error("Error fetching data:", error.message);
+        console.log("Error fetching data:", error.message);
       }
     };
     getproperties();
   }, []);
 
-
-
-
-
-
+  const onClose = () => {
+    setVisible(false);
+  };
 
   const UpdateForm = async () => {
     try {
@@ -165,7 +162,6 @@ const PgGuestHouse = () => {
       console.log("Error during login:", error.message);
     }
   };
-
 
   useEffect(() => {
     const getData = async () => {
@@ -219,7 +215,8 @@ const PgGuestHouse = () => {
         image: (selectedImage && selectedImage) || img,
         facilities: facilities,
       });
-      console.warn(data);
+
+      setVisible(true);
       ToastAndroid.show("Your Property Add !", ToastAndroid.SHORT);
     } catch (error) {
       console.log("Error during login:", error.message);
@@ -862,8 +859,11 @@ const PgGuestHouse = () => {
       </View>
 
       <View style={{ paddingBottom: 40, backgroundColor: "#fff" }}>
-      {Num == 1 ? (
-          <TouchableOpacity style={styles.loginBtn1} onPress={() => UpdateForm()}>
+        {Num == 1 ? (
+          <TouchableOpacity
+            style={styles.loginBtn1}
+            onPress={() => UpdateForm()}
+          >
             <Text style={{ color: "tomato", fontSize: 18, fontWeight: "500" }}>
               Update
             </Text>
@@ -887,6 +887,13 @@ const PgGuestHouse = () => {
           </TouchableOpacity>
         )}
       </View>
+      <Alerts
+        visible={visible}
+        onClose={onClose}
+        icon={"building"}
+        title={"Application Submitted"}
+        desc={"The Request For The Property Has Been Sent Successfully!"}
+      />
     </>
   );
 };

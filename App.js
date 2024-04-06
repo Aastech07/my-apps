@@ -83,6 +83,9 @@ import Settings from "./Screens/Settings";
 import CV from "./Screens/Form/ProfileEdit/CV";
 import MatrimonyFriends from "./Screens/Matrimony/MatrimonyFriends";
 import MatrimonyProfileChats from "./Screens/Matrimony/MatrimonyProfileChats";
+import HelpAndFAQs from "./Screens/HelpAndFAQs";
+import Alerts from "./Screens/Alertmodal/Alerts";
+import Messages from "./Screens/Matrimony/Messages";
 function App() {
   const [data, setData] = React.useState();
   useEffect(() => {
@@ -588,7 +591,31 @@ function App() {
                 }}
                 component={MatrimonyProfileChats}
               />
+              <Stack.Screen
+                name="HelpAndFAQs"
+                options={{
+                  headerShown: true,
+                  title: "Help&FAQs",
+                }}
+                component={HelpAndFAQs}
+              />
+              <Stack.Screen
+                name="Alerts"
+                options={{
+                  headerShown: true,
+                  title: "Alert",
+                }}
+                component={Alerts}
+              />
 
+              <Stack.Screen
+                name="Messages"
+                options={{
+                  headerShown: true,
+                  title: "Message",
+                }}
+                component={Messages}
+              />
               <Stack.Screen name="directroy" component={Directroydata} />
 
               <Stack.Screen name="Verification" component={OtpScreen} />

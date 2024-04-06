@@ -163,7 +163,7 @@ const NavigationView = () => {
 
         <TouchableOpacity
           style={styles.item}
-          onPress={() => navigation.navigate("Helps&FAQs")}
+          onPress={() => navigation.navigate("HelpAndFAQs")}
         >
           <FontAwesome
             name="question-circle"

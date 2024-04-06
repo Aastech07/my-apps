@@ -30,17 +30,27 @@ const Notification = ({ navigation }) => {
   }, []);
 
   const handleNotificationPress = async (item) => {
-    console.warn(item);
+    console.log({ item });
     await markNotificationAsRead(item);
     function removeNewAndPost(inputString) {
       return inputString.replace(/New|Post/g, "").replace(/\s+/g, "");
     }
     const changedString = removeNewAndPost(item.title);
-    console.warn(changedString);
+    const properties = ["LandPlot", "PgGuestHouse", "Property", "ShopOffice"];
+    const buyAndSell = [
+      "Phone",
+      "Accessories",
+      "Tablets",
+      "Bicycles",
+      "Bike",
+      "Car",
+    ];
     if (changedString === "Blog") {
       navigation.navigate("NotificationBlogs", { data: item });
-    } else if (changedString === "LandPlot") {
+    } else if (properties.includes(changedString)) {
       navigation.navigate("Details", { data: item });
+    } else if (buyAndSell.includes(changedString)) {
+      navigation.navigate("ByDetalis", { data: item });
     }
   };
 

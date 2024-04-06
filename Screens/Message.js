@@ -1,19 +1,28 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Chat, defaultTheme } from "@flyerhq/react-native-chat-ui";
-import * as ImagePicker from "expo-image-picker";
 import FontAwesome5 from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import { responsiveWidth } from "react-native-responsive-dimensions";
-import { View, Text, DrawerLayoutAndroid } from "react-native";
+import { View, Text, DrawerLayoutAndroid, Button } from "react-native";
 import { StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { GiftedChat } from "react-native-gifted-chat";
-
+import { firestore } from "../firebase";
 const Message = () => {
   const [messages, setMessages] = useState([]);
   const navigation = useNavigation();
   const drawer = React.useRef(null);
+
+  const registerUser = async () => {
+    try {
+      await firestore.collection("user").add({
+        messages,
+      });
+      console.warn("User added successfully!");
+    } catch (error) {
+      console.error("Error adding user: ", error);
+    }
+  };
 
   useEffect(() => {
     setMessages([
@@ -31,6 +40,7 @@ const Message = () => {
   }, []);
 
   const onSend = useCallback((messages = []) => {
+    registerUser()
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, messages)
     );
@@ -228,14 +238,16 @@ const Message = () => {
             </Text>
           </View>
         </View>
+        <Button title="clike " onPress={registerUser} color={"orange"} />
+
         <GiftedChat
-        
-      messages={messages}
-      onSend={messages => onSend(messages)}
-      user={{
-        _id: 1,
-      }}
-    />
+          messages={messages}
+          onSend={(messages) => onSend(messages)}
+         
+          user={{
+            _id: 1,
+          }}
+        />
       </SafeAreaProvider>
     </DrawerLayoutAndroid>
   );

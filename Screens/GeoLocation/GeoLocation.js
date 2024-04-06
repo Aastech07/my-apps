@@ -23,7 +23,7 @@ export const GeoLocation = async () => {
   const lonlat = await LonLat();
   try {
     const { data } = await axios.get(
-      `http://api.openweathermap.org/geo/1.0/reverse?lat=${lonlat.latitude}&lon=${lonlat.longitude}&limit=1&appid=18ec223fd958f8825740ea82bcf3a994` // to get city name
+      `https://api.openweathermap.org/geo/1.0/reverse?lat=${lonlat.latitude}&lon=${lonlat.longitude}&limit=1&appid=18ec223fd958f8825740ea82bcf3a994` // to get city name
     );
     if (data && data[0].name) {
       loc = data[0].name;

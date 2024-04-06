@@ -37,6 +37,10 @@ const MemberSearch = () => {
     try {
       const { data } = await axios.get(`${api}/profiles`, {});
       setData(data);
+      const arr = [];
+      data.filter((e) => arr.push(e.image));
+      console.log(arr);
+      console.log(data[0].image);
     } catch (error) {
       console.log("Error during login:", error.message);
     }
@@ -78,7 +82,13 @@ const MemberSearch = () => {
         onPress={() => navigation.navigate("MemberProfile", { data: item })}
       >
         <Text style={styles.itemText}>{item.firstName}</Text>
-        <Image style={styles.itemImage} source={{ uri: item.url }} />
+        <Image
+          style={styles.itemImage}
+          source={{
+            uri:
+              item.url != "undefined" ? item.url : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJvmnwX4X7IXeaRGd0tWqAf4jik5rAghBEsllvMDyvHg&s",
+          }}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -158,7 +168,6 @@ const MemberSearch = () => {
           </View>
         </View>
       </Modal>
-      
     </ScrollView>
   );
 };

@@ -142,7 +142,29 @@ const MyMatches = () => {
                       {calculateAge(item.profileId.dateOfBirth)} yrs,{" "}
                       {item.height}
                     </Text>
-                 
+                    <Text
+                      style={{
+                        fontWeight: "600",
+                        fontSize: 13,
+                        color: "#fff",
+                        marginBottom: 5,
+                        right:90
+                      }}
+                    >
+                      {item.profileId.profession}
+                    </Text>
+                    <Text
+                      style={{
+                        fontWeight: "600",
+                        fontSize: 13,
+                        color: "#fff",
+                        marginBottom: 5,
+                        right:90
+                      }}
+                    >
+                      {item.profileId.address.city} ||{" "}
+                      {item.profileId.address.street}
+                    </Text>
                   </Animated.View>
                 </View>
               </TouchableWithoutFeedback>
@@ -195,18 +217,22 @@ const styles = StyleSheet.create({
   },
   profileDetails: {
     position: "absolute",
-    left: responsiveWidth(13),
-    bottom: responsiveHeight(15),
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: 9,
+    paddingHorizontal: 98,
+    bottom: 0,
   },
   profileName: {
     fontWeight: "600",
-    fontSize: 16,
-    color: "#f2f2f2",
+    fontSize: 18,
+    color: "#ffff",
     marginBottom: 5,
+    right:90
   },
   profileAge: {
     fontWeight: "600",
-    fontSize: 14,
+    fontSize: 12,
     color: "#f2f2f2",
+    right:90
   },
 });

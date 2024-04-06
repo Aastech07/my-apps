@@ -32,24 +32,7 @@ const SignUp = () => {
     { key: "2", value: "Mother" },
     { key: "3", value: "Son" },
     { key: "4", value: "Daughter" },
-    { key: "5", value: "Grandfather" },
-    { key: "7", value: "Grandmother" },
-    { key: "8", value: "Uncle" },
-    { key: "9", value: "Aunt" },
-    { key: "10", value: "Brother" },
-    { key: "11", value: "Cousin" },
-    { key: "12", value: "Nephew" },
-    { key: "13", value: "Niece" },
-    { key: "14", value: "Husband" },
-    { key: "15", value: "Wife" },
-    { key: "16", value: "Partner" },
-    { key: "17", value: "Fiance" },
-    { key: "18", value: "Fiancee" },
-    { key: "19", value: "Ex-Spouse" },
-    { key: "20", value: "In-law" },
-    { key: "21", value: "Guardian" },
-    { key: "22", value: "Godfather" },
-    { key: "23", value: "Godmother" },
+ 
   ];
   const loginUser = async () => {
     try {

@@ -20,6 +20,7 @@ import { ImagePicker } from "expo-image-multiple-picker";
 import { api } from "../../Api";
 import { Bicycles } from "./Api";
 import { useRoute } from "@react-navigation/native";
+import Alerts from "../../Alertmodal/Alerts";
 
 const BicycleDetails = () => {
   const [adtitle, setAdTitle] = useState("");
@@ -34,6 +35,7 @@ const BicycleDetails = () => {
   const [modalVisible1, setModalVisible1] = useState(false);
   const [profileid, setProfileid] = useState("");
   const [brand, setBrand] = useState("");
+  const [visible,setVisible]=useState(false)
 
   const Data = useRoute();
   const Value = Data.params?.data;
@@ -88,6 +90,7 @@ const BicycleDetails = () => {
   }, []);
 
 
+  const onClose =()=>{setVisible(false)}
 
   const POSTPRO = async () => {
     try {
@@ -102,6 +105,8 @@ const BicycleDetails = () => {
         images: selectedImage,
       });
       console.warn(data);
+      setVisible(true)
+
       // ToastAndroid.show("Your Property Add !", ToastAndroid.SHORT);
     } catch (error) {
       console.log("Error during login:", error.message);
@@ -125,7 +130,7 @@ const BicycleDetails = () => {
     }
   };
   return (
-    <View style={{ flex: 1, backgroundColor: "#ffff" }}>
+    <><View style={{ flex: 1, backgroundColor: "#ffff" }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 90 }}
@@ -163,8 +168,7 @@ const BicycleDetails = () => {
                   name="trash-alt"
                   size={15}
                   style={{}}
-                  color={"tomato"}
-                />
+                  color={"tomato"} />
               </TouchableOpacity>
             </View>
             <TouchableOpacity>
@@ -186,10 +190,7 @@ const BicycleDetails = () => {
                   size={15}
                   style={{}}
                   color={"orange"}
-                  onPress={() =>
-                    setModalVisible1(!modalVisible1) + setOpen(true)
-                  }
-                />
+                  onPress={() => setModalVisible1(!modalVisible1) + setOpen(true)} />
               </View>
             </TouchableOpacity>
 
@@ -231,8 +232,7 @@ const BicycleDetails = () => {
                   marginLeft: responsiveWidth(5),
                   marginRight: responsiveWidth(5),
                 }}
-                search={false}
-              />
+                search={false} />
             </View>
           </View>
 
@@ -254,8 +254,7 @@ const BicycleDetails = () => {
                 placeholder="AdTitle"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setAdTitle(txt)}
-                value={adtitle}
-              />
+                value={adtitle} />
             </View>
           </View>
 
@@ -278,8 +277,7 @@ const BicycleDetails = () => {
                 placeholderTextColor="black"
                 onChangeText={(txt) => setPrice(txt)}
                 value={price}
-                keyboardType="numeric"
-              />
+                keyboardType="numeric" />
             </View>
           </View>
 
@@ -301,8 +299,7 @@ const BicycleDetails = () => {
                 placeholder="Address"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setAddress(txt)}
-                value={address}
-              />
+                value={address} />
             </View>
           </View>
 
@@ -324,8 +321,7 @@ const BicycleDetails = () => {
                 placeholder="landmark"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setLandmark(txt)}
-                value={landmark}
-              />
+                value={landmark} />
             </View>
           </View>
 
@@ -349,8 +345,7 @@ const BicycleDetails = () => {
                 onChangeText={(txt) => setDescription(txt)}
                 value={description}
                 numberOfLines={4}
-                multiline={true}
-              />
+                multiline={true} />
             </View>
           </View>
         </View>
@@ -369,8 +364,7 @@ const BicycleDetails = () => {
                 selected={assets}
                 selectedAlbum={album}
                 multiple
-                limit={5}
-              />
+                limit={5} />
             ) : (
               <TouchableOpacity onPress={() => setOpen(true)}>
                 <Text style={styles.button}>Open Image Picker</Text>
@@ -401,12 +395,12 @@ const BicycleDetails = () => {
                 padding: 12,
                 borderRadius: 50,
                 color: "#fff",
-              }}
-            />
+              }} />
           </TouchableOpacity>
         )}
       </View>
-    </View>
+    </View><Alerts visible={visible} onClose={onClose} icon={"bicycle"} title={'Application Submitted'} desc={"The Request For The Bicycle Has Been Sent Successfully!"} /></>
+
   );
 };
 

@@ -33,6 +33,7 @@ const EducationDetails = () => {
   const [degree, setDegree] = useState("");
   const [institution, setInstitution] = useState("");
   const [modalVisible1, setModalVisible1] = useState(false);
+  const [educationData, setEducationData] = useState([]);
   const img =
     "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.1700460183.1708646400&semt=ais";
 
@@ -46,10 +47,30 @@ const EducationDetails = () => {
           const { data } = await axios.get(`${api}/profiles/${profileId}`);
           if (data) {
             setProfileData(data);
+            setEducationData([
+              {
+                completionYear: "2024",
+                course: "",
+                educationType: "Post Graduation",
+                institution: "Tolani college of commerce ",
+              },
+              {
+                completionYear: "2024",
+                course: "",
+                educationType: "HSC",
+                institution: "Vzknfgkzgkkg",
+              },
+              {
+                completionYear: "2024",
+                course: "Bachelor of Homeopathic Medicine and Surgery (BHMS)",
+                educationType: "Graduation",
+                institution: " Vzmgkgzhk",
+              },
+            ]);
             setID(data._id);
-            setDegree(data.education.degree);
-            setInstitution(data.education.institution);
-            setCompletionYear(data.education.completionYear);
+            setDegree(data?.education?.degree);
+            setInstitution(data?.education?.institution);
+            setCompletionYear(data?.education?.completionYear);
 
             // Initialize editableFields state with all fields set to false
             const fields = {};
@@ -77,43 +98,57 @@ const EducationDetails = () => {
   };
 
   const renderDetailItem = (label, value, key) => {
-    const isEditing = editableFields[key];
+    // const isEditing = editableFields[key];
 
-    if (isEditing) {
-      return (
-        <View style={styles.detailItem}>
-          <Text style={styles.label}>{label}:</Text>
+    // if (isEditing) {
+    //   return (
+    //     <View style={styles.detailItem}>
+    //       <Text style={styles.label}>{label}:</Text>
 
-          <TextInput
-            style={styles.textInput}
-            value={value}
-            onChangeText={(text) => handleInputChange(key, text)}
-          />
+    //       <TextInput
+    //         style={styles.textInput}
+    //         value={value}
+    //         onChangeText={(text) => handleInputChange(key, text)}
+    //       />
 
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => handleSave(key)}
-          >
-            <FontAwesome5Icon name="save" size={20} color="#007BFF" />
-          </TouchableOpacity>
-        </View>
-      );
-    }
+    //       <TouchableOpacity
+    //         style={styles.iconButton}
+    //         onPress={() => handleSave(key)}
+    //       >
+    //         <FontAwesome5Icon name="save" size={20} color="#007BFF" />
+    //       </TouchableOpacity>
+    //     </View>
+    //   );
+    // }
 
     return (
       <View style={styles.detailItem}>
         <Text style={styles.label}>{label}:</Text>
         <Text style={styles.value}>{value}</Text>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.iconButton}
           onPress={() => handleEdit(key)}
         >
           <FontAwesome5Icon name="edit" size={20} color="#777" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     );
   };
 
+ const edu =  {education:[{completionYear: {
+    type: String,
+  },
+  course: {
+    type: String,
+    default: ""
+  },
+  educationType: {
+    type: String,
+  },
+  institution: {
+    type: String
+  }
+}]}
   const handleEdit = (key) => {
     setEditableFields({ ...editableFields, [key]: true });
   };
@@ -131,8 +166,6 @@ const EducationDetails = () => {
       };
 
       const { data } = await axios.put(`${api}/profiles/${id}`, updatedData);
-      console.warn("Profile updated:", data);
-
       // Update profileData with the saved data
       setProfileData(data);
     } catch (error) {
@@ -174,7 +207,7 @@ const EducationDetails = () => {
   return (
     <ScrollView style={styles.container}>
       {!profileData ? (
-        <EducationEditForm />
+        <EducationEditForm education={educationData} />
       ) : (
         <>
           <View style={styles.profileHeader}>
@@ -186,17 +219,34 @@ const EducationDetails = () => {
               <Text style={styles.profession}>{profileData?.profession}</Text>
             </View>
           </View>
-
           <View style={styles.detailsContainer}>
             <Text style={styles.sectionTitle}>Education Details</Text>
-            {renderDetailItem("Degree", degree, "degree")}
-            {renderDetailItem("Institution", institution, "institution")}
-            {renderDetailItem(
-              "Completion Year",
-              completionYear,
-              "completionYear"
-            )}
+            {educationData?.map((item, index) => (
+              <View style={{borderWidth:1,borderColor:'gray',marginVertical:10,padding:10,borderRadius:10,}}>
+                <React.Fragment key={index}>
+                  {renderDetailItem("Type", item.educationType, index)}
+                  {renderDetailItem(
+                    "Institution",
+                    item.institution,
+                    index
+                  )}
+                  {item.course &&
+                    renderDetailItem("Course", item?.course, index)}
+                  {renderDetailItem(
+                    "Completion Year",
+                    item.completionYear,
+                    "completionYear"
+                  )}
+                  {/* <Text>
+                    -----------------------------------------------------------------
+                  </Text> */}
+                </React.Fragment>
+              </View>
+            ))}
           </View>
+          <TouchableOpacity onPress={() => setProfileData(false)}>
+            <Text>Update Education</Text>
+          </TouchableOpacity>
         </>
       )}
     </ScrollView>

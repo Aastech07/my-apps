@@ -28,9 +28,7 @@ const MatrimonyData = () => {
   const Data = useRoute();
   const Value = Data.params?.data;
   const id = Value?._id;
-  console.warn(id);
 
-  // console.warn({ matrimonial:id });
   const [show, setShow] = useState(false);
   const [profileId, setProfileID] = useState("");
   const [filteredData, setFilteredData] = useState("");

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -25,8 +25,10 @@ const MatrimonyProfileChats = () => {
   const navigation = useNavigation();
   const Data = useRoute();
   const Value = Data.params?.data;
+  const ID = Data.params?.id;
 
-  // console.warn({ matrimonial:id });
+
+
   const [show, setShow] = useState(false);
 
   const handleNavigateBack = () => {
@@ -117,7 +119,6 @@ const MatrimonyProfileChats = () => {
           entering={FadeInLeft.duration(500).damping()}
           style={{ left: responsiveWidth(17), bottom: 200 }}
         >
-         
           <Text
             style={{ fontWeight: "600", fontSize: 16, color: "#fff" }}
           ></Text>
@@ -927,7 +928,7 @@ const MatrimonyProfileChats = () => {
       <View
         style={{ paddingBottom: 17, elevation: 3, backgroundColor: "#fff" }}
       >
-        <TouchableOpacity style={styles.loginBtn}>
+        <TouchableOpacity style={styles.loginBtn} onPress={()=>navigation.navigate("Messages",{data:Value,id:ID})}>
           <Text style={{ color: "tomato", fontSize: 18, fontWeight: "500" }}>
             Chat
           </Text>

@@ -20,6 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { api } from "../../Api";
 import { useRoute } from "@react-navigation/native";
+import Alerts from "../../Alertmodal/Alerts";
 const MobileDetails = () => {
   
   const [adtitle, setAdTitle] = useState("");
@@ -34,6 +35,7 @@ const MobileDetails = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [profileid, setProfileid] = useState("");
   const [brand, setBrand] = useState("");
+  const [visible,setVisible]=useState(false)
 
   const Data = useRoute();
   const Value = Data.params?.data;
@@ -90,25 +92,27 @@ const MobileDetails = () => {
    
   //65fd50a2335e2bd795c643a0
   const POSTPRO = async () => {
-    console.warn(profileid);
+  
     try {
-      const { data } = await axios.post(`${api}/phones`, {
-        profileId: profileid,
-        brand: brand,
-        adTitle: adtitle,
-        description: description,
-        price: price,
-        address: address,
-        landmark: landmark,
-        //  images: selectedImage,
-      });
-      console.warn(data);
-      // ToastAndroid.show("Your Phone Add !", ToastAndroid.SHORT);
+     const { data } = await axios.post(`${api}/phones`, {
+       profileId: profileid,
+       brand: brand,
+       adTitle: adtitle,
+       description: description,
+       price: price,
+       address: address,
+       landmark: landmark,
+       //  images: selectedImage,
+     });
+    console.warn(data);
+      setVisible(true)
+
     } catch (error) {
       console.log("Error during login:", error.message);
     }
   };
 
+  const onClose =()=>{setVisible(false)}
 
 
   const POSTPROS = async () => {
@@ -129,7 +133,7 @@ const MobileDetails = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#ffff" }}>
+    <><View style={{ flex: 1, backgroundColor: "#ffff" }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 90 }}
@@ -167,8 +171,7 @@ const MobileDetails = () => {
                   name="trash-alt"
                   size={15}
                   style={{}}
-                  color={"tomato"}
-                />
+                  color={"tomato"} />
               </TouchableOpacity>
             </View>
             <TouchableOpacity>
@@ -190,10 +193,7 @@ const MobileDetails = () => {
                   size={15}
                   style={{}}
                   color={"orange"}
-                  onPress={() =>
-                    setModalVisible1(!modalVisible1) + setOpen(true)
-                  }
-                />
+                  onPress={() => setModalVisible1(!modalVisible1) + setOpen(true)} />
               </View>
             </TouchableOpacity>
 
@@ -234,8 +234,7 @@ const MobileDetails = () => {
                 dropdownStyles={{
                   marginLeft: responsiveWidth(5),
                   marginRight: responsiveWidth(5),
-                }}
-              />
+                }} />
             </View>
           </View>
 
@@ -257,8 +256,7 @@ const MobileDetails = () => {
                 placeholder="AdTitle"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setAdTitle(txt)}
-                value={adtitle}
-              />
+                value={adtitle} />
             </View>
           </View>
 
@@ -281,8 +279,7 @@ const MobileDetails = () => {
                 placeholderTextColor="black"
                 onChangeText={(txt) => setPrice(txt)}
                 value={price}
-                keyboardType="numeric"
-              />
+                keyboardType="numeric" />
             </View>
           </View>
 
@@ -304,8 +301,7 @@ const MobileDetails = () => {
                 placeholder="Address"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setAddress(txt)}
-                value={address}
-              />
+                value={address} />
             </View>
           </View>
 
@@ -327,8 +323,7 @@ const MobileDetails = () => {
                 placeholder="landmark"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setLandmark(txt)}
-                value={landmark}
-              />
+                value={landmark} />
             </View>
           </View>
 
@@ -352,8 +347,7 @@ const MobileDetails = () => {
                 onChangeText={(txt) => setDescription(txt)}
                 value={description}
                 numberOfLines={4}
-                multiline={true}
-              />
+                multiline={true} />
             </View>
           </View>
         </View>
@@ -373,8 +367,7 @@ const MobileDetails = () => {
                 selected={assets}
                 selectedAlbum={album}
                 multiple
-                limit={5}
-              />
+                limit={5} />
             ) : (
               <TouchableOpacity onPress={() => setOpen(true)}>
                 <Text style={styles.button}>Open Image Picker</Text>
@@ -405,12 +398,11 @@ const MobileDetails = () => {
                 padding: 12,
                 borderRadius: 50,
                 color: "#fff",
-              }}
-            />
+              }} />
           </TouchableOpacity>
         )}
       </View>
-    </View>
+    </View><Alerts visible={visible} onClose={onClose} icon={"mobile"} title={'Application Submitted'} desc={"The Request For The Mobile Has Been Sent Successfully!"} /></>
   );
 };
 

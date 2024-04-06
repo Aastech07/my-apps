@@ -20,6 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { api } from "../../Api";
 import { useRoute } from "@react-navigation/native";
+import Alerts from "../../Alertmodal/Alerts";
 const Accessories = () => {
   const [adtitle, setAdTitle] = useState("");
   const [price, setPrice] = useState("");
@@ -33,11 +34,13 @@ const Accessories = () => {
   const [profileid, setProfileid] = useState("");
   const [brand, setBrand] = useState("");
   const [modalVisible1, setModalVisible1] = useState(false);
+  const [visible,setVisible]=useState(false)
 
   const Data = useRoute();
   const Value = Data.params?.data;
   const Num = Data.params?.num;
 
+  const onClose =()=>{setVisible(false)}
 
 
   const handleSave = (selectedAssets) => {
@@ -87,8 +90,9 @@ const Accessories = () => {
         landmark: landmark,
       //  images: selectedImage,
       });
-      console.warn(data);
+    //  console.warn(data);
       // ToastAndroid.show("Your Property Add !", ToastAndroid.SHORT);
+      setVisible(true)
     } catch (error) {
       console.log("Error during login:", error.message);
     }
@@ -128,7 +132,7 @@ const Accessories = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#ffff" }}>
+    <><View style={{ flex: 1, backgroundColor: "#ffff" }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 90 }}
@@ -166,8 +170,7 @@ const Accessories = () => {
                   name="trash-alt"
                   size={15}
                   style={{}}
-                  color={"tomato"}
-                />
+                  color={"tomato"} />
               </TouchableOpacity>
             </View>
             <TouchableOpacity>
@@ -189,10 +192,7 @@ const Accessories = () => {
                   size={15}
                   style={{}}
                   color={"orange"}
-                  onPress={() =>
-                    setModalVisible1(!modalVisible1) + setOpen(true)
-                  }
-                />
+                  onPress={() => setModalVisible1(!modalVisible1) + setOpen(true)} />
               </View>
             </TouchableOpacity>
 
@@ -234,8 +234,7 @@ const Accessories = () => {
                   marginLeft: responsiveWidth(5),
                   marginRight: responsiveWidth(5),
                 }}
-                search={false}
-              />
+                search={false} />
             </View>
           </View>
 
@@ -257,8 +256,7 @@ const Accessories = () => {
                 placeholder="AdTitle"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setAdTitle(txt)}
-                value={adtitle}
-              />
+                value={adtitle} />
             </View>
           </View>
 
@@ -281,8 +279,7 @@ const Accessories = () => {
                 placeholderTextColor="black"
                 onChangeText={(txt) => setPrice(txt)}
                 value={price}
-                keyboardType="numeric"
-              />
+                keyboardType="numeric" />
             </View>
           </View>
 
@@ -304,8 +301,7 @@ const Accessories = () => {
                 placeholder="Address"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setAddress(txt)}
-                value={address}
-              />
+                value={address} />
             </View>
           </View>
 
@@ -327,8 +323,7 @@ const Accessories = () => {
                 placeholder="landmark"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setLandmark(txt)}
-                value={landmark}
-              />
+                value={landmark} />
             </View>
           </View>
 
@@ -352,8 +347,7 @@ const Accessories = () => {
                 onChangeText={(txt) => setDescription(txt)}
                 value={description}
                 numberOfLines={4}
-                multiline={true}
-              />
+                multiline={true} />
             </View>
           </View>
         </View>
@@ -373,8 +367,7 @@ const Accessories = () => {
                 selected={assets}
                 selectedAlbum={album}
                 multiple
-                limit={5}
-              />
+                limit={5} />
             ) : (
               <TouchableOpacity onPress={() => setOpen(true)}>
                 <Text style={styles.button}>Open Image Picker</Text>
@@ -385,7 +378,7 @@ const Accessories = () => {
       </ScrollView>
 
       <View style={{ paddingBottom: 20 }}>
-      {Num == 1 ? (
+        {Num == 1 ? (
           <TouchableOpacity style={styles.loginBtn1} onPress={() => POSTPROS()}>
             <Text style={{ color: "tomato", fontSize: 18, fontWeight: "500" }}>
               Update
@@ -405,12 +398,11 @@ const Accessories = () => {
                 padding: 12,
                 borderRadius: 50,
                 color: "#fff",
-              }}
-            />
+              }} />
           </TouchableOpacity>
         )}
       </View>
-    </View>
+    </View><Alerts visible={visible} onClose={onClose} icon={"laptop"} title={'Application Submitted'} desc={"The Request For The Accessories Has Been Sent Successfully!"} /></>
   );
 };
 

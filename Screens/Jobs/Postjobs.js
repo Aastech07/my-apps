@@ -109,8 +109,11 @@ const Postjobs = () => {
 
   const POSTPRO = async () => {
     try {
+      console.log(userid)
+      const profileId= await AsyncStorage.getItem('profileid')
       const { data } = await axios.post(`${api}/jobs`, {
         userId: userid,
+        profileId,
         salary: salary,
         title: title,
         contactEmail: email,
@@ -127,7 +130,7 @@ const Postjobs = () => {
       });
       console.warn(data);
     } catch (error) {
-      console.log("Error during login:", error.message);
+      console.log("Error during add job:", error.message);
     }
   };
 

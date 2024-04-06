@@ -21,7 +21,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ImagePicker } from "expo-image-multiple-picker";
 import { useRoute } from "@react-navigation/native";
-
+import Alerts from "../../Alertmodal/Alerts";
 //65fd59da335e2bd795c7e84a
 const ElectronicsDetails = () => {
   const [brand, setBrand] = useState("");
@@ -37,6 +37,7 @@ const ElectronicsDetails = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalVisible1, setModalVisible1] = useState(false);
   const [profileid, setProfileid] = useState("");
+  const [visible,setVisible]=useState(false)
 
   const Data = useRoute();
   const Value = Data.params?.data;
@@ -70,6 +71,7 @@ const ElectronicsDetails = () => {
   const handleSelectAlbum = (selectedAlbum) => {
     setAlbum(selectedAlbum);
   };
+  const onClose =()=>{setVisible(false)}
 
   const removeImage = () => {
     setAssets("");
@@ -93,19 +95,19 @@ const ElectronicsDetails = () => {
 
   const POSTPRO = async () => {
     try {
-      const { data } = await axios.post(`${api}/electronics`, {
-        profileId: profileid,
-        electronicsAndAppliances: brand,
-        address: address,
-        landmark: landmark,
-        used: used,
-        adTitle: adtitle,
-        description: description,
-        price: price,
-        images: selectedImage,
-      });
-      console.warn(data);
-      // ToastAndroid.show("Your Property Add !", ToastAndroid.SHORT);
+     // const { data } = await axios.post(`${api}/electronics`, {
+     //   profileId: profileid,
+     //   electronicsAndAppliances: brand,
+     //   address: address,
+     //   landmark: landmark,
+     //   used: used,
+     //   adTitle: adtitle,
+     //   description: description,
+     //   price: price,
+     //   images: selectedImage,
+     // });
+     // console.warn(data);
+     setVisible(true)
     } catch (error) {
       console.log("Error during login:", error.message);
     }
@@ -130,7 +132,7 @@ const ElectronicsDetails = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#ffff" }}>
+    <><View style={{ flex: 1, backgroundColor: "#ffff" }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 90 }}
@@ -168,8 +170,7 @@ const ElectronicsDetails = () => {
                   name="trash-alt"
                   size={15}
                   style={{}}
-                  color={"tomato"}
-                />
+                  color={"tomato"} />
               </TouchableOpacity>
             </View>
             <TouchableOpacity>
@@ -191,10 +192,7 @@ const ElectronicsDetails = () => {
                   size={15}
                   style={{}}
                   color={"orange"}
-                  onPress={() =>
-                    setModalVisible1(!modalVisible1) + setOpen(true)
-                  }
-                />
+                  onPress={() => setModalVisible1(!modalVisible1) + setOpen(true)} />
               </View>
             </TouchableOpacity>
 
@@ -235,8 +233,7 @@ const ElectronicsDetails = () => {
                 dropdownStyles={{
                   marginLeft: responsiveWidth(5),
                   marginRight: responsiveWidth(5),
-                }}
-              />
+                }} />
             </View>
           </View>
 
@@ -265,8 +262,7 @@ const ElectronicsDetails = () => {
                   marginLeft: responsiveWidth(5),
                   marginRight: responsiveWidth(5),
                 }}
-                search={false}
-              />
+                search={false} />
             </View>
           </View>
 
@@ -288,8 +284,7 @@ const ElectronicsDetails = () => {
                 placeholder="AdTitle"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setAdTitle(txt)}
-                value={adtitle}
-              />
+                value={adtitle} />
             </View>
           </View>
 
@@ -312,8 +307,7 @@ const ElectronicsDetails = () => {
                 placeholderTextColor="black"
                 onChangeText={(txt) => setPrice(txt)}
                 value={price}
-                keyboardType="numeric"
-              />
+                keyboardType="numeric" />
             </View>
           </View>
 
@@ -335,8 +329,7 @@ const ElectronicsDetails = () => {
                 placeholder="Address"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setAddress(txt)}
-                value={address}
-              />
+                value={address} />
             </View>
           </View>
 
@@ -358,8 +351,7 @@ const ElectronicsDetails = () => {
                 placeholder="landmark"
                 placeholderTextColor="black"
                 onChangeText={(txt) => setLandmark(txt)}
-                value={landmark}
-              />
+                value={landmark} />
             </View>
           </View>
 
@@ -383,8 +375,7 @@ const ElectronicsDetails = () => {
                 onChangeText={(txt) => setDescription(txt)}
                 value={description}
                 numberOfLines={4}
-                multiline={true}
-              />
+                multiline={true} />
             </View>
           </View>
         </View>
@@ -404,8 +395,7 @@ const ElectronicsDetails = () => {
                 selected={assets}
                 selectedAlbum={album}
                 multiple
-                limit={5}
-              />
+                limit={5} />
             ) : (
               <TouchableOpacity onPress={() => setOpen(true)}>
                 <Text style={styles.button}>Open Image Picker</Text>
@@ -436,12 +426,15 @@ const ElectronicsDetails = () => {
                 padding: 12,
                 borderRadius: 50,
                 color: "#fff",
-              }}
-            />
+              }} />
           </TouchableOpacity>
         )}
       </View>
     </View>
+    <Alerts visible={visible} onClose={onClose} icon={"laptop"} title={'Application Submitted'} desc={"The Request For The Electronics Has Been Sent Successfully!"} /></>
+
+
+
   );
 };
 

@@ -120,7 +120,7 @@ const Matrimony = () => {
 
   const renderTab = (tabName, iconName) => {
     const isActive = activeTab === tabName;
-  
+
     // Check if the tab is 'View' and data is null or empty, then don't show the tab
     const showTab = !(tabName === "Request" && (!data || data.length === 0));
     const showTab1 = !(tabName === "Friends" && (!hide || hide.length === 0));
@@ -146,7 +146,6 @@ const Matrimony = () => {
       </TouchableOpacity>
     );
   };
-  
 
   return (
     <View style={styles.container}>

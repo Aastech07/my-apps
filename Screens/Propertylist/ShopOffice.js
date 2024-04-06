@@ -21,7 +21,7 @@ import { api } from "../Api";
 import axios from "axios";
 import { ImagePicker } from "expo-image-multiple-picker";
 import { useRoute } from "@react-navigation/native";
-
+import Alerts from "../Alertmodal/Alerts";
 const ShopOffice = () => {
 
   const data = useRoute();
@@ -54,6 +54,7 @@ const ShopOffice = () => {
   const [carpetArea, setCarpetArea] = useState("");
   const [washrooms, setWashrooms] = useState("");
   const [maintenance, setMaintenance] = useState("");
+  const [visible,setVisible]=useState(false)
 
   const img =
     "https://i.pinimg.com/originals/07/8c/71/078c71955fe352c544e395fbafddf82c.jpg";
@@ -84,6 +85,8 @@ const ShopOffice = () => {
       [key]: !prevFacilities[key],
     }));
   };
+
+  const onClose =()=>{setVisible(false)}
 
   useEffect(() => {
     const getproperties = async () => {
@@ -171,23 +174,24 @@ const ShopOffice = () => {
 
   const POSTPRO = async () => {
     try {
-      const { data } = await axios.post(`${api}/shopOffices`, {
-        profileId: profileid,
-        shopOfficeType: propertyFor,
-        address: address,
-        landmark: landmark,
-        furnishing: furnishing,
-        carParking: carParking,
-        adTitle: adTitle,
-        description: description,
-        price: price,
-        image: (selectedImage && selectedImage) || img,
-        facilities: facilities,
-        superBuiltupArea: superBuiltupArea,
-        carpetArea: carpetArea,
-        maintenance: maintenance,
-        washrooms: washrooms,
-      });
+    const { data } = await axios.post(`${api}/shopOffices`, {
+      profileId: profileid,
+      shopOfficeType: propertyFor,
+      address: address,
+      landmark: landmark,
+      furnishing: furnishing,
+      carParking: carParking,
+      adTitle: adTitle,
+      description: description,
+      price: price,
+      image: (selectedImage && selectedImage) || img,
+      facilities: facilities,
+      superBuiltupArea: superBuiltupArea,
+      carpetArea: carpetArea,
+      maintenance: maintenance,
+      washrooms: washrooms,
+    });
+      setVisible(true)
       console.warn(data);
       ToastAndroid.show("Your Property Add !", ToastAndroid.SHORT);
     } catch (error) {
@@ -723,6 +727,8 @@ const ShopOffice = () => {
           </TouchableOpacity>
         )}
       </View>
+      <Alerts visible={visible} onClose={onClose} icon={"building"} title={'Application Submitted'} desc={"The Request For The Property Has Been Sent Successfully!"}/>
+
     </>
   );
 };

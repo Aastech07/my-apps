@@ -21,13 +21,14 @@ import { api } from "../Api";
 import axios from "axios";
 import { ImagePicker } from "expo-image-multiple-picker";
 import { useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 const PropertyForm = () => {
-
+  const navigation = useNavigation();
   const data = useRoute();
-  const values = data.params?.data
+  const values = data.params?.data;
 
   const Num = data.params?.num;
- 
+
   const [address, setAddress] = useState("");
   const [landmark, setLandmark] = useState("");
   const [proprietorshiptypes, setProprietorshiptypes] = useState("");
@@ -53,6 +54,8 @@ const PropertyForm = () => {
   const [album, setAlbum] = useState(undefined);
   const [assets, setAssets] = useState([]);
   const [number, setNumber] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
   const img =
     "https://i.pinimg.com/originals/07/8c/71/078c71955fe352c544e395fbafddf82c.jpg";
 
@@ -119,7 +122,7 @@ const PropertyForm = () => {
     const getData = async () => {
       try {
         const value = await AsyncStorage.getItem("profileid");
-       
+
         if (value !== null) {
           setProfileid(value);
         }
@@ -130,34 +133,32 @@ const PropertyForm = () => {
     getData();
   }, []);
 
-
-  useEffect(()=>{
-   const getproperties = async()=>{
-      const {data} = await axios.get(`${api}/properties/${values._id}`)
-      setAddress(data.address)
-      setLandmark(data.landmark)
-      setPropertyFor(data.propertyFor)
-      setProprietorshiptypes(data.proprietorshiptypes)
-      setPropertyType(data.propertyType)
-      setBedrooms(data.bedrooms)
-      setBathrooms(data.bathrooms)
-      setFurnishing(data.furnishing)
-      setSuperBuiltupArea(data.superBuiltupArea)
-      setCarpetArea(data.carpetArea)
-      setMaintenanceMonthly(data.maintenanceMonthly)
-      setTotalFloors(data.totalFloors)
-      setFloorNo(data.floorNo)
-      setCarParking(data.carParking)
-      setFacing(data.facing)
-      setAdTitle(data.adTitle)
-      setDescription(data.description)
-      setPrice(data.price)
-      setSelectedImage(data.image)
-      setNumber(data.ContactNo)
-    }
-    getproperties()
-  },[])
-
+  useEffect(() => {
+    const getproperties = async () => {
+      const { data } = await axios.get(`${api}/properties/${values._id}`);
+      setAddress(data.address);
+      setLandmark(data.landmark);
+      setPropertyFor(data.propertyFor);
+      setProprietorshiptypes(data.proprietorshiptypes);
+      setPropertyType(data.propertyType);
+      setBedrooms(data.bedrooms);
+      setBathrooms(data.bathrooms);
+      setFurnishing(data.furnishing);
+      setSuperBuiltupArea(data.superBuiltupArea);
+      setCarpetArea(data.carpetArea);
+      setMaintenanceMonthly(data.maintenanceMonthly);
+      setTotalFloors(data.totalFloors);
+      setFloorNo(data.floorNo);
+      setCarParking(data.carParking);
+      setFacing(data.facing);
+      setAdTitle(data.adTitle);
+      setDescription(data.description);
+      setPrice(data.price);
+      setSelectedImage(data.image);
+      setNumber(data.ContactNo);
+    };
+    getproperties();
+  }, []);
 
   const handleSave = (selectedAssets) => {
     setAssets(selectedAssets);
@@ -209,9 +210,6 @@ const PropertyForm = () => {
     }
   };
 
-
-
-
   const POSTPRO = async () => {
     try {
       const { data } = await axios.post(`${api}/properties`, {
@@ -237,8 +235,10 @@ const PropertyForm = () => {
         image: (selectedImage && selectedImage) || img,
         ContactNo: number,
       });
+      setShowModal(true);
+
       console.warn(data);
-      ToastAndroid.show("Your Property Add !", ToastAndroid.SHORT);
+      // ToastAndroid.show("Your Property Add !", ToastAndroid.SHORT);
     } catch (error) {
       console.log("Error during login:", error.message);
     }
@@ -838,6 +838,39 @@ const PropertyForm = () => {
             </View>
 
             <Modal
+              visible={showModal}
+              animationType="slide"
+              transparent
+              onRequestClose={() => setShowModal(false)}
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                  <FontAwesome5Icon
+                    name="building"
+                    size={20}
+                    color="blue"
+                    style={{ alignSelf: "center" }}
+                  />
+                  <Text style={styles.modalTitle}>Submit Application</Text>
+                  <Text style={{ fontWeight: "400",textAlign:'center' }}>
+                    The Request For The Property Has Been Sent Successfully!
+                  </Text>
+                
+                  <View style={styles.modalButtons}>
+                    <TouchableOpacity
+                      style={[styles.modalButton, styles.submitButton]}
+                      onPress={() => navigation.goBack()}
+                    >
+                      <Text style={{ color: "#fff", fontWeight: "500" }}>
+                        Done
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+
+            <Modal
               style={{}}
               animationType="slide"
               visible={modalVisible1}
@@ -866,8 +899,11 @@ const PropertyForm = () => {
       </View>
 
       <View style={{ paddingBottom: 40, backgroundColor: "#fff" }}>
-          {Num == 1 ? (
-          <TouchableOpacity style={styles.loginBtn1} onPress={() => UpdateForm()}>
+        {Num == 1 ? (
+          <TouchableOpacity
+            style={styles.loginBtn1}
+            onPress={() => UpdateForm()}
+          >
             <Text style={{ color: "tomato", fontSize: 18, fontWeight: "500" }}>
               Update
             </Text>
@@ -968,6 +1004,64 @@ const styles = StyleSheet.create({
     top: 10,
     borderWidth: 1,
     borderColor: "tomato",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "500",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  modalButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginLeft: 10,
+    top: 10,
+  },
+  cancelButton: {
+    backgroundColor: "#ccc",
+  },
+  submitButton: {
+    backgroundColor: "tomato",
+  },
+  button1: {
+    backgroundColor: "#f2f2f2", // Green color similar to Internshala's UI
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    right: 10,
+    elevation: 1,
+  },
+  text1: {
+    color: "#000", // White color for text
+    fontSize: 15,
+    fontWeight: "500",
   },
 });
 
